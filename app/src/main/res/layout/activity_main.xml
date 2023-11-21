@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundblack"
-    android:orientation="vertical"
     tools:context=".MainActivity"
+
     >
+
+
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
-        android:paddingBottom="40dp"
         android:scrollbars="none"
+        android:paddingBottom="56dp"
         >
 
         <LinearLayout
@@ -24,7 +26,8 @@
             android:paddingTop="40dp"
             android:layout_gravity="center_horizontal"
             android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="20dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -196,19 +199,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_horizontal"
-                        android:orientation="vertical"
-                        android:gravity="bottom">
+                        android:gravity="bottom"
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/poppins_semibold"
                             android:layout_gravity="bottom"
+                            android:background="@drawable/mapback"
+                            android:fontFamily="@font/poppins_semibold"
+                            android:paddingStart="28dp"
                             android:text="최근 운동 장소"
                             android:textColor="@color/white"
-                            android:textSize="12sp"
-                            android:paddingStart="28dp"
-                            android:background="@drawable/mapback"/>
+                            android:textSize="12sp" />
 
                     </LinearLayout>
                 </LinearLayout>
@@ -304,5 +307,17 @@
         </LinearLayout>
     </ScrollView>
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_navigation_menu"
+        android:background="#212432"
+        app:itemIconTint="@drawable/navi_select"
+        app:itemTextColor="@drawable/navi_select"
+        />
 
-</LinearLayout>
+
+</FrameLayout>
