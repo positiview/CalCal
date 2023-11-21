@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="red">#DF1930</color>
+    <color name="lightred">#F47483</color>
+    <color name="darkred">#871422</color>
+    <color name="backgroundblack">#1C1B29</color>
+    <color name="gradationred">#123456</color>
+
 </resources>
