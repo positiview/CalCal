@@ -10,8 +10,6 @@ interface ApiService {
     @POST("api/tests")
     fun saveData(
         @Body test: TestDTO,
-
     ): Call<String>
-
 
 }

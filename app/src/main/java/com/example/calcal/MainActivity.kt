@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnTest.setOnClickListener {
             Log.d("$$","버튼 누름")
             val testDTO = TestDTO("이름인부분","제목이고",123)
-            val call: Call<String> = apiService.saveData(testDTO)
+            val call: Call<String> = apiService.saveData(testDTO) // Json으로 바꿈 주소 정보 가짐.
 
             call.enqueue(object : Callback<String>{
                 override fun onResponse(call: Call<String>, response: Response<String>) {
