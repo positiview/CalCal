@@ -15,7 +15,7 @@
         android:paddingStart="40dp"
         android:paddingEnd="40dp"
         android:scrollbars="none"
-        android:paddingBottom="56dp"
+
         >
 
         <LinearLayout
@@ -194,7 +194,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="145dp"
                     android:layout_marginTop="12dp"
-                    android:id="@+id/map"
+                    android:id="@+id/map_main"
                     android:background="@drawable/blackgradient"
                     android:orientation="horizontal"
                     android:paddingTop="12dp">

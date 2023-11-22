@@ -32,9 +32,14 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMainBinding.inflate(inflater, container, false) // 뷰 바인딩 초기화
+
+        binding.mapMain.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_mapFragment)
+        }
+
+
+
         return binding.root
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
