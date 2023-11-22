@@ -4,6 +4,7 @@ package com.example.calcal.signlogin
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -22,7 +23,40 @@ class SignActivity : AppCompatActivity() {
 
         val btnRegister = findViewById<TextView>(R.id.btnRegister) //회원가입
         btnRegister.setOnClickListener{
-            val memberDTO = MemberDTO("test","0100000","a","a")
+            val emailEditText = findViewById<EditText>(R.id.email)
+            val phoneEditText = findViewById<EditText>(R.id.phone)
+            val passwordEditText = findViewById<EditText>(R.id.password1)
+            val password2EditText = findViewById<EditText>(R.id.password2)
+
+            val email = emailEditText.text.toString()
+            val phone = phoneEditText.text.toString()
+            val password = passwordEditText.text.toString()
+            val password2 = password2EditText.text.toString()
+
+            // EditText 값이 비어있는지 확인하고 메시지 표시
+            if (email.isEmpty()) {
+                emailEditText.error = "Email을 입력해주세요."
+                return@setOnClickListener
+            }
+            if (phone.isEmpty()) {
+                phoneEditText.error = "전화번호를 입력해주세요."
+                return@setOnClickListener
+            }
+            if (password.isEmpty()) {
+                passwordEditText.error = "비밀번호를 입력해주세요."
+                return@setOnClickListener
+            }
+            if (password2.isEmpty()) {
+                password2EditText.error = "비밀번호 확인을 입력해주세요."
+                return@setOnClickListener
+            }
+            if (password != password2) {
+                passwordEditText.error = "비밀번호가 일치하지 않습니다."
+                password2EditText.error = "비밀번호가 일치하지 않습니다."
+                return@setOnClickListener
+            }
+
+            val memberDTO = MemberDTO(email,phone,password,password2)
             val call: Call<String> = apiService.memberData(memberDTO)
 
             call.enqueue(object : Callback<String> {
