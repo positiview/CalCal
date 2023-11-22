@@ -11,39 +11,126 @@
        android:label="fragment_main"
        tools:layout="@layout/fragment_main">
     <action
-        android:id="@+id/action_firstFragment_to_graphFragment"
-        app:destination="@id/graphFragment" />
+        android:id="@+id/navi_graph"
+        app:destination="@id/graphFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/mainFragment"
+        app:popUpToInclusive="false"/>
     <action
-        android:id="@+id/action_mainFragment_to_calendarFragment"
-        app:destination="@id/calendarFragment" />
+        android:id="@+id/navi_calendar"
+        app:destination="@id/calendarFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/mainFragment"
+        app:popUpToInclusive="false"/>
     <action
-        android:id="@+id/action_mainFragment_to_mypageFragment"
-        app:destination="@id/mypageFragment" />
+        android:id="@+id/navi_mypage"
+        app:destination="@id/mypageFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/mainFragment"
+        app:popUpToInclusive="false"/>
     <action
         android:id="@+id/action_mainFragment_to_notiFragment"
-        app:destination="@id/notiFragment" />
+        app:destination="@id/notiFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/mainFragment"
+        app:popUpToInclusive="false"/>
     <action
         android:id="@+id/action_mainFragment_to_mapFragment"
-        app:destination="@id/mapFragment" />
+        app:destination="@id/mapFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/mainFragment"
+        app:popUpToInclusive="false"/>
     <action
         android:id="@+id/action_mainFragment_to_calcheckFragment"
-        app:destination="@id/calcheckFragment" />
+        app:destination="@id/calcheckFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/mainFragment"
+        app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/action_mainFragment_to_exerciseInfoFragment"
+        app:destination="@id/exerciseInfoFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/mainFragment"
+        app:popUpToInclusive="false"/>
+    <action
+        android:id="@+id/action_mainFragment_to_exercisestartFragment"
+        app:destination="@id/exercisestartFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/mainFragment"
+        app:popUpToInclusive="false"/>
    </fragment>
     <fragment
         android:id="@+id/graphFragment"
         android:name="com.example.calcal.mainFrag.GraphFragment"
         android:label="fragment_graph"
-        tools:layout="@layout/fragment_graph" />
+        tools:layout="@layout/fragment_graph" >
+     <action
+         android:id="@+id/navi_calendar"
+         app:destination="@id/calendarFragment"
+         app:launchSingleTop="true"
+         app:popUpTo="@id/graphFragment"
+         app:popUpToInclusive="false"/>
+     <action
+         android:id="@+id/navi_mypage"
+         app:destination="@id/mypageFragment"
+         app:launchSingleTop="true"
+         app:popUpTo="@id/graphFragment"
+         app:popUpToInclusive="false"/>
+     <action
+         android:id="@+id/navi_home"
+         app:destination="@id/mainFragment"
+         app:launchSingleTop="true"
+         app:popUpTo="@id/graphFragment"
+         app:popUpToInclusive="false"/>
+    </fragment>
     <fragment
         android:id="@+id/mypageFragment"
         android:name="com.example.calcal.mainFrag.MypageFragment"
         android:label="fragment_mypage"
-        tools:layout="@layout/fragment_mypage" />
+        tools:layout="@layout/fragment_mypage" >
+     <action
+         android:id="@+id/navi_home"
+         app:destination="@id/mainFragment"
+         app:launchSingleTop="true"
+         app:popUpTo="@id/mypageFragment"
+         app:popUpToInclusive="false"/>
+     <action
+         android:id="@+id/navi_calendar"
+         app:destination="@id/calendarFragment"
+         app:launchSingleTop="true"
+         app:popUpTo="@id/mypageFragment"
+         app:popUpToInclusive="false"/>
+     <action
+         android:id="@+id/navi_graph"
+         app:destination="@id/graphFragment"
+         app:launchSingleTop="true"
+         app:popUpTo="@id/mypageFragment"
+         app:popUpToInclusive="false"/>
+    </fragment>
     <fragment
         android:id="@+id/calendarFragment"
         android:name="com.example.calcal.mainFrag.CalendarFragment"
         android:label="fragment_calendar"
-        tools:layout="@layout/fragment_calendar" />
+        tools:layout="@layout/fragment_calendar" >
+     <action
+         android:id="@+id/navi_home"
+         app:destination="@id/mainFragment"
+         app:launchSingleTop="true"
+         app:popUpTo="@id/calendarFragment"
+         app:popUpToInclusive="false"/>
+     <action
+         android:id="@+id/navi_graph"
+         app:destination="@id/graphFragment"
+         app:launchSingleTop="true"
+         app:popUpTo="@id/calendarFragment"
+         app:popUpToInclusive="false"/>
+     <action
+         android:id="@+id/navi_mypage"
+         app:destination="@id/mypageFragment"
+         app:launchSingleTop="true"
+         app:popUpTo="@id/calendarFragment"
+         app:popUpToInclusive="false"/>
+    </fragment>
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.calcal.subFrag.MapFragment"

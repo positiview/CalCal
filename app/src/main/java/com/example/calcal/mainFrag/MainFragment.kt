@@ -1,60 +1,76 @@
 package com.example.calcal.mainFrag
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
+import com.example.calcal.databinding.FragmentMainBinding
+import com.example.calcal.modelDTO.TestDTO
+import com.example.calcal.retrofit.RequestFactory
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [MainFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class MainFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
+    private lateinit var binding: FragmentMainBinding
+    private val apiService = RequestFactory.create()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        binding = FragmentMainBinding.inflate(inflater, container, false) // 뷰 바인딩 초기화
+        return binding.root
+
+
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MainFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MainFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.btnTest.setOnClickListener {
+            Log.d("$$","버튼 누름")
+            val testDTO = TestDTO("이름인부분","제목이고",123)
+            val call: Call<String> = apiService.saveData(testDTO)
+
+
+            call.enqueue(object : Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    Log.d("$$","onResponse 응답 response : $response")
+                    if (response.isSuccessful) {
+                        // 서버 응답이 성공적으로 받아졌을 때
+                        val responseBody: String? = response.body()
+
+
+                        // responseBody에서 "Success" 등의 값을 확인하거나 원하는 처리를 수행
+                        if (responseBody == "Success") {
+                            // 성공 처리
+                        } else {
+                            // 다른 응답 처리
+                        }
+                    } else {
+                        // 서버 응답이 실패했을 때
+                        Log.d("$$", "onResponse 실패 response : ${response.code()}")
+                    }
                 }
-            }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.d("$$","onFailure 발생")
+                }
+            })
+        }
+
     }
 }
