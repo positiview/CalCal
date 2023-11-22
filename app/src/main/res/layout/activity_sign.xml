@@ -91,7 +91,7 @@
             android:drawablePadding="8dp" />
 
 
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/btnRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
             android:textColor="@color/white"
             android:text="회원가입"
             android:textSize="20dp"
-            android:layout_marginTop="126dp"
+            android:layout_marginTop="75dp"
             android:background="@drawable/signupbox"
             android:textAllCaps="false"
             android:fontFamily="@font/notosanskr_bold"
@@ -152,5 +152,17 @@
                 android:paddingStart="10dp"
                 android:background="@drawable/socialbox" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/loginTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="로그인으로 돌아가기"
+            android:layout_gravity="center"
+            android:background="@color/backgroundblack"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:fontFamily="@font/poppins_medium" />
     </LinearLayout>
+
 </ScrollView>
