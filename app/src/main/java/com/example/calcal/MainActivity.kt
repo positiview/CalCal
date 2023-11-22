@@ -21,6 +21,27 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.post {
             navController = findNavController(R.id.my_nav)
             binding.bottomNavigation.setupWithNavController(navController)
+            binding.bottomNavigation.setOnNavigationItemSelectedListener { item ->
+                when (item.itemId) {
+                    R.id.navi_home -> {
+                        navController.navigate(R.id.navi_home)
+                        true
+                    }
+                    R.id.navi_graph -> {
+                        navController.navigate(R.id.navi_graph)
+                        true
+                    }
+                    R.id.navi_calendar -> {
+                        navController.navigate(R.id.navi_calendar)
+                        true
+                    }
+                    R.id.navi_mypage -> {
+                        navController.navigate(R.id.navi_mypage)
+                        true
+                    }
+                    else -> false
+                }
+            }
         }
 
 
