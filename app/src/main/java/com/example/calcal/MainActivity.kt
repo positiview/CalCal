@@ -1,11 +1,58 @@
 package com.example.calcal
 
 import androidx.appcompat.app.AppCompatActivity
+import com.example.calcal.databinding.ActivityMainBinding
 import android.os.Bundle
+import android.util.Log
+import com.example.calcal.modelDTO.TestDTO
+import com.example.calcal.request.ApiService
+import com.example.calcal.retrofit.RequestFactory
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private val apiService = RequestFactory.create()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+
+        binding.btnTest.setOnClickListener {
+            Log.d("$$","버튼 누름")
+            val testDTO = TestDTO("이름인부분","제목이고",123)
+            val call: Call<String> = apiService.saveData(testDTO)
+
+            call.enqueue(object : Callback<String>{
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    Log.d("$$","onResponse 응답 response : $response")
+                    if (response.isSuccessful) {
+                        // 서버 응답이 성공적으로 받아졌을 때
+                        val responseBody: String? = response.body()
+
+
+                        // responseBody에서 "Success" 등의 값을 확인하거나 원하는 처리를 수행
+                        if (responseBody == "Success") {
+                            // 성공 처리
+                        } else {
+                            // 다른 응답 처리
+                        }
+                    } else {
+                        // 서버 응답이 실패했을 때
+                        Log.d("$$", "onResponse 실패 response : ${response.code()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.d("$$","onFailure 발생")
+                }
+            })
+
+        }
+
+
+
     }
 }
