@@ -1,58 +1,50 @@
 package com.example.calcal
 
-import androidx.appcompat.app.AppCompatActivity
-import com.example.calcal.databinding.ActivityMainBinding
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import com.example.calcal.modelDTO.TestDTO
-import com.example.calcal.request.ApiService
-import com.example.calcal.retrofit.RequestFactory
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupWithNavController
+import com.example.calcal.databinding.ActivityMainBinding
+import com.example.calcal.mainFrag.CalendarFragment
+import com.example.calcal.mainFrag.GraphFragment
+import com.example.calcal.mainFrag.MainFragment
+import com.example.calcal.mainFrag.MypageFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val apiService = RequestFactory.create()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val navController = findNavController(R.id.my_nav)
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        binding.btnTest.setOnClickListener {
-            Log.d("$$","버튼 누름")
-            val testDTO = TestDTO("이름인부분","제목이고",123)
-            val call: Call<String> = apiService.saveData(testDTO)
+        NavigationUI.setupWithNavController(bottomNavigationView, navController)
+        bottomNavigationView.setupWithNavController(navController)
 
-            call.enqueue(object : Callback<String>{
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    Log.d("$$","onResponse 응답 response : $response")
-                    if (response.isSuccessful) {
-                        // 서버 응답이 성공적으로 받아졌을 때
-                        val responseBody: String? = response.body()
-
-
-                        // responseBody에서 "Success" 등의 값을 확인하거나 원하는 처리를 수행
-                        if (responseBody == "Success") {
-                            // 성공 처리
-                        } else {
-                            // 다른 응답 처리
-                        }
-                    } else {
-                        // 서버 응답이 실패했을 때
-                        Log.d("$$", "onResponse 실패 response : ${response.code()}")
-                    }
+        val callback = object : OnBackPressedCallback(true /* enabled by default */) {
+            override fun handleOnBackPressed() {
+                // If it's not possible to navigate up in the navigation hierarchy, exit the app
+                if (!navController.navigateUp()) {
+                    finish()
                 }
-
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    Log.d("$$","onFailure 발생")
-                }
-            })
-
+            }
         }
-
-
-
+        onBackPressedDispatcher.addCallback(this, callback)
     }
+//    override fun onBackPressed() {
+//        if (!findNavController(R.id.my_nav).navigateUp()) {
+//            super.onBackPressed()
+//        }
+//    }
+
+
 }

@@ -53,7 +53,11 @@
                     android:text="cal"
                     android:textColor="@color/white"
                     android:textSize="22sp" />
-
+                <Button
+                    android:id="@+id/btn_test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Test(임시)" />
                 <Button
                     android:id="@+id/btn_alarm"
                     android:layout_width="48dp"
