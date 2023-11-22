@@ -47,7 +47,7 @@ class MainFragment : Fragment() {
 
         binding.btnTest.setOnClickListener {
             Log.d("$$","버튼 누름")
-            val testDTO = TestDTO("이름인부분","제목이고",123)
+            val testDTO = TestDTO("이름인부분23","제목이고",123)
             val call: Call<String> = apiService.saveData(testDTO)
 
 
