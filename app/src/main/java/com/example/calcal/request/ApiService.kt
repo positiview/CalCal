@@ -17,4 +17,9 @@ interface ApiService {
         @Body member: MemberDTO,
     ): Call<String>
 
+    @POST("api/login")
+    fun login(
+        @Body member: MemberDTO,
+    ): Call<String>
+
 }

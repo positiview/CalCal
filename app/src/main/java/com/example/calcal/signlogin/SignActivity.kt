@@ -21,7 +21,8 @@ class SignActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign)
 
-        val btnRegister = findViewById<TextView>(R.id.btnRegister) //회원가입
+        //회원가입
+        val btnRegister = findViewById<TextView>(R.id.btnRegister)
         btnRegister.setOnClickListener{
             val emailEditText = findViewById<EditText>(R.id.email)
             val phoneEditText = findViewById<EditText>(R.id.phone)
@@ -56,6 +57,7 @@ class SignActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            //값 반영
             val memberDTO = MemberDTO(email,phone,password,password2)
             val call: Call<String> = apiService.memberData(memberDTO)
 
@@ -66,6 +68,12 @@ class SignActivity : AppCompatActivity() {
                         // 서버 응답이 성공적으로 받아졌을 때
                         val responseBody: String? = response.body()
 
+                        // 로그인페이지로 이동
+                        val intent = Intent(this@SignActivity, LoginActivity::class.java)
+                        startActivity(intent)
+
+
+                        Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
 
                         // responseBody에서 "Success" 등의 값을 확인하거나 원하는 처리를 수행
                         if (responseBody == "Success") {
@@ -76,6 +84,8 @@ class SignActivity : AppCompatActivity() {
                     } else {
                         // 서버 응답이 실패했을 때
                         Log.d("$$", "onResponse 실패 response : ${response.code()}")
+                        Toast.makeText(getApplicationContext(), "이미 가입되어있는 이메일 입니다.", Toast.LENGTH_SHORT).show();
+
                     }
                 }
 
@@ -85,15 +95,10 @@ class SignActivity : AppCompatActivity() {
             })
 
 
-            // 로그인페이지로 이동
-            val intent = Intent(this@SignActivity, LoginActivity::class.java)
-            startActivity(intent)
-
-
-       Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
         }
 
-        val loginTv = findViewById<TextView>(com.example.calcal.R.id.loginTv) //로그인으로 돌아가기
+        //로그인으로 돌아가기
+        val loginTv = findViewById<TextView>(com.example.calcal.R.id.loginTv)
         loginTv.setOnClickListener{
             val intent = Intent(this@SignActivity, LoginActivity::class.java)
             startActivity(intent)
