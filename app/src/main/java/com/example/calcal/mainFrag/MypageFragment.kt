@@ -32,7 +32,7 @@ class MypageFragment : Fragment() {
         binding = FragmentMypageBinding.inflate(inflater, container, false)
         val view = inflater.inflate(R.layout.fragment_mypage, container, false)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.mypagerecycler)
+        val recyclerView = binding.mypagerecycler
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         val list = ArrayList<String>()
@@ -50,7 +50,7 @@ class MypageFragment : Fragment() {
             NavHostFragment.findNavController(this).navigateUp()
         }
 
-        return view
+        return binding.root
 
         }
     fun onItemClick(position: Int) {

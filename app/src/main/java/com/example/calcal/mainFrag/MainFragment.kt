@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
@@ -21,6 +22,7 @@ class MainFragment : Fragment() {
 
     private lateinit var binding: FragmentMainBinding
     private val apiService = RequestFactory.create()
+//    private lateinit var btn_alarm : Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,17 +34,26 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMainBinding.inflate(inflater, container, false) // 뷰 바인딩 초기화
+
+        binding.mapMain.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_mapFragment)
+        }
+
+
+
         return binding.root
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnAlarm.setOnClickListener{
+            findNavController().navigate(R.id.action_mainFragment_to_notiFragment)
+        }
+
         binding.btnTest.setOnClickListener {
             Log.d("$$","버튼 누름")
-            val testDTO = TestDTO("이름인부분","제목이고",123)
+            val testDTO = TestDTO("이름인부분23","제목이고",123)
             val call: Call<String> = apiService.saveData(testDTO)
 
 

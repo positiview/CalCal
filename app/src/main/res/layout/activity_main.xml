@@ -25,11 +25,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#212432"
-        app:itemIconTint="@color/navi_select"
-        app:itemTextColor="@color/navi_select"
+        app:itemIconTint="@color/gray"
+        app:itemTextColor="@color/gray"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_navigation_menu" />
+        app:menu="@menu/bottom_navigation_menu"
+        app:labelVisibilityMode="labeled"/>
+
 
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
