@@ -4,5 +4,5 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="location_permission_description">위치 접근 권한 설정</string>
     <string name="course">산책코스</string>
-
+    <string name="google_login_client_id">648879563018-amfif4hftuklbvdis8eanfvomii5g1d9.apps.googleusercontent.com</string>
 </resources>
