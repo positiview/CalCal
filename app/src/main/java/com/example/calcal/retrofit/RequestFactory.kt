@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RequestFactory {
 
-    private const val baseUrl = "http://10.100.203.32:8080"
+    private const val baseUrl = "http://10.100.203.53:8080"
 
     fun create():ApiService{
         val retrofit: Retrofit = Retrofit.Builder()
