@@ -1,108 +1,84 @@
 package com.example.calcal.signlogin
 
-
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.retrofit.RequestFactory
 import retrofit2.Call
 import retrofit2.Callback
-import retrofit2.Response
 
+class LoginActivity : AppCompatActivity() {
 
-class SignActivity : AppCompatActivity() {
     private val apiService = RequestFactory.create()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sign)
+        setContentView(R.layout.activity_login)
 
-        //회원가입
-        val btnRegister = findViewById<TextView>(R.id.btnRegister)
-        btnRegister.setOnClickListener{
+        //로그인 버튼 클릭
+        val button = findViewById<Button>(R.id.btnlogin)
+        button.setOnClickListener {
+
+            // 입력된 이메일과 비밀번호 가져오기
             val emailEditText = findViewById<EditText>(R.id.email)
-            val phoneEditText = findViewById<EditText>(R.id.phone)
-            val passwordEditText = findViewById<EditText>(R.id.password1)
-            val password2EditText = findViewById<EditText>(R.id.password2)
-
+            val passwordEditText = findViewById<EditText>(R.id.password)
             val email = emailEditText.text.toString()
-            val phone = phoneEditText.text.toString()
             val password = passwordEditText.text.toString()
-            val password2 = password2EditText.text.toString()
 
-            // EditText 값이 비어있는지 확인하고 메시지 표시
+            // 이메일과 비밀번호 유효성 검사
             if (email.isEmpty()) {
                 emailEditText.error = "Email을 입력해주세요."
-                return@setOnClickListener
-            }
-            if (phone.isEmpty()) {
-                phoneEditText.error = "전화번호를 입력해주세요."
                 return@setOnClickListener
             }
             if (password.isEmpty()) {
                 passwordEditText.error = "비밀번호를 입력해주세요."
                 return@setOnClickListener
             }
-            if (password2.isEmpty()) {
-                password2EditText.error = "비밀번호 확인을 입력해주세요."
-                return@setOnClickListener
-            }
-            if (password != password2) {
-                passwordEditText.error = "비밀번호가 일치하지 않습니다."
-                password2EditText.error = "비밀번호가 일치하지 않습니다."
-                return@setOnClickListener
-            }
 
-            //값 반영
-            val memberDTO = MemberDTO(email,phone,password,password2)
-            val call: Call<String> = apiService.memberData(memberDTO)
-
+            // 로그인 요청
+            val call: Call<String> = apiService.login(MemberDTO(email = email, phone = "", password = password, password2 = ""))
             call.enqueue(object : Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    Log.d("$$","onResponse 응답 response : $response")
+                override fun onResponse(call: Call<String>, response: retrofit2.Response<String>) {
                     if (response.isSuccessful) {
-                        // 서버 응답이 성공적으로 받아졌을 때
+                        // 로그인 성공
                         val responseBody: String? = response.body()
-
-                        // 로그인페이지로 이동
-                        val intent = Intent(this@SignActivity, LoginActivity::class.java)
-                        startActivity(intent)
-
-
-                        Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
-
-                        // responseBody에서 "Success" 등의 값을 확인하거나 원하는 처리를 수행
                         if (responseBody == "Success") {
-                            // 성공 처리
+                            // 로그인 성공 처리
+                            Toast.makeText(applicationContext, "반갑습니다!", Toast.LENGTH_SHORT).show()
+                            // 로그인 후 작업 수행
+                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                            startActivity(intent)
                         } else {
-                            // 다른 응답 처리
+                            // 로그인 실패 처리
+                            Toast.makeText(applicationContext, "로그인 실패", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        // 서버 응답이 실패했을 때
-                        Log.d("$$", "onResponse 실패 response : ${response.code()}")
-                        Toast.makeText(getApplicationContext(), "이미 가입되어있는 이메일 입니다.", Toast.LENGTH_SHORT).show();
-
+                        // 서버 응답 실패
+                        Toast.makeText(applicationContext, "이메일, 비밀번호를 확인해주세요", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
-                    Log.d("$$","onFailure 발생")
+                    // 통신 실패
+                    Log.d("$$", "onFailure 발생")
+                    Toast.makeText(applicationContext, "통신 실패", Toast.LENGTH_SHORT).show()
                 }
             })
 
 
         }
 
-        //로그인으로 돌아가기
-        val loginTv = findViewById<TextView>(com.example.calcal.R.id.loginTv)
-        loginTv.setOnClickListener{
-            val intent = Intent(this@SignActivity, LoginActivity::class.java)
+        //회원가입페이지로 이동
+        val register = findViewById<TextView>(R.id.registerTv)
+        register.setOnClickListener{
+            val intent = Intent(this@LoginActivity, SignActivity::class.java)
             startActivity(intent)
         }
     }
-
 }
