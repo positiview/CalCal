@@ -30,8 +30,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         binding = FragmentMapBinding.inflate(inflater,container, false)
         val view = binding.root
         val options = NaverMapOptions()
-            .camera(CameraPosition(LatLng(35.1798159, 129.0750222), 8.0))
-            .mapType(NaverMap.MapType.Basic)
+            .mapType(NaverMap.MapType.Terrain)
         val fm = childFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
             ?: MapFragment.newInstance(options).also {
@@ -70,6 +69,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mNaverMap.locationSource = locationSource
         uiSettings = naverMap.uiSettings
         uiSettings.isLocationButtonEnabled = true
+        // 초기 위치 설정
+        val initialPosition = LatLng(35.1798159, 129.0750222)
+        val cameraPosition = CameraPosition(initialPosition, 17.0)
+        mNaverMap.moveCamera(com.naver.maps.map.CameraUpdate.toCameraPosition(cameraPosition))
+        mNaverMap.maxZoom = 18.0
+        mNaverMap.minZoom = 5.0
 
     }
 
