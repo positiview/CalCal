@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMapBinding
 import com.naver.maps.geometry.LatLng
@@ -60,7 +61,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
 
             selectCourse.setOnClickListener{
-
+                findNavController().navigate(R.id.action_mapFragment_to_searchLocationFragment)
             }
 
         }

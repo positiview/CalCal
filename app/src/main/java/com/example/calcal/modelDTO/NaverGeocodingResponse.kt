@@ -1,7 +1,7 @@
 package com.example.calcal.modelDTO
 
 
-data class NaverAddressResponseDTO(
+data class NaverGeocodingResponseDTO(
     val status: String,
     val meta: Meta,
     val addresses: List<Address>,

@@ -1,6 +1,7 @@
 package com.example.calcal.request
 
-import com.example.calcal.modelDTO.NaverAddressResponseDTO
+import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
+import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.signlogin.MemberDTO
 import retrofit2.Call
@@ -26,6 +27,13 @@ interface ApiService {
         @Query("query") query: String,
         @Header("X-NCP-APIGW-API-KEY-ID") apiKeyId: String,
         @Header("X-NCP-APIGW-API-KEY") apiKey: String
-    ): Call<NaverAddressResponseDTO>
+    ): Call<NaverGeocodingResponseDTO>
+
+    @GET("map-reversegeocode/v2/gc")
+    fun reverseGeocode(
+        @Query("query") query: String,
+        @Header("X-NCP-APIGW-API-KEY-ID") apiKeyId: String,
+        @Header("X-NCP-APIGW-API-KEY") apiKey: String
+    ): Call<ReverseGeocodingResponseDTO>
 
 }

@@ -7,14 +7,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.calcal.R
 import com.example.calcal.adapter.AddressListAdapter
 import com.example.calcal.databinding.FragmentSearchAddressBinding
 import com.example.calcal.modelDTO.Address
-import com.example.calcal.modelDTO.NaverAddressResponseDTO
+import com.example.calcal.modelDTO.AddressDTO
+import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.retrofit.RequestFactory
-
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +31,10 @@ class SearchAddressFragment:Fragment() {
     ): View? {
         binding = FragmentSearchAddressBinding.inflate(inflater,container,false)
 
+        arguments?.let{bundle ->
+            binding.searchQuery.setText(bundle.getString("address"))
+        }
+
         binding.searchQuery.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -44,7 +49,16 @@ class SearchAddressFragment:Fragment() {
                 }
             }
         })
-        addressListAdapter = AddressListAdapter()
+        addressListAdapter = AddressListAdapter{
+            // Navigation Component를 사용하여 이전 fragment로 이동
+
+                val copyAddress = it
+                val addressDTO = AddressDTO(copyAddress.roadAddress, copyAddress.addressElements[0].longName, copyAddress.x, copyAddress.y)
+                val bundle = Bundle()
+                bundle.putParcelable("addressDTO", addressDTO)
+                findNavController().navigate(R.id.action_searchAddressFragment_to_searchLocationFragment, bundle)
+            //  이부분 나중에 ViewModel 사용하여 수정해야함 !!!
+        }
 
 
 
@@ -66,13 +80,13 @@ class SearchAddressFragment:Fragment() {
         val apiKeyId = "clurvbfncz"
         val apiKey = "WuVnFkJnFdIt7L03dhCZw7iCyNCeLGtNh3UsrhrI"
         val service = RequestFactory.create2()
-        val callAddressList: Call<NaverAddressResponseDTO> = service.geocode(query, apiKeyId, apiKey)
+        val callAddressList: Call<NaverGeocodingResponseDTO> = service.geocode(query, apiKeyId, apiKey)
 
-        callAddressList.enqueue(object : Callback<NaverAddressResponseDTO>{
-            override fun onResponse(call: Call<NaverAddressResponseDTO>, response: Response<NaverAddressResponseDTO>) {
+        callAddressList.enqueue(object : Callback<NaverGeocodingResponseDTO>{
+            override fun onResponse(call: Call<NaverGeocodingResponseDTO>, response: Response<NaverGeocodingResponseDTO>) {
                 Log.d("$$","주소 검색 결과 읍답 : $response")
                 if(response.isSuccessful){
-                    val respAddress: NaverAddressResponseDTO? = response.body()
+                    val respAddress: NaverGeocodingResponseDTO? = response.body()
 
                     if(respAddress != null && respAddress.addresses.isNotEmpty()){
                         val addressList: List<Address> = respAddress.addresses
@@ -96,7 +110,8 @@ class SearchAddressFragment:Fragment() {
                 }
             }
 
-            override fun onFailure(call: Call<NaverAddressResponseDTO>, t: Throwable) {
+            override fun onFailure(call: Call<NaverGeocodingResponseDTO>, t: Throwable) {
+                Log.d("$$","요청 실패 onFailure")
             }
 
         })

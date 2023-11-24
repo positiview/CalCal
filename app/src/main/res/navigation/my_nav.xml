@@ -135,7 +135,31 @@
         android:id="@+id/mapFragment"
         android:name="com.example.calcal.subFrag.MapFragment"
         android:label="fragment_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+     <action
+         android:id="@+id/action_mapFragment_to_searchLocationFragment"
+         app:destination="@+id/searchLocationFragment"
+         />
+    </fragment>
+    <fragment
+        android:id="@+id/searchLocationFragment"
+        android:name="com.example.calcal.subFrag.SearchLocationFragment"
+        >
+
+      <action
+          android:id="@+id/action_searchLocationFragment_to_searchAddressFragment"
+          app:destination="@+id/searchAddressFragment"
+       />
+    </fragment>
+    <fragment
+        android:id="@+id/searchAddressFragment"
+        android:name="com.example.calcal.subFrag.SearchAddressFragment"
+        >
+      <action
+          android:id="@+id/action_searchAddressFragment_to_searchLocationFragment"
+          app:destination="@+id/searchLocationFragment"
+       />
+    </fragment>
     <fragment
         android:id="@+id/exercisestartFragment"
         android:name="com.example.calcal.subFrag.ExercisestartFragment"

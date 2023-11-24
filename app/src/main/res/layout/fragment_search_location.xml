@@ -16,6 +16,7 @@
 
         <TextView
             android:id="@+id/textView"
+            android:textAppearance="@style/white_bold_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="코스 이름" />
@@ -46,30 +47,34 @@
 
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/selected_location"
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/add_waypoint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="경유지 추가" />
 
     </LinearLayout>
 
+    <View
+        android:id="@+id/view3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toBottomOf="@id/location_finder"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/course_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:layout_editor_absoluteX="254dp"
-        tools:layout_editor_absoluteY="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/location_finder"
 
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-
-
+        tools:layout_editor_absoluteX="254dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

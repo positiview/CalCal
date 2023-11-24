@@ -1,5 +1,6 @@
 package com.example.calcal.modelDTO
 
 data class LocationDTO (
-    var name:String = ""
+    var location:String, // 주소
+    var name: String //
 )
