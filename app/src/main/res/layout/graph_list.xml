@@ -5,7 +5,11 @@
     android:layout_height="270dp"
     android:orientation="vertical"
     android:background="@drawable/graph_back"
-    android:padding="20dp">
+    android:paddingTop="8dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="20dp"
+    android:layout_marginBottom="12dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,16 +34,30 @@
         >
     <TextView
         android:id="@+id/exer_title"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="러닝"
         android:textSize="24sp"
         android:textColor="@color/white"
         android:textStyle="bold"
+
         android:layout_gravity="center_vertical"
 
 
         />
+        <TextView
+            android:id="@+id/exer_ing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="진행중"
+            android:textSize="12sp"
+            android:textColor="@color/semigray"
+            android:layout_marginStart="12dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone"
+            />
+
     </LinearLayout>
     <TextView
         android:id="@+id/exer_cal_child"
@@ -88,7 +106,7 @@
 
 
         <LinearLayout
-            android:id="@+id/mypage_daypart"
+            android:id="@+id/graph_daypart"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -96,39 +114,39 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/day_counttext"
+                android:id="@+id/walk_counttext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="운동 시작일"
+                android:text="걸음수"
                 android:textColor="@color/gray"
                 android:textSize="12sp" />
 
             <TextView
-                android:id="@+id/day_count"
+                android:id="@+id/walk_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="23.11.20"
+                android:text="15000 보"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/calbset"
+                android:id="@+id/exer_distancetext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="최대 칼로리 소모"
+                android:text="운동거리"
                 android:textColor="@color/gray"
                 android:textSize="12sp" />
 
             <TextView
-                android:id="@+id/calbset_count"
+                android:id="@+id/exer_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="700 kcal"
+                android:text="1.2km"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -144,39 +162,39 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/bestwalk"
+                android:id="@+id/exer_timetext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="최대 걸음수"
+                android:text=" 운동시간"
                 android:textColor="@color/gray"
                 android:textSize="12sp" />
 
             <TextView
-                android:id="@+id/bestwalk_count"
+                android:id="@+id/exer_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="23500"
+                android:text="1시간 30분"
                 android:textColor="@color/red"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/bestwalkday"
+                android:id="@+id/continuitytext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="가장 많이 걸은 날"
+                android:text="연속운동"
                 android:textColor="@color/gray"
                 android:textSize="12sp" />
 
             <TextView
-                android:id="@+id/bestwalkday_count"
+                android:id="@+id/continuity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="23.11.02"
+                android:text="22일째"
                 android:textColor="@color/red"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -184,13 +202,21 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_exermap"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn_long"
-        android:text="운동 경로 확인"
-        android:textColor="@color/white"
-        android:textStyle="bold"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="bottom">
+
+        <Button
+            android:id="@+id/btn_exermap"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/btn_long"
+            android:text="운동 경로 확인"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+    </LinearLayout>
 
 </LinearLayout>

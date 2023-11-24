@@ -38,6 +38,7 @@ android {
 
 
 
+
 }
 
 
@@ -61,8 +62,12 @@ dependencies {
 
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.google.code.gson:gson:2.9.0")
+    implementation ("com.google.code.gson:gson:2.10.1")
 
     implementation("com.naver.maps:map-sdk:3.17.0")
+
+
+    implementation ("com.github.jakob-grabner:Circle-Progress-View:1.4")
+
 
 }
