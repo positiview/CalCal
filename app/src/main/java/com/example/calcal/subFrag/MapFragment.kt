@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMapBinding
@@ -19,6 +20,8 @@ import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.UiSettings
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.widget.LocationButtonView
+
 
 class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var binding : FragmentMapBinding
@@ -36,9 +39,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val options = NaverMapOptions()
             .mapType(NaverMap.MapType.Terrain)
         val fm = childFragmentManager
-        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
+        val mapFragment = fm.findFragmentById(com.example.calcal.R.id.map) as MapFragment?
             ?: MapFragment.newInstance(options).also {
-                fm.beginTransaction().add(R.id.map, it).commit()
+                fm.beginTransaction().add(com.example.calcal.R.id.map, it).commit()
             }
 
         mapFragment.getMapAsync(this)
@@ -46,7 +49,24 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         locationSource =
             FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
+        binding.apply {
+            toggleCourse.textOff = null
+            toggleCourse.textOn = null
+            toggleCourse.setOnCheckedChangeListener { _, isChecked ->
+                if(isChecked){
+                    toggleCourse.setBackgroundResource(R.drawable.ic_minus_shape)
+                    courseRecode.visibility = View.VISIBLE
+                }else{
+                    toggleCourse.setBackgroundResource(R.drawable.ic_plus_shape)
+                    toggleCourse.visibility = View.GONE
+                }
+            }
 
+            selectCourse.setOnClickListener{
+                findNavController().navigate(R.id.action_mapFragment_to_searchLocationFragment)
+            }
+
+        }
 
         btn_back = binding.btnBack
         btn_back.setOnClickListener {
@@ -75,7 +95,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mNaverMap = naverMap
         mNaverMap.locationSource = locationSource
         uiSettings = naverMap.uiSettings
-        uiSettings.isLocationButtonEnabled = true
+        uiSettings.isLocationButtonEnabled = false
+        val locationButtonView: LocationButtonView = binding.locationView
+        locationButtonView.map = mNaverMap
         // 초기 위치 설정
         val initialPosition = LatLng(35.1798159, 129.0750222)
         val cameraPosition = CameraPosition(initialPosition, 17.0)
