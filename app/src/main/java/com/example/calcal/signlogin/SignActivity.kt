@@ -1,6 +1,7 @@
 package com.example.calcal.signlogin
 
 
+
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -25,15 +26,14 @@ import com.google.android.gms.common.api.ApiException
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.security.MessageDigest
 
 
 class SignActivity : AppCompatActivity() {
     private val apiService = RequestFactory.create()
-
-
-
-
     private lateinit var binding: ActivitySignBinding
+
+    //구글로그인
     private val viewModel: SignViewModel by viewModels()
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -57,10 +57,10 @@ class SignActivity : AppCompatActivity() {
     }
 
 
-
-
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var networkInfo: NetworkInfo
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign)
@@ -78,7 +78,7 @@ class SignActivity : AppCompatActivity() {
 
 
 
-        //회원가입
+        //일반 회원가입
         val btnRegister = findViewById<TextView>(R.id.btnRegister)
         btnRegister.setOnClickListener{
             val emailEditText = findViewById<EditText>(R.id.email)
@@ -90,6 +90,7 @@ class SignActivity : AppCompatActivity() {
             val phone = phoneEditText.text.toString()
             val password = passwordEditText.text.toString()
             val password2 = password2EditText.text.toString()
+
 
             // EditText 값이 비어있는지 확인하고 메시지 표시
             if (email.isEmpty()) {
@@ -114,8 +115,12 @@ class SignActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // 비밀번호 해시 암호화
+            val hashedPassword = hashPassword(password)
+            val hashedPassword2 = hashPassword(password2)
+
             //값 반영
-            val memberDTO = MemberDTO(email,phone,password,password2)
+            val memberDTO = MemberDTO(email,phone,hashedPassword,hashedPassword2)
             val call: Call<String> = apiService.memberData(memberDTO)
 
             call.enqueue(object : Callback<String> {
@@ -162,6 +167,26 @@ class SignActivity : AppCompatActivity() {
         }
     }
 
+    private fun hashPassword(password: String): String {
+        val messageDigest = MessageDigest.getInstance("SHA-256")
+        val passwordBytes = password.toByteArray()
+        val hashedBytes = messageDigest.digest(passwordBytes)
+        return bytesToHex(hashedBytes)
+    }
+
+    private fun bytesToHex(bytes: ByteArray): String {
+        val hexChars = "0123456789ABCDEF"
+        val hexBuilder = StringBuilder(bytes.size * 2)
+        for (byte in bytes) {
+            val higherNibble = byte.toInt() ushr 4 and 0x0F
+            val lowerNibble = byte.toInt() and 0x0F
+            hexBuilder.append(hexChars[higherNibble])
+            hexBuilder.append(hexChars[lowerNibble])
+        }
+        return hexBuilder.toString()
+    }
+
+    //구글로그인
     private fun addListener() {
         binding.google.setOnClickListener {
             requestGoogleLogin()

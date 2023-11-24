@@ -8,6 +8,7 @@ android {
     namespace = "com.example.calcal"
     compileSdk = 34
     viewBinding { enable = true }
+    dataBinding { var enabled = true }
 
     defaultConfig {
         applicationId = "com.example.calcal"
@@ -48,6 +49,7 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.activity:activity-ktx:1.8.1")
+    implementation("androidx.databinding:databinding-runtime:8.1.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -62,6 +64,9 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.9.0")
 
     implementation("com.naver.maps:map-sdk:3.17.0")
+
+    //구글 로그인
     implementation ("com.google.android.gms:play-services-auth:20.7.0")
+
 
 }
