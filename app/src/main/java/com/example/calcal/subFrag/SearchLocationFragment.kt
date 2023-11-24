@@ -43,9 +43,7 @@ class SearchLocationFragment:Fragment() {
         binding = FragmentSearchLocationBinding.inflate(inflater,container,false)
         val view = binding.root
 
-        // 각각의 RecyclerView를 구별한다.
-        val addressRecyclerView : RecyclerView = view.findViewById(R.id.selected_location)
-        val courseRecyclerView : RecyclerView = view.findViewById(R.id.course_list)
+
 
         setLocationList(){
             selectLocation = it
@@ -70,12 +68,14 @@ class SearchLocationFragment:Fragment() {
 
     private fun setLocationList(callback : (List<LocationDTO>) -> Unit) {
         var locationList = listOf<LocationDTO>()
-        val initialLocation = LocationDTO("", "[현재 위치] ")
+        val initialLocation = LocationDTO("1", "[현재 위치] ")
         locationList = locationList.plus(initialLocation)
 
+
         Log.d("$$","setLocationList 에서 내 위치 가져오기")
+
         // 내위치 정보 가져오기
-        locationCallback = object : LocationCallback() {
+       /* locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 Log.d("$$", "locationresult 값 : $locationResult")
                 for ((i, location) in locationResult.locations.withIndex()) {
@@ -85,7 +85,8 @@ class SearchLocationFragment:Fragment() {
                     }
                 }
             }
-        }
+        }*/
+
 
         callback(locationList)
     }

@@ -1,6 +1,7 @@
 package com.example.calcal.adapter
 
 import android.location.Location
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
@@ -36,18 +37,23 @@ class LocationSearchAdapter(private val onClickListener: (LocationDTO) -> Unit):
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val locations = locationList[position]
 
-
+        if (position == 1) {
+            locations.name="[목적지]"
+            locations.location=""
+        }
         holder.bind(locations)
+
     }
 
     override fun getItemCount(): Int {
 
-        return maxOf(2, locationList.size)
+        return if (locationList.size < 2) 2 else locationList.size
     }
 
 
     fun setLocationList(locationList : List<LocationDTO>){
         this.locationList = locationList
+        Log.d("$$", "setLocationList 호출")
         notifyDataSetChanged()
     }
 }
