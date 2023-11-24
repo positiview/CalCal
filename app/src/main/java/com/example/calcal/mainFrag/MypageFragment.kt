@@ -40,6 +40,7 @@ class MypageFragment : Fragment() {
         list.add("알림설정")
         list.add("고객센터")
         list.add("환경설정")
+        list.add("로그아웃")
         list.add("회원탈퇴")
 
         val adapter = MypageAdapter(list, this)
@@ -68,7 +69,8 @@ class MypageFragment : Fragment() {
             3 -> NavHostFragment.findNavController(this)
                 .navigate(R.id.action_mypageFragment_to_settingFragment)
 
-//            4 -> delete~기능 넣어야 함
+//            4 -> 로그아웃 기능 넣어야 함
+            //            5 -> delete~기능 넣어야 함
 
         }
     }

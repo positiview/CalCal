@@ -36,7 +36,7 @@ class MypageAdapter(private val mData: List<String>, private val listener: Mypag
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val text = mData[position]
         holder.mypageList.text = text
-        if (position == 4) {
+        if (position == 5) {
             // 특정 위치(position)의 요소의 색상을 변경
             holder.mypageList.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.verygray))
             holder.mypage_list_img.setColorFilter(ContextCompat.getColor(holder.itemView.context, R.color.verygray))
