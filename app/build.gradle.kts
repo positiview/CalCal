@@ -8,6 +8,7 @@ android {
     namespace = "com.example.calcal"
     compileSdk = 34
     viewBinding { enable = true }
+    dataBinding { var enabled = true }
 
     defaultConfig {
         applicationId = "com.example.calcal"
@@ -50,6 +51,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.activity:activity-ktx:1.8.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("androidx.databinding:databinding-runtime:8.1.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -67,7 +69,13 @@ dependencies {
     implementation("com.naver.maps:map-sdk:3.17.0")
 
 
+    //그래프용
     implementation ("com.github.jakob-grabner:Circle-Progress-View:1.4")
+    //달력용
     implementation ("com.github.prolificinteractive:material-calendarview:2.0.1")
+    //구글 로그인
+    implementation ("com.google.android.gms:play-services-auth:20.7.0")
+
+
 
 }

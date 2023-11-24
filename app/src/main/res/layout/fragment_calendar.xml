@@ -24,7 +24,7 @@
                 android:layout_height="32dp"
                 android:background="@drawable/ic_arrow"
                 android:contentDescription="뒤로가기"
-                app:layout_constraintStart_toStartOf="@+id/textView"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
