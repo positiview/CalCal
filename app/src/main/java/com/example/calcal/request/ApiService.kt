@@ -35,5 +35,9 @@ interface ApiService {
         @Header("X-NCP-APIGW-API-KEY-ID") apiKeyId: String,
         @Header("X-NCP-APIGW-API-KEY") apiKey: String
     ): Call<ReverseGeocodingResponseDTO>
+    @POST("api/login")
+    fun login(
+        @Body member: MemberDTO,
+    ): Call<String>
 
 }
