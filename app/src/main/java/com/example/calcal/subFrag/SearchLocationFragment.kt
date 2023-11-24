@@ -62,7 +62,7 @@ class SearchLocationFragment:Fragment() {
         locationSearchAdapter.setLocationList(selectLocation)
 
         // 어댑터 설정하기
-        addressRecyclerView.adapter = locationSearchAdapter
+        binding.selectedLocation.adapter = locationSearchAdapter
 //        courseRecyclerView.adapter = courseListAdapter
 
         return view
