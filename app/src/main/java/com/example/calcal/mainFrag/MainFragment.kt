@@ -22,6 +22,7 @@ class MainFragment : Fragment() {
 
     private lateinit var binding: FragmentMainBinding
     private val apiService = RequestFactory.create()
+
 //    private lateinit var btn_alarm : Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +47,9 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        binding.btnGraph.setOnClickListener{
+            findNavController().navigate(R.id.navi_graph)
+        }
         binding.btnAlarm.setOnClickListener{
             findNavController().navigate(R.id.action_mainFragment_to_notiFragment)
         }

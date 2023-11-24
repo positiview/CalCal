@@ -68,6 +68,6 @@ dependencies {
 
 
     implementation ("com.github.jakob-grabner:Circle-Progress-View:1.4")
-
+    implementation ("com.github.prolificinteractive:material-calendarview:2.0.1")
 
 }

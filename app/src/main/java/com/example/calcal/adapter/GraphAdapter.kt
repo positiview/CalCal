@@ -70,7 +70,7 @@ class GraphAdapter(private val mData: List<String>, private val listener: GraphF
                 }
             }
             is FirstViewHolder -> {
-                holder.ringGraph.setValueAnimated(0f, 88f, 1000) // 1초 동안 0에서 100까지 애니메이션합니다.
+                holder.ringGraph.setValueAnimated(0f, 36f, 1000) // 1초 동안 0에서 100까지 애니메이션합니다.
 
                 val animator = ValueAnimator.ofInt(0, 360)
                 animator.addUpdateListener { animation ->
