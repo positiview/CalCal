@@ -1,60 +1,57 @@
 package com.example.calcal.mainFrag
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.calcal.R
+import com.example.calcal.adapter.GraphAdapter
+import com.example.calcal.adapter.MypageAdapter
+import com.example.calcal.databinding.FragmentGraphBinding
+import com.example.calcal.databinding.FragmentMypageBinding
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [GraphFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class GraphFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
+    private lateinit var binding: FragmentGraphBinding
+    private lateinit var btn_back : Button
+            override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_graph, container, false)
+        binding = FragmentGraphBinding.inflate(inflater, container, false)
+
+
+        val recyclerView = binding.graphrecycler
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        val list = ArrayList<String>()
+        list.add("그래프")
+        list.add("디비값")
+        list.add("요소 추가")
+
+        val adapter = GraphAdapter(list, this)
+        recyclerView.adapter = adapter
+
+        btn_back = binding.btnBack
+        btn_back.setOnClickListener {
+            NavHostFragment.findNavController(this).navigateUp()
+        }
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment GraphFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            GraphFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    fun onItemClick(position: Int) {
+        // 여기서 프래그먼트 네비게이션 라이브러리를 사용하여 다른 프래그먼트로 이동합니다.
+        when (position) {
+
+
+        }
     }
 }
