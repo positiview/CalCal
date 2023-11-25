@@ -107,6 +107,8 @@ class SearchAddressFragment:Fragment() {
                     }else {
                         println("에러: ${response.code()} - ${response.message()}")
                     }
+                }else{
+                    Log.e("$$","주소 검색 결과 응답 실패!!!")
                 }
             }
 
