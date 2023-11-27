@@ -28,6 +28,9 @@
     <style name="CalenderViewWeekCustomText" parent="android:TextAppearance.DeviceDefault.Small">
         <item name="android:textColor">@color/white</item>
     </style>
+    <style name="CalenderViewMonthCustomText" parent="android:TextAppearance.DeviceDefault.Small">
+        <item name="android:textColor">@color/white</item>
+    </style>
 
     <!-- 연, 월을 표시하는 헤더에 적용되는 스타일 -->
     <style name="CalendarWidgetHeader">
