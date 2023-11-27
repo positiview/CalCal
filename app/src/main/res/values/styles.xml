@@ -35,4 +35,9 @@
         <item name="android:textColor">@color/semigray</item>
         <item name="android:background">@drawable/graph_back</item>
     </style>
+    <!-- 동그란 버튼 만들기-->
+    <style name="RoundedButton" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="20dp"
+    android:background="@color/white"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -40,20 +41,20 @@
         android:paddingHorizontal="5dp"
         android:orientation="vertical">
         <TextView
-            android:id="@+id/roadAddress"
+            android:id="@+id/place_title"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:gravity="bottom"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:text="주소"
+            android:text="이름"
             />
         <TextView
-            android:id="@+id/postal_code"
+            android:id="@+id/address"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:textSize="10sp"
-            android:text="번지"
+            android:text="주소"
             />
 
     </LinearLayout>

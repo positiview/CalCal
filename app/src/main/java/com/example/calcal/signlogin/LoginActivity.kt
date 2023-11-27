@@ -92,8 +92,11 @@ class LoginActivity : AppCompatActivity() {
     private fun addListener() {
         // 로그인 버튼 클릭 시
         binding.btnlogin.setOnClickListener {
+            Toast.makeText(applicationContext, "반갑습니다!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+            startActivity(intent)
             // EditText로부터 이메일과 비밀번호 추출
-            val emailEditText = findViewById<EditText>(R.id.email)
+            /*val emailEditText = findViewById<EditText>(R.id.email)
             val passwordEditText = findViewById<EditText>(R.id.password)
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
@@ -133,7 +136,7 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("$$", "onFailure 발생")
                     Toast.makeText(applicationContext, "통신 실패", Toast.LENGTH_SHORT).show()
                 }
-            })
+            })*/
         }
 
         // 회원가입 TextView 클릭 시 SignActivity로 이동
