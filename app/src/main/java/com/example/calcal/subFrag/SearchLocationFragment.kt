@@ -157,34 +157,7 @@ class SearchLocationFragment:Fragment() {
             }
 
 
-           /* val waypointClickListener: View.OnClickListener = View.OnClickListener {
 
-
-                when (it) {
-                    departure -> {
-                        openSearchAddressDialog(departure)
-                    }
-                    waypoint1Text -> {
-                        openSearchAddressDialog(waypoint1Text)
-                    }
-                    waypoint2Text -> {
-                        openSearchAddressDialog(waypoint2Text)
-                    }
-                    waypoint3Text -> {
-                        openSearchAddressDialog(waypoint3Text)
-                    }
-                    waypoint4Text -> {
-                        openSearchAddressDialog(waypoint4Text)
-                    }
-                    waypoint5Text -> {
-                        openSearchAddressDialog(waypoint5Text)
-                    }
-                    arrival -> {
-                        openSearchAddressDialog(arrival)
-                    }
-                }
-
-            }*/
             val waypoints = arrayOf(departure,waypoint1Text, waypoint2Text, waypoint3Text, waypoint4Text, waypoint5Text,arrival)
 
             waypoints.forEach { waypoint ->
