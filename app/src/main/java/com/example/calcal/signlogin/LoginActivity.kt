@@ -7,14 +7,16 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
 import android.util.Log
-import com.example.calcal.signlogin.SignActivity
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.ActivityLoginBinding
+import com.example.calcal.databinding.ActivitySignBinding
 import com.example.calcal.retrofit.RequestFactory
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -38,11 +40,10 @@ class LoginActivity : AppCompatActivity() {
         set(value) = sharedPreferences.edit().putBoolean(KEY_IS_LOGGED_IN, value).apply()
 
 
-    // 네트워크 연결 상태를 확인하기 위한 변수 초기화
-    private lateinit var connectivityManager: ConnectivityManager
-    private lateinit var networkInfo: NetworkInfo
+
 
     // 구글 로그인을 위한 클라이언트 초기화
+    private val viewModel: LoginActivity.LoginViewModel by viewModels()
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result?.data)
@@ -50,22 +51,27 @@ class LoginActivity : AppCompatActivity() {
         try {
             val account = task.getResult(ApiException::class.java)
 
-            // 구글 계정에서 필요한 정보 추출
+            // 이름, 이메일 등이 필요하다면 아래와 같이 account를 통해 각 메소드를 불러올 수 있다.
             val userName = account.givenName
             val serverAuth = account.serverAuthCode
 
-            // MainActivity로 이동
+            // 회원가입 완료 후 이동할 액티비티로 변경해야 함
             moveMainActivity()
 
+
         } catch (e: ApiException) {
-            // ApiException 발생 시 로깅
-            Log.e(LoginActivity::class.java.simpleName, e.stackTraceToString())
+            Log.e(SignActivity::class.java.simpleName, e.stackTraceToString())
         }
     }
 
+    private lateinit var connectivityManager: ConnectivityManager
+    private lateinit var networkInfo: NetworkInfo
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // View 바인딩 초기화
+        setContentView(R.layout.activity_sign)
+
+
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -74,6 +80,7 @@ class LoginActivity : AppCompatActivity() {
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         networkInfo = connectivityManager.activeNetworkInfo!!
 
+        addListener()
 
         // SharedPreferences 초기화
         sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -92,15 +99,10 @@ class LoginActivity : AppCompatActivity() {
     private fun addListener() {
         // 로그인 버튼 클릭 시
         binding.btnlogin.setOnClickListener {
-            Toast.makeText(applicationContext, "반갑습니다!", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this@LoginActivity, MainActivity::class.java)
-            startActivity(intent)
-            // EditText로부터 이메일과 비밀번호 추출
-            /*val emailEditText = findViewById<EditText>(R.id.email)
+            val emailEditText = findViewById<EditText>(R.id.email)
             val passwordEditText = findViewById<EditText>(R.id.password)
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
-            val hashedPassword = hashPassword(password)
 
             // 이메일과 비밀번호 유효성 검사
             if (email.isEmpty()) {
@@ -112,6 +114,8 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            val hashedPassword = hashPassword(password)
+
             // Retrofit을 통한 로그인 요청
             val call: Call<String> = apiService.login(MemberDTO(email = email, phone = "", password = hashedPassword, password2 = ""))
             call.enqueue(object : Callback<String> {
@@ -120,8 +124,11 @@ class LoginActivity : AppCompatActivity() {
                         val responseBody: String? = response.body()
                         if (responseBody == "Success") {
                             isLoggedIn = true // 로그인 상태를 저장
+                            sharedPreferences.edit().putString(KEY_EMAIL, email).apply() // 이메일 값을 저장
                             // 로그인 성공 시 MainActivity로 이동
-                            Toast.makeText(applicationContext, "반갑습니다!", Toast.LENGTH_SHORT).show()
+                            val welcomeMessage = " ${email} 님, 반갑습니다!" // 이메일을 활용한 환영 메시지 생성
+
+                            Toast.makeText(applicationContext, welcomeMessage, Toast.LENGTH_SHORT).show()
                             val intent = Intent(this@LoginActivity, MainActivity::class.java)
                             startActivity(intent)
                         } else {
@@ -136,7 +143,7 @@ class LoginActivity : AppCompatActivity() {
                     Log.d("$$", "onFailure 발생")
                     Toast.makeText(applicationContext, "통신 실패", Toast.LENGTH_SHORT).show()
                 }
-            })*/
+            })
         }
 
         // 회원가입 TextView 클릭 시 SignActivity로 이동
@@ -177,6 +184,7 @@ class LoginActivity : AppCompatActivity() {
         googleAuthLauncher.launch(signInIntent)
     }
 
+
     // 구글 클라이언트 초기화
     private fun getGoogleClient(): GoogleSignInClient {
         val googleSignInOption = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -190,42 +198,56 @@ class LoginActivity : AppCompatActivity() {
     private fun moveMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
-        isLoggedIn = true // 로그인 상태를 저장
+
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null) {
-            val email = account.email ?: ""
+            val email = account.email ?: "" // 사용자 이메일 주소, null인 경우 빈 문자열로 대체
+            val displayName = account.displayName // 사용자 이름
+            // 추가로 필요한 사용자 정보도 가져올 수 있습니다.
 
-            val memberDTO = MemberDTO(email, "", "", "")
+            // 회원 정보를 데이터베이스에 저장하기 위한 API 요청
+            val memberDTO = MemberDTO(email, "", "", "") // memberDTO에 필요한 정보 추가
             val call: Call<String> = apiService.memberData(memberDTO)
 
             call.enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.isSuccessful) {
+                        // 회원 정보 저장 성공
                         val responseBody: String? = response.body()
                         if (responseBody == "Success") {
-                            runOnUiThread {
-                                Toast.makeText(applicationContext, "회원 정보 저장 성공", Toast.LENGTH_SHORT).show()
-                            }
+                            val welcomeMessage = " ${email} 님, 반갑습니다!" // 이메일을 활용한 환영 메시지 생성
+
+                            Toast.makeText(applicationContext, welcomeMessage, Toast.LENGTH_SHORT).show()
                         } else {
-                            runOnUiThread {
-                                Toast.makeText(applicationContext, "회원 정보 저장 실패", Toast.LENGTH_SHORT).show()
-                            }
+                            // 회원 정보 저장 실패 처리
                         }
                     } else {
+                        // 회원 정보 저장 실패
                         Log.d("$$", "onResponse 실패 response : ${response.code()}")
-                        Toast.makeText(applicationContext, "회원 정보 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(getApplicationContext(), "회원 정보 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
+                    // 회원 정보 저장 실패
                     Log.d("$$", "onFailure 발생")
-                    Toast.makeText(applicationContext, "통신 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(getApplicationContext(), "회원 정보 저장에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             })
         }
+
+    }
+    // 인터넷 연결 상태를 확인하는 함수
+    private fun isNetworkConnected(): Boolean {
+        return networkInfo != null && networkInfo.isConnected
+    }
+    class LoginViewModel : ViewModel() {
+        // 필요한 뷰모델 기능 구현
     }
     companion object {
         private const val PREF_NAME = "login_pref"
-        private const val KEY_IS_LOGGED_IN = "is_logged_in"
+        const val KEY_IS_LOGGED_IN = "is_logged_in"
+        const val KEY_EMAIL = "email" // KEY_EMAIL 상수 정의
     }
+
 }
