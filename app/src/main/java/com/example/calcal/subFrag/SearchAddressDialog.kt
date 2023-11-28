@@ -1,5 +1,6 @@
 package com.example.calcal.subFrag
 
+import DirectSearchMapFragment
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -82,6 +84,15 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+       dialog?.window?.let { window ->
+           val params = window.attributes
+           params.width = WindowManager.LayoutParams.MATCH_PARENT // 다이얼로그의 가로 길이를 맞춰줍니다.
+           // 다이얼로그를 화면의 상단에 위치하도록 설정
+           params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+           // 화면의 상단부터 일정 거리를 띄우고 싶다면 아래와 같이 설정할 수 있습니다.
+           params.y = (resources.displayMetrics.heightPixels * 0.1).toInt() // 상단으로부터 20% 지점에 위치
+           window.attributes = params
+       }
         binding = DialongFragmentSearchAddressBinding.inflate(inflater,container,false)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
@@ -128,13 +139,12 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                     if (location != null) {
                         locations = CoordinateDTO(location.latitude,location.longitude)
                     }
-                    Log.d("$$","CoordinateDTO locations = $locations")
+//                    Log.d("$$","CoordinateDTO locations = $locations")
 
                 }
         }else{
             locationPermissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
-
 
 
 
@@ -166,6 +176,12 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                 dismiss()
             }
         }
+
+       binding.directChooseOnMap.setOnClickListener {
+           val fragment = DirectSearchMapFragment()
+           fragment.show(parentFragmentManager, "DirectSearchMapFragment")
+           dismiss()
+       }
 
         return binding.root
     }
