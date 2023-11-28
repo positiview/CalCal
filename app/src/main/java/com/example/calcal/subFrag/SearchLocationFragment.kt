@@ -1,21 +1,22 @@
 package com.example.calcal.subFrag
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.calcal.R
 import com.example.calcal.adapter.CourseListAdapter
 import com.example.calcal.adapter.LocationSearchAdapter
 import com.example.calcal.databinding.FragmentSearchLocationBinding
@@ -24,6 +25,7 @@ import com.example.calcal.modelDTO.Result
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.ItemDTO
+import com.example.calcal.modelDTO.DeviceSizeDTO
 import com.example.calcal.retrofit.RequestFactory
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -199,6 +201,9 @@ class SearchLocationFragment:Fragment() {
 
         return view
     }
+
+
+
     private fun openSearchAddressDialog(textView: TextView) {
         val searchAddressDialog = SearchAddressDialog(myArea)
         searchAddressDialog.setOnItemClickListener(object : SearchAddressDialog.OnItemClickListener {

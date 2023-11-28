@@ -1,13 +1,18 @@
 package com.example.calcal.subFrag
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -18,6 +23,7 @@ import com.example.calcal.adapter.AddressListAdapter
 import com.example.calcal.databinding.DialongFragmentSearchAddressBinding
 import com.example.calcal.modelDTO.ChannelDTO
 import com.example.calcal.modelDTO.CoordinateDTO
+import com.example.calcal.modelDTO.DeviceSizeDTO
 import com.example.calcal.modelDTO.ItemDTO
 import com.example.calcal.retrofit.RequestFactory
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -75,17 +81,20 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-       dialog?.window?.setLayout(
-           (resources.displayMetrics.widthPixels * 0.9).toInt(),
-           ViewGroup.LayoutParams.WRAP_CONTENT
-       )
+
         binding = DialongFragmentSearchAddressBinding.inflate(inflater,container,false)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
-        /*arguments?.let{bundle ->
+       if (dialog?.window == null) {
+           // 다이얼로그 창이 null인 경우 처리
+           Log.e("SearchAddressDialog", "Dialog window is null.")
+           dismiss()  // 다이얼로그를 종료하거나 적절한 대응을 수행하세요.
+           return null  // onCreateView에서 null을 반환하면 오류가 발생하지 않습니다.
+       }
+       dialog?.window?.setDimAmount(0.8f)
 
-            myArea = bundle.getString("myArea") ?: ""
-        }*/
+       // 터치 이벤트를 밖으로 전파하지 않도록 설정하여 주변을 터치하면 다이얼로그가 종료되도록 합니다.
+       dialog?.setCanceledOnTouchOutside(true)
 
         val recyclerView = binding.addressList
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -226,8 +235,28 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
     }
 
 
+    override fun onResume() {
+        super.onResume()
+        fragmentSize(){
 
+            val params: ViewGroup.LayoutParams? = dialog?.window?.attributes
+            val deviceWidth = it.deviceWidth
+            params?.width = (deviceWidth * 0.9).toInt()
+            dialog?.window?.attributes = params as WindowManager.LayoutParams
+        }
 
+    }
+
+    private fun fragmentSize(callback: (DeviceSizeDTO) -> Unit){
+        val windowManager = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getRealSize(size)
+
+        val deviceSizeDTO = DeviceSizeDTO(deviceWidth = size.x, deviceHeight = size.y)
+        callback(deviceSizeDTO)
+
+    }
 }
 
 
