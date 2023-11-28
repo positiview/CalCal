@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
- <navigation xmlns:android="http://schemas.android.com/apk/res/android"
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
@@ -83,30 +83,48 @@
          app:popUpTo="@id/graphFragment"
          app:popUpToInclusive="false"/>
     </fragment>
-    <fragment
-        android:id="@+id/mypageFragment"
-        android:name="com.example.calcal.mainFrag.MypageFragment"
-        android:label="fragment_mypage"
-        tools:layout="@layout/fragment_mypage" >
-     <action
-         android:id="@+id/navi_home"
-         app:destination="@id/mainFragment"
-         app:launchSingleTop="true"
-         app:popUpTo="@id/mypageFragment"
-         app:popUpToInclusive="false"/>
-     <action
-         android:id="@+id/navi_calendar"
-         app:destination="@id/calendarFragment"
-         app:launchSingleTop="true"
-         app:popUpTo="@id/mypageFragment"
-         app:popUpToInclusive="false"/>
-     <action
-         android:id="@+id/navi_graph"
-         app:destination="@id/graphFragment"
-         app:launchSingleTop="true"
-         app:popUpTo="@id/mypageFragment"
-         app:popUpToInclusive="false"/>
-    </fragment>
+ <fragment
+     android:id="@+id/mypageFragment"
+     android:name="com.example.calcal.mainFrag.MypageFragment"
+     android:label="fragment_mypage"
+     tools:layout="@layout/fragment_mypage" >
+  <action
+      android:id="@+id/navi_mypage"
+      app:destination="@id/mypageFragment"
+      app:launchSingleTop="true"/>
+  <action
+      android:id="@+id/navi_home"
+      app:destination="@id/mainFragment"
+      app:launchSingleTop="true"/>
+  <action
+      android:id="@+id/navi_calendar"
+      app:destination="@id/calendarFragment"
+      app:launchSingleTop="true"/>
+  <action
+      android:id="@+id/navi_graph"
+      app:destination="@id/graphFragment"
+      app:launchSingleTop="true"/>
+  <action
+      android:id="@+id/action_mypageFragment_to_centerFragment"
+      app:destination="@id/centerFragment"
+      app:launchSingleTop="true"
+      app:popUpToInclusive="false"/>
+  <action
+      android:id="@+id/action_mypageFragment_to_modifyFragment"
+      app:destination="@id/modifyFragment"
+      app:launchSingleTop="true"
+      app:popUpToInclusive="false"/>
+  <action
+      android:id="@+id/action_mypageFragment_to_notisetFragment"
+      app:destination="@id/notisetFragment"
+      app:launchSingleTop="true"
+      app:popUpToInclusive="false"/>
+  <action
+      android:id="@+id/action_mypageFragment_to_settingFragment"
+      app:destination="@id/settingFragment"
+      app:launchSingleTop="true"
+      app:popUpToInclusive="false"/>
+ </fragment>
     <fragment
         android:id="@+id/calendarFragment"
         android:name="com.example.calcal.mainFrag.CalendarFragment"
@@ -135,7 +153,31 @@
         android:id="@+id/mapFragment"
         android:name="com.example.calcal.subFrag.MapFragment"
         android:label="fragment_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+     <action
+         android:id="@+id/action_mapFragment_to_searchLocationFragment"
+         app:destination="@+id/searchLocationFragment"
+         />
+    </fragment>
+    <fragment
+        android:id="@+id/searchLocationFragment"
+        android:name="com.example.calcal.subFrag.SearchLocationFragment"
+        >
+
+      <action
+          android:id="@+id/action_searchLocationFragment_to_searchAddressFragment"
+          app:destination="@+id/searchAddressFragment"
+       />
+    </fragment>
+    <fragment
+        android:id="@+id/searchAddressFragment"
+        android:name="com.example.calcal.subFrag.SearchAddressFragment"
+        >
+      <action
+          android:id="@+id/action_searchAddressFragment_to_searchLocationFragment"
+          app:destination="@+id/searchLocationFragment"
+       />
+    </fragment>
     <fragment
         android:id="@+id/exercisestartFragment"
         android:name="com.example.calcal.subFrag.ExercisestartFragment"
@@ -156,5 +198,25 @@
         android:name="com.example.calcal.subFrag.CalcheckFragment"
         android:label="fragment_calcheck"
         tools:layout="@layout/fragment_calcheck" />
+ <fragment
+     android:id="@+id/centerFragment"
+     android:name="com.example.calcal.mypagefrag.CenterFragment"
+     android:label="fragment_center"
+     tools:layout="@layout/fragment_center" />
+ <fragment
+     android:id="@+id/modifyFragment"
+     android:name="com.example.calcal.mypagefrag.ModifyFragment"
+     android:label="fragment_modify"
+     tools:layout="@layout/fragment_modify" />
+ <fragment
+     android:id="@+id/notisetFragment"
+     android:name="com.example.calcal.mypagefrag.NotisetFragment"
+     android:label="fragment_notiset"
+     tools:layout="@layout/fragment_notiset" />
+ <fragment
+     android:id="@+id/settingFragment"
+     android:name="com.example.calcal.mypagefrag.SettingFragment"
+     android:label="fragment_setting"
+     tools:layout="@layout/fragment_setting" />
 
 </navigation>

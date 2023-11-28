@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:CircleProgressView="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="30dp"
+    android:orientation="vertical">
+
+    <at.grabner.circleprogress.CircleProgressView
+        android:id="@+id/ring_graph"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        CircleProgressView:cpv_autoTextSize="true"
+
+        CircleProgressView:cpv_barColor="#F1AAB2"
+        CircleProgressView:cpv_barColor1="@color/red"
+        CircleProgressView:cpv_barColor2="@color/darkred"
+        CircleProgressView:cpv_barWidth="56dp"
+        CircleProgressView:cpv_innerContourSize="0dp"
+        CircleProgressView:cpv_maxValue="100"
+        CircleProgressView:cpv_barStrokeCap="Round"
+        CircleProgressView:cpv_outerContourSize="0dp"
+        CircleProgressView:cpv_rimColor="@color/backgroundblack"
+        CircleProgressView:cpv_rimWidth="56dp"
+        CircleProgressView:cpv_showUnit="true"
+        CircleProgressView:cpv_spinColor="#ABF200"
+        CircleProgressView:cpv_textMode="Text"
+        CircleProgressView:cpv_textColor="@color/semigray"
+        CircleProgressView:cpv_textScale="0.5"
+        CircleProgressView:cpv_unitToTextScale="0.5"
+        CircleProgressView:cpv_unitColor="#FF2000"
+        CircleProgressView:cpv_unitScale="0.5"
+        CircleProgressView:cpv_value="38"
+        tools:ignore="MissingConstraints" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/ring_graph_curcal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="136dp"
+            android:fontFamily="@font/poppins_black"
+            android:text="555"
+            android:textColor="@color/red"
+            android:textSize="50sp"
+            CircleProgressView:layout_constraintEnd_toEndOf="parent"
+            CircleProgressView:layout_constraintHorizontal_bias="0.498"
+            CircleProgressView:layout_constraintStart_toStartOf="parent"
+            CircleProgressView:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/ring_graphtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:text="소모 칼로리"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            CircleProgressView:layout_constraintEnd_toEndOf="parent"
+            CircleProgressView:layout_constraintHorizontal_bias="0.495"
+            CircleProgressView:layout_constraintStart_toStartOf="parent"
+            CircleProgressView:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/ring_graph_allcal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="224dp"
+            android:text="1000 kcal"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            CircleProgressView:layout_constraintEnd_toEndOf="parent"
+            CircleProgressView:layout_constraintHorizontal_bias="0.498"
+            CircleProgressView:layout_constraintStart_toStartOf="parent"
+            CircleProgressView:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/ring_graph_allcal2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="256dp"
+            android:text="목표 수정하기"
+            android:textColor="@color/lightred"
+            android:textSize="12sp"
+            CircleProgressView:layout_constraintEnd_toEndOf="parent"
+            CircleProgressView:layout_constraintHorizontal_bias="0.498"
+            CircleProgressView:layout_constraintStart_toStartOf="parent"
+            CircleProgressView:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
