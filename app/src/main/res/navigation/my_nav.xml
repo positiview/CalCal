@@ -58,6 +58,9 @@
         app:launchSingleTop="true"
         app:popUpTo="@id/mainFragment"
         app:popUpToInclusive="false"/>
+       <action
+           android:id="@+id/action_mainFragment_to_modifyFragment"
+           app:destination="@id/modifyFragment" />
    </fragment>
     <fragment
         android:id="@+id/graphFragment"
@@ -82,6 +85,15 @@
          app:launchSingleTop="true"
          app:popUpTo="@id/graphFragment"
          app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_graphFragment_to_exercisestartFragment"
+            app:destination="@id/exercisestartFragment" />
+        <action
+            android:id="@+id/action_graphFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_graphFragment_to_mapFragment2"
+            app:destination="@id/mapFragment" />
     </fragment>
  <fragment
      android:id="@+id/mypageFragment"
@@ -177,12 +189,25 @@
           android:id="@+id/action_searchAddressFragment_to_searchLocationFragment"
           app:destination="@+id/searchLocationFragment"
        />
+        <action
+            android:id="@+id/action_searchAddressFragment_self"
+            app:destination="@id/searchAddressFragment" />
+        <action
+            android:id="@+id/action_searchAddressFragment_to_exercisestartFragment"
+            app:destination="@id/exercisestartFragment" />
     </fragment>
     <fragment
         android:id="@+id/exercisestartFragment"
         android:name="com.example.calcal.subFrag.ExercisestartFragment"
         android:label="fragment_exercisestart"
-        tools:layout="@layout/fragment_exercisestart" />
+        tools:layout="@layout/fragment_exercisestart" >
+        <action
+            android:id="@+id/action_exercisestartFragment_to_exerciseInfoFragment"
+            app:destination="@id/exerciseInfoFragment" />
+        <action
+            android:id="@+id/action_exercisestartFragment_to_exerciseInfoFragment2"
+            app:destination="@id/exerciseInfoFragment" />
+    </fragment>
     <fragment
         android:id="@+id/exerciseInfoFragment"
         android:name="com.example.calcal.subFrag.ExerciseInfoFragment"

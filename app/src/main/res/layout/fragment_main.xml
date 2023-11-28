@@ -238,6 +238,7 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <View
+                        android:id="@+id/btn_daycount"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/mainbutton" />
@@ -266,6 +267,7 @@
                     >
 
                     <View
+                        android:id="@+id/btn_kgcheck"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/mainbutton" />
@@ -303,6 +305,7 @@
                     >
 
                     <View
+                        android:id="@+id/btn_exerciseinfo"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/mainbutton" />
@@ -356,6 +359,7 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <View
+                        android:id="@+id/btn_exercisestart"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/mainbutton" />

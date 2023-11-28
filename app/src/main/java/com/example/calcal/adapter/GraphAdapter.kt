@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment.Companion.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import at.grabner.circleprogress.CircleProgressView
 import com.example.calcal.R
 import com.example.calcal.mainFrag.GraphFragment
 
-class GraphAdapter(private val mData: List<String>, private val listener: GraphFragment): RecyclerView.Adapter<RecyclerView.ViewHolder>()   {
+class GraphAdapter(private val mData: List<String>, private val listener: GraphFragment,private val navController: NavController): RecyclerView.Adapter<RecyclerView.ViewHolder,>()   {
     companion object {
         private const val ring_graph = 0
         private const val graph_list = 1
@@ -28,22 +31,44 @@ class GraphAdapter(private val mData: List<String>, private val listener: GraphF
 
         init {
             itemView.setOnClickListener(this)
+            btnExermap.setOnClickListener(this)
         }
 
         override fun onClick(v: View?) {
             val position = adapterPosition
             if (position != RecyclerView.NO_POSITION) {
-                listener.onItemClick(position)
+                if (v == btnExermap) {
+                    navController.navigate(R.id.action_graphFragment_to_mapFragment2)
+                } else {
+
+                    listener.onItemClick(position)
+                }
             }
         }
     }
+
+
     inner class FirstViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ringGraph: CircleProgressView = itemView.findViewById(R.id.ring_graph)
         val ringGraphCurcal: TextView = itemView.findViewById(R.id.ring_graph_curcal)
 
     }
-    inner class LastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val btnGraphPlus:View = itemView.findViewById(R.id.btn_graph_plus)
+    inner class LastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
+        val btnGraphPlus: View = itemView.findViewById(R.id.btn_graph_plus)
+
+        init {
+            btnGraphPlus.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                when (v) {
+                    btnGraphPlus -> navController.navigate(R.id.action_graphFragment_to_exercisestartFragment)
+                }
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

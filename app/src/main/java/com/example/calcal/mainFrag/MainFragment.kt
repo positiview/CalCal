@@ -39,6 +39,19 @@ class MainFragment : Fragment() {
         binding.mapMain.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_mapFragment)
         }
+        binding.btnDaycount.setOnClickListener{
+            findNavController().navigate(R.id.navi_calendar)
+        }
+        binding.btnKgcheck.setOnClickListener{
+            findNavController().navigate(R.id.action_mainFragment_to_modifyFragment)
+        }
+
+        binding.btnExerciseinfo.setOnClickListener{
+            findNavController().navigate(R.id.action_mainFragment_to_exerciseInfoFragment)
+        }
+        binding.btnExercisestart.setOnClickListener{
+            findNavController().navigate(R.id.action_mainFragment_to_exercisestartFragment)
+        }
 
 
 

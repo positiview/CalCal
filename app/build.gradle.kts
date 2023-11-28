@@ -61,12 +61,13 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-location:21.0.1") // 위치 서비스
 
-
+    // 레트로핏 서버 요청
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.google.code.gson:gson:2.10.1")
     implementation ("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
 
+    // 네이버 지도
     implementation("com.naver.maps:map-sdk:3.17.0")
 
 
@@ -79,8 +80,6 @@ dependencies {
     //구글 로그인
     implementation ("com.google.android.gms:play-services-auth:20.7.0")
 
-
-
-
+    implementation ("androidx.recyclerview:recyclerview:1.3.2")
 
 }
