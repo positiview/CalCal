@@ -16,6 +16,7 @@ object RequestFactory {
 
     private const val localSearch = "https://openapi.naver.com/"
 
+    // 서버 연결
     fun create():ApiService{
         val retrofit: Retrofit = Retrofit.Builder()
                 .baseUrl(baseUrl)
@@ -24,6 +25,7 @@ object RequestFactory {
         return retrofit.create(ApiService::class.java)
     }
 
+    // 주소 검색, 지도 연결
     fun create2():ApiService{
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(naverMapUrl)
@@ -32,6 +34,8 @@ object RequestFactory {
         return retrofit.create(ApiService::class.java)
     }
 
+
+    // 지역 검색
     fun create3():ApiService{
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(localSearch)
