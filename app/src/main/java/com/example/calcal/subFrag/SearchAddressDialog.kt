@@ -3,7 +3,6 @@ package com.example.calcal.subFrag
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
-import com.example.calcal.R
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,12 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment
+import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.calcal.adapter.AddressListAdapter
-import com.example.calcal.databinding.FragmentSearchAddressBinding
+import com.example.calcal.databinding.DialongFragmentSearchAddressBinding
 import com.example.calcal.modelDTO.ChannelDTO
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.ItemDTO
@@ -28,24 +26,48 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class SearchAddressFragment:Fragment() {
-    lateinit var binding: FragmentSearchAddressBinding
+class SearchAddressDialog(private val myArea: String) :DialogFragment() {
+    lateinit var binding: DialongFragmentSearchAddressBinding
     private lateinit var addressListAdapter: AddressListAdapter
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locations : CoordinateDTO
-    private lateinit var myArea : String
+
+
+    interface OnItemClickListener {
+        fun onItemClicked(itemDTO: ItemDTO)
+
+        fun onMyLocationClicked(myLocation: CoordinateDTO)
+    }
+
+
+    private var onItemClickListener: OnItemClickListener? = null
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        onItemClickListener = listener
+    }
+
+
+   /* interface OnMyLocationClickListener{
+        fun onMyLocationClicked(myLocation: CoordinateDTO)
+    }
+
+    private var myLocationClickListener: OnMyLocationClickListener? = null
+
+    fun setOnMyLocationClickListener(listener: OnMyLocationClickListener){
+        myLocationClickListener = listener
+    }*/
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSearchAddressBinding.inflate(inflater,container,false)
+        binding = DialongFragmentSearchAddressBinding.inflate(inflater,container,false)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
-        arguments?.let{bundle ->
+        /*arguments?.let{bundle ->
 
-            myArea= bundle.getString("myArea") ?: ""
-        }
+            myArea = bundle.getString("myArea") ?: ""
+        }*/
 
         val recyclerView = binding.addressList
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -107,13 +129,14 @@ class SearchAddressFragment:Fragment() {
 
         binding.apply {
             btnBack.setOnClickListener{
-                findNavController().navigateUp()
+                dismiss()
             }
             directChooseOnMap.setOnClickListener {
 
             }
             directChooseMyLocation.setOnClickListener {
-
+                onItemClickListener?.onMyLocationClicked(locations)
+                dismiss()
             }
         }
 
@@ -122,9 +145,12 @@ class SearchAddressFragment:Fragment() {
 
     fun onItemClick(itemDTO: ItemDTO) {
 
-        val bundle = Bundle()
+        onItemClickListener?.onItemClicked(itemDTO)
+
+        dismiss()
+        /*val bundle = Bundle()
         bundle.putParcelable("addressItem", itemDTO)
-        NavHostFragment.findNavController(this).navigate(R.id.action_searchAddressFragment_to_searchLocationFragment, bundle)
+        NavHostFragment.findNavController(this).navigate(R.id.action_searchAddressFragment_to_searchLocationFragment, bundle)*/
         //  이부분 나중에 ViewModel 사용하여 수정해야함 !!!
     }
 

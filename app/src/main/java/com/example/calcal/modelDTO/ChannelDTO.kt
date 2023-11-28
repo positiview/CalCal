@@ -11,7 +11,7 @@ data class ChannelDTO(
     val display: Int,
     val items: List<ItemDTO>
 )
-@Parcelize
+
 data class ItemDTO(
     val title: String,
     val link: String?,
@@ -22,4 +22,4 @@ data class ItemDTO(
     val roadAddress: String,
     val mapx: String,
     val mapy: String
-): Parcelable
+)
