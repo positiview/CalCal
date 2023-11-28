@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.DialogFragment
@@ -31,8 +32,21 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
     private lateinit var addressListAdapter: AddressListAdapter
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locations : CoordinateDTO
+    companion object {
+        const val TAG = "SearchAddressDialog"
+    }
+    private var clickedTextView: TextView? = null
 
+    fun setClickedTextView(textView: TextView) {
+        clickedTextView = textView
+    }
 
+    // Other existing code...
+
+    private fun handleItemClicked(itemDTO: ItemDTO) {
+        clickedTextView?.text = itemDTO.title
+        dismiss()
+    }
     interface OnItemClickListener {
         fun onItemClicked(itemDTO: ItemDTO)
 
@@ -61,6 +75,10 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+       dialog?.window?.setLayout(
+           (resources.displayMetrics.widthPixels * 0.9).toInt(),
+           ViewGroup.LayoutParams.WRAP_CONTENT
+       )
         binding = DialongFragmentSearchAddressBinding.inflate(inflater,container,false)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 

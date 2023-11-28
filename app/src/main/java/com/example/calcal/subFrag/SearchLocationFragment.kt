@@ -155,14 +155,10 @@ class SearchLocationFragment:Fragment() {
             }
 
 
-            val waypointClickListener: View.OnClickListener = View.OnClickListener {
+           /* val waypointClickListener: View.OnClickListener = View.OnClickListener {
 
-               /* val bundle = Bundle().apply {
 
-                    putString("myArea", myArea)
-                }*/
-
-                when (view) {
+                when (it) {
                     departure -> {
                         openSearchAddressDialog(departure)
                     }
@@ -186,11 +182,13 @@ class SearchLocationFragment:Fragment() {
                     }
                 }
 
-            }
+            }*/
             val waypoints = arrayOf(departure,waypoint1Text, waypoint2Text, waypoint3Text, waypoint4Text, waypoint5Text,arrival)
 
             waypoints.forEach { waypoint ->
-                waypoint.setOnClickListener(waypointClickListener)
+                waypoint.setOnClickListener{
+                    openSearchAddressDialog(waypoint)
+                }
             }
 
 
@@ -209,10 +207,14 @@ class SearchLocationFragment:Fragment() {
             }
 
             override fun onMyLocationClicked(myLocation: CoordinateDTO) {
-                TODO("Not yet implemented")
+
             }
 
         })
+
+        searchAddressDialog.setClickedTextView(textView)
+
+        searchAddressDialog.show(childFragmentManager, SearchAddressDialog.TAG)
 
     }
 
