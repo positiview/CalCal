@@ -55,7 +55,9 @@
             android:layout_gravity="center"
             android:background="@drawable/signbox"
             android:drawableLeft="@drawable/ic_password"
-            android:drawablePadding="8dp" />
+            android:drawablePadding="8dp"
+            android:inputType="textPassword" />
+
 
 
         <Button

@@ -228,7 +228,7 @@ class SignActivity : AppCompatActivity() {
                         // 회원 정보 저장 성공
                         val responseBody: String? = response.body()
                         if (responseBody == "Success") {
-                            // 회원 정보 저장 성공 처리
+                            Toast.makeText(getApplicationContext(), "반갑습니다!", Toast.LENGTH_SHORT).show()
                         } else {
                             // 회원 정보 저장 실패 처리
                         }
@@ -246,6 +246,7 @@ class SignActivity : AppCompatActivity() {
                 }
             })
         }
+
     }
 
     // 인터넷 연결 상태를 확인하는 함수
