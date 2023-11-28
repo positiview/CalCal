@@ -7,34 +7,34 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.calcal.R
-import com.example.calcal.databinding.AddressItemCardviewBinding
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.ItemDTO
+import com.example.calcal.subFrag.SearchAddressFragment
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class AddressListAdapter(private val address: MutableList<ItemDTO>, private val location: CoordinateDTO, private val onClick: (ItemDTO)->Unit): RecyclerView.Adapter<AddressListAdapter.ViewHolder>() {
+class AddressListAdapter(private val address: MutableList<ItemDTO>, private val location: CoordinateDTO, private val listener: SearchAddressFragment): RecyclerView.Adapter<AddressListAdapter.ViewHolder>() {
 
 
 
-    class ViewHolder(view : View, val onClick: (ItemDTO) -> Unit): RecyclerView.ViewHolder(view){
+    inner class ViewHolder(view : View): RecyclerView.ViewHolder(view), View.OnClickListener{
 
         private val placeTitleTextView: TextView = view.findViewById(R.id.place_title)
         private val roadAddress :TextView = view.findViewById(R.id.address)
         private val distance: TextView = view.findViewById(R.id.distance)
-        private var addr: ItemDTO? = null
         init {
-            view.setOnClickListener {
-                addr?.let{
+            view.setOnClickListener(this)
+        }
 
-                    onClick(it)
-                }
+        override fun onClick(v: View?) {
+            val position = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                listener.onItemClick(address[position])
             }
         }
         fun bind(addressDTO: ItemDTO,location: CoordinateDTO){
-            addr = addressDTO
             placeTitleTextView.text = addressDTO.title
             roadAddress.text = addressDTO.roadAddress
             distance.text = haversine(location.latidute,location.longitude,addressDTO.mapx.toDouble(),addressDTO.mapy.toDouble()).toString()+"km"
@@ -58,6 +58,8 @@ class AddressListAdapter(private val address: MutableList<ItemDTO>, private val 
         }
 
 
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -66,7 +68,7 @@ class AddressListAdapter(private val address: MutableList<ItemDTO>, private val 
 
 
 
-        return ViewHolder(view,onClick)
+        return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

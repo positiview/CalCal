@@ -5,8 +5,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import com.example.calcal.R
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,25 +12,20 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.calcal.adapter.AddressListAdapter
 import com.example.calcal.databinding.FragmentSearchAddressBinding
-import com.example.calcal.modelDTO.Address
-import com.example.calcal.modelDTO.AddressDTO
 import com.example.calcal.modelDTO.ChannelDTO
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.ItemDTO
-import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.retrofit.RequestFactory
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
 
 
 class SearchAddressFragment:Fragment() {
@@ -50,10 +43,12 @@ class SearchAddressFragment:Fragment() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         arguments?.let{bundle ->
-            binding.searchQuery.setText(bundle.getString("address"))
+
             myArea= bundle.getString("myArea") ?: ""
         }
 
+        val recyclerView = binding.addressList
+        recyclerView.layoutManager = LinearLayoutManager(context)
 
 
         val locationPermissionRequest =
@@ -99,26 +94,15 @@ class SearchAddressFragment:Fragment() {
         binding.btnSearch.setOnClickListener {
             val query = binding.searchQuery.text.toString()
             Log.d("$$","쿼리 : $query")
-            if (query.isNotEmpty()) { // 예: 텍스트 길이가 2 이상인 경우에만 처리
+            if (query.isNotEmpty()) { // 입력내용이 있을경우에만 처리
                 requestAddress(query) { itemDTOMutableList ->
-                    addressListAdapter = AddressListAdapter(itemDTOMutableList,locations){
-                        // Navigation Component를 사용하여 이전 fragment로 이동
+                    addressListAdapter = AddressListAdapter(itemDTOMutableList,locations,this)
+                    recyclerView.adapter = addressListAdapter
 
-
-                        val bundle = Bundle()
-                        bundle.putParcelable("addressItem", it)
-                        findNavController().navigate(R.id.action_searchAddressFragment_to_searchLocationFragment, bundle)
-                        //  이부분 나중에 ViewModel 사용하여 수정해야함 !!!
-                    }
                     binding.addressList.adapter = addressListAdapter
                 }
             }
         }
-
-
-
-
-
 
 
         binding.apply {
@@ -136,45 +120,14 @@ class SearchAddressFragment:Fragment() {
         return binding.root
     }
 
-    private fun setAddressSearch() {
-        /*binding.searchQuery.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+    fun onItemClick(itemDTO: ItemDTO) {
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                val query = s.toString()
-                Log.d("$$","쿼리 : $query")
-                if (query.length >= 2) { // 예: 텍스트 길이가 2 이상인 경우에만 처리
-                    requestAddress(query) {
-                        addressListAdapter.setAddressList(locations,it)
-                    }
-                }
-            }
-        })*/
-       /* binding.btnSearch.setOnClickListener {
-            val query = binding.searchQuery.text.toString()
-            Log.d("$$","쿼리 : $query")
-            if (query.isNotEmpty()) { // 예: 텍스트 길이가 2 이상인 경우에만 처리
-                requestAddress(query) {
-                    addressListAdapter = AddressListAdapter(it,locations){
-                        // Navigation Component를 사용하여 이전 fragment로 이동
-
-
-
-                        val bundle = Bundle()
-                        bundle.putParcelable("addressItem", it)
-                        findNavController().navigate(R.id.action_searchAddressFragment_to_searchLocationFragment, bundle)
-                        //  이부분 나중에 ViewModel 사용하여 수정해야함 !!!
-                    }
-                }
-            }
-        }*/
-
-
+        val bundle = Bundle()
+        bundle.putParcelable("addressItem", itemDTO)
+        NavHostFragment.findNavController(this).navigate(R.id.action_searchAddressFragment_to_searchLocationFragment, bundle)
+        //  이부분 나중에 ViewModel 사용하여 수정해야함 !!!
     }
+
 
 
     private fun requestAddress( query : String, callback: (MutableList<ItemDTO>) -> Unit){
@@ -227,6 +180,8 @@ class SearchAddressFragment:Fragment() {
 
 
     }
+
+
 
 
 }
