@@ -9,13 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.calcal.R
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.ItemDTO
-import com.example.calcal.subFrag.SearchAddressFragment
+import com.example.calcal.subFrag.SearchAddressDialog
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class AddressListAdapter(private val address: MutableList<ItemDTO>, private val location: CoordinateDTO, private val listener: SearchAddressFragment): RecyclerView.Adapter<AddressListAdapter.ViewHolder>() {
+class AddressListAdapter(private val address: MutableList<ItemDTO>, private val location: CoordinateDTO, private val listener: SearchAddressDialog): RecyclerView.Adapter<AddressListAdapter.ViewHolder>() {
 
 
 

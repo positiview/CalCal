@@ -41,7 +41,7 @@ class CalendarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         btn_back = binding.btnBack
         btn_back.setOnClickListener {
             NavHostFragment.findNavController(this).navigateUp()

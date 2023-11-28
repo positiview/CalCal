@@ -136,6 +136,11 @@
       app:destination="@id/settingFragment"
       app:launchSingleTop="true"
       app:popUpToInclusive="false"/>
+     <action
+         android:id="@+id/action_mypageFragment_to_homeFragment"
+         app:destination="@id/mainFragment"
+         app:launchSingleTop="true"
+         app:popUpToInclusive="false"/>
  </fragment>
     <fragment
         android:id="@+id/calendarFragment"
@@ -183,8 +188,9 @@
     </fragment>
     <fragment
         android:id="@+id/searchAddressFragment"
-        android:name="com.example.calcal.subFrag.SearchAddressFragment"
+        android:name="com.example.calcal.subFrag.SearchAddressDialog"
         >
+
       <action
           android:id="@+id/action_searchAddressFragment_to_searchLocationFragment"
           app:destination="@+id/searchLocationFragment"
@@ -195,6 +201,7 @@
         <action
             android:id="@+id/action_searchAddressFragment_to_exercisestartFragment"
             app:destination="@id/exercisestartFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/exercisestartFragment"

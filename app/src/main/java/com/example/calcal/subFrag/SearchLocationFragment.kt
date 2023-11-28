@@ -1,20 +1,22 @@
 package com.example.calcal.subFrag
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.calcal.R
 import com.example.calcal.adapter.CourseListAdapter
 import com.example.calcal.adapter.LocationSearchAdapter
 import com.example.calcal.databinding.FragmentSearchLocationBinding
@@ -22,6 +24,8 @@ import com.example.calcal.modelDTO.LocationDTO
 import com.example.calcal.modelDTO.Result
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.CoordinateDTO
+import com.example.calcal.modelDTO.ItemDTO
+import com.example.calcal.modelDTO.DeviceSizeDTO
 import com.example.calcal.retrofit.RequestFactory
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -44,7 +48,7 @@ class SearchLocationFragment:Fragment() {
     private lateinit var waypoint4: CoordinateDTO
     private lateinit var waypoint5: CoordinateDTO
     private lateinit var arrival: CoordinateDTO
-    private lateinit var myArea:String
+    private var myArea:String = ""
 
 
     override fun onCreateView(
@@ -62,8 +66,13 @@ class SearchLocationFragment:Fragment() {
         setLocationList()
         Log.d("$$"," selectLocation 값 : $selectLocation")
 
-       /* val layoutManager = GridLayoutManager(requireContext(), 1)
-        binding.selectedLocation.layoutManager = layoutManager*/
+        /* val layoutManager = GridLayoutManager(requireContext(), 1)
+         binding.selectedLocation.layoutManager = layoutManager*/
+        if(binding.departure.text.isEmpty()){
+            binding.btnRoundTrip.visibility = View.GONE
+        } else {
+            binding.btnRoundTrip.visibility = View.VISIBLE
+        }
 
 
         binding.apply{
@@ -72,6 +81,32 @@ class SearchLocationFragment:Fragment() {
                 departure.text = arrival.text
                 arrival.text = temp
             }
+            btnRoundTrip.setOnClickListener {
+
+
+
+                val newWaypoint = when {
+                    waypoint1.visibility != View.VISIBLE -> waypoint1Text
+                    waypoint2.visibility != View.VISIBLE -> waypoint2Text
+                    waypoint3.visibility != View.VISIBLE -> waypoint3Text
+                    waypoint4.visibility != View.VISIBLE -> waypoint4Text
+                    waypoint5.visibility != View.VISIBLE -> waypoint5Text
+                    else -> null
+                }
+
+                addWaypoint.performClick()
+
+                if(newWaypoint==null) {
+                    Toast.makeText(requireContext(),"경유지는 최대 5개까지 설정 할 수 있어, 목적지를 출발지로 설정했습니다.",Toast.LENGTH_SHORT).show()
+                }
+
+                newWaypoint?.text = arrival.text
+
+
+
+                arrival.text = departure.text
+            }
+
             updateAddWaypointVisibility(waypointCount)
 
             addWaypoint.setOnClickListener {
@@ -122,19 +157,12 @@ class SearchLocationFragment:Fragment() {
             }
 
 
-            val waypointClickListener: View.OnClickListener = View.OnClickListener {
-
-                val bundle = Bundle().apply {
-
-                    putString("myArea", myArea)
-                }
-
-                findNavController().navigate(R.id.action_searchLocationFragment_to_searchAddressFragment,bundle)
-            }
             val waypoints = arrayOf(departure,waypoint1Text, waypoint2Text, waypoint3Text, waypoint4Text, waypoint5Text,arrival)
 
             waypoints.forEach { waypoint ->
-                waypoint.setOnClickListener(waypointClickListener)
+                waypoint.setOnClickListener{
+                    openSearchAddressDialog(waypoint)
+                }
             }
 
 
@@ -144,6 +172,27 @@ class SearchLocationFragment:Fragment() {
 
 
         return view
+    }
+
+
+
+    private fun openSearchAddressDialog(textView: TextView) {
+        val searchAddressDialog = SearchAddressDialog(myArea)
+        searchAddressDialog.setOnItemClickListener(object : SearchAddressDialog.OnItemClickListener {
+            override fun onItemClicked(itemDTO: ItemDTO) {
+                textView.text = itemDTO.title
+            }
+
+            override fun onMyLocationClicked(myLocation: CoordinateDTO) {
+
+            }
+
+        })
+
+        searchAddressDialog.setClickedTextView(textView)
+
+        searchAddressDialog.show(childFragmentManager, SearchAddressDialog.TAG)
+
     }
 
     private fun updateAddWaypointVisibility(waypointCount:Int) {
@@ -159,31 +208,30 @@ class SearchLocationFragment:Fragment() {
             var actualAddress = "${it[0].region.area1.name} $area ${it[0].region.area3.name} ${it[0].region.area4.name}".trim()
             Log.d("$$" , "actualAddress = $actualAddress")
             locationList.add(LocationDTO(actualAddress,name))
-            selectLocation = locationList
-            Log.d("$$","initMylocation it : ${selectLocation[0]}")
 
-            if (selectLocation.isEmpty()) {
-                // locationList가 비어 있다면 출발지와 목적지를 나타내는 두 데이터를 추가합니다.
-                Log.d("$$","location size 는 없습니다.")
-                selectLocation = listOf(
-                    LocationDTO("출발지 내용", "[출발지]"),
-                    LocationDTO("목적지 내용", "[목적지]")
-                )
-            } else if (selectLocation.size == 1) {
-                // locationList에 항목이 하나만 있다면 목적지를 나타내는 데이터를 추가합니다.
-                Log.d("$$","location size 는 1입니다.")
-                selectLocation =  listOf(
-                    selectLocation[0],LocationDTO("목적지 내용", "[목적지]")
-                )
-            } else {
-                // 그 외의 경우는 주어진 locationList를 그대로 사용합니다.
-                Log.d("$$","location size 는 ${selectLocation.size}입니다.")
 
-            }
 
-            binding.departure.text = selectLocation[0].name + selectLocation[0].location
+            /* if (selectLocation.isEmpty()) {
+                 // locationList가 비어 있다면 출발지와 목적지를 나타내는 두 데이터를 추가합니다.
+                 Log.d("$$","location size 는 없습니다.")
+                 selectLocation = listOf(
+                     LocationDTO("출발지 내용", "[출발지]"),
+                     LocationDTO("목적지 내용", "[목적지]")
+                 )
+             } else if (selectLocation.size == 1) {
+                 // locationList에 항목이 하나만 있다면 목적지를 나타내는 데이터를 추가합니다.
+                 Log.d("$$","location size 는 1입니다.")
+                 selectLocation =  listOf(
+                     selectLocation[0],LocationDTO("목적지 내용", "[목적지]")
+                 )
+             } else {
+                 // 그 외의 경우는 주어진 locationList를 그대로 사용합니다.
+                 Log.d("$$","location size 는 ${selectLocation.size}입니다.")
+             }*/
 
-            binding.arrival.text = selectLocation[1].name + selectLocation[1].location
+            binding.departure.text = locationList[0].name + locationList[0].location
+
+
         }
     }
     private fun initMyLocation(callback: (List<Result>) -> Unit) {
@@ -219,7 +267,7 @@ class SearchLocationFragment:Fragment() {
             }
 
         // 내위치 정보 가져오기
-            // 위치 권한이 허용되어 있는 경우
+        // 위치 권한이 허용되어 있는 경우
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION

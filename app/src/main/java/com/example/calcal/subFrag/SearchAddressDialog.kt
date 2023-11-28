@@ -1,24 +1,31 @@
 package com.example.calcal.subFrag
 
+import DirectSearchMapFragment
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
 import android.location.Location
-import com.example.calcal.R
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment
+import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.calcal.adapter.AddressListAdapter
-import com.example.calcal.databinding.FragmentSearchAddressBinding
+import com.example.calcal.databinding.DialongFragmentSearchAddressBinding
 import com.example.calcal.modelDTO.ChannelDTO
 import com.example.calcal.modelDTO.CoordinateDTO
+import com.example.calcal.modelDTO.DeviceSizeDTO
 import com.example.calcal.modelDTO.ItemDTO
 import com.example.calcal.retrofit.RequestFactory
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -28,24 +35,77 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class SearchAddressFragment:Fragment() {
-    lateinit var binding: FragmentSearchAddressBinding
+class SearchAddressDialog(private val myArea: String) :DialogFragment() {
+    lateinit var binding: DialongFragmentSearchAddressBinding
     private lateinit var addressListAdapter: AddressListAdapter
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locations : CoordinateDTO
-    private lateinit var myArea : String
+    companion object {
+        const val TAG = "SearchAddressDialog"
+    }
+    private var clickedTextView: TextView? = null
+
+    fun setClickedTextView(textView: TextView) {
+        clickedTextView = textView
+    }
+
+    // Other existing code...
+
+    private fun handleItemClicked(itemDTO: ItemDTO) {
+        clickedTextView?.text = itemDTO.title
+        dismiss()
+    }
+    interface OnItemClickListener {
+        fun onItemClicked(itemDTO: ItemDTO)
+
+        fun onMyLocationClicked(myLocation: CoordinateDTO)
+    }
+
+
+    private var onItemClickListener: OnItemClickListener? = null
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
+        onItemClickListener = listener
+    }
+
+
+    /* interface OnMyLocationClickListener{
+         fun onMyLocationClicked(myLocation: CoordinateDTO)
+     }
+
+     private var myLocationClickListener: OnMyLocationClickListener? = null
+
+     fun setOnMyLocationClickListener(listener: OnMyLocationClickListener){
+         myLocationClickListener = listener
+     }*/
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSearchAddressBinding.inflate(inflater,container,false)
+
+        dialog?.window?.let { window ->
+            val params = window.attributes
+            params.width = WindowManager.LayoutParams.MATCH_PARENT // 다이얼로그의 가로 길이를 맞춰줍니다.
+            // 다이얼로그를 화면의 상단에 위치하도록 설정
+            params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+            // 화면의 상단부터 일정 거리를 띄우고 싶다면 아래와 같이 설정할 수 있습니다.
+            params.y = (resources.displayMetrics.heightPixels * 0.1).toInt() // 상단으로부터 20% 지점에 위치
+            window.attributes = params
+        }
+        binding = DialongFragmentSearchAddressBinding.inflate(inflater,container,false)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
-        arguments?.let{bundle ->
-
-            myArea= bundle.getString("myArea") ?: ""
+        if (dialog?.window == null) {
+            // 다이얼로그 창이 null인 경우 처리
+            Log.e("SearchAddressDialog", "Dialog window is null.")
+            dismiss()  // 다이얼로그를 종료하거나 적절한 대응을 수행하세요.
+            return null  // onCreateView에서 null을 반환하면 오류가 발생하지 않습니다.
         }
+        dialog?.window?.setDimAmount(0.8f)
+
+        // 터치 이벤트를 밖으로 전파하지 않도록 설정하여 주변을 터치하면 다이얼로그가 종료되도록 합니다.
+        dialog?.setCanceledOnTouchOutside(true)
 
         val recyclerView = binding.addressList
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -79,13 +139,12 @@ class SearchAddressFragment:Fragment() {
                     if (location != null) {
                         locations = CoordinateDTO(location.latitude,location.longitude)
                     }
-                    Log.d("$$","CoordinateDTO locations = $locations")
+//                    Log.d("$$","CoordinateDTO locations = $locations")
 
                 }
         }else{
             locationPermissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
-
 
 
 
@@ -107,14 +166,21 @@ class SearchAddressFragment:Fragment() {
 
         binding.apply {
             btnBack.setOnClickListener{
-                findNavController().navigateUp()
+                dismiss()
             }
             directChooseOnMap.setOnClickListener {
 
             }
             directChooseMyLocation.setOnClickListener {
-
+                onItemClickListener?.onMyLocationClicked(locations)
+                dismiss()
             }
+        }
+
+        binding.directChooseOnMap.setOnClickListener {
+            val fragment = DirectSearchMapFragment()
+            fragment.show(parentFragmentManager, "DirectSearchMapFragment")
+            dismiss()
         }
 
         return binding.root
@@ -122,9 +188,12 @@ class SearchAddressFragment:Fragment() {
 
     fun onItemClick(itemDTO: ItemDTO) {
 
-        val bundle = Bundle()
+        onItemClickListener?.onItemClicked(itemDTO)
+
+        dismiss()
+        /*val bundle = Bundle()
         bundle.putParcelable("addressItem", itemDTO)
-        NavHostFragment.findNavController(this).navigate(R.id.action_searchAddressFragment_to_searchLocationFragment, bundle)
+        NavHostFragment.findNavController(this).navigate(R.id.action_searchAddressFragment_to_searchLocationFragment, bundle)*/
         //  이부분 나중에 ViewModel 사용하여 수정해야함 !!!
     }
 
@@ -182,8 +251,26 @@ class SearchAddressFragment:Fragment() {
     }
 
 
+    override fun onResume() {
+        super.onResume()
+        fragmentSize(){
 
+            val params: ViewGroup.LayoutParams? = dialog?.window?.attributes
+            val deviceWidth = it.deviceWidth
+            params?.width = (deviceWidth * 0.9).toInt()
+            dialog?.window?.attributes = params as WindowManager.LayoutParams
+        }
 
+    }
+
+    private fun fragmentSize(callback: (DeviceSizeDTO) -> Unit){
+        val windowManager = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getRealSize(size)
+
+        val deviceSizeDTO = DeviceSizeDTO(deviceWidth = size.x, deviceHeight = size.y)
+        callback(deviceSizeDTO)
+
+    }
 }
-
-

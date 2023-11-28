@@ -60,4 +60,9 @@ interface ApiService {
         @Body member: MemberDTO,
     ): Call<String>
 
+    @POST("api/withdraw")
+    fun withdraw(
+        @Body member: MemberDTO
+    ): Call<String>
+
 }
