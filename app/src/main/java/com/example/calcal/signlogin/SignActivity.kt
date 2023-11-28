@@ -131,7 +131,7 @@ class SignActivity : AppCompatActivity() {
                         val responseBody: String? = response.body()
 
                         // 로그인페이지로 이동
-                        val intent = Intent(this@SignActivity, LoginActivity::class.java)
+                        val intent = Intent(this@SignActivity, MainActivity::class.java)
                         startActivity(intent)
 
 
