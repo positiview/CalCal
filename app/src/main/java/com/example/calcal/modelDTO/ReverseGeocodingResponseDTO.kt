@@ -1,5 +1,7 @@
 package com.example.calcal.modelDTO
 
+
+// 위치 좌표로 검색 했을때 응답을 DTO로 만듬
 data class ReverseGeocodingResponseDTO(
     val status: Status,
     val results: List<Result>
