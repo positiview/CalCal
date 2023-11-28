@@ -155,7 +155,7 @@ class SearchLocationFragment:Fragment() {
             }
 
 
-           /* val waypointClickListener: View.OnClickListener = View.OnClickListener {
+            val waypointClickListener: View.OnClickListener = View.OnClickListener {
 
 
                 when (it) {
@@ -182,7 +182,7 @@ class SearchLocationFragment:Fragment() {
                     }
                 }
 
-            }*/
+            }
             val waypoints = arrayOf(departure,waypoint1Text, waypoint2Text, waypoint3Text, waypoint4Text, waypoint5Text,arrival)
 
             waypoints.forEach { waypoint ->
