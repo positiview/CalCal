@@ -1,5 +1,6 @@
 package com.example.calcal.subFrag
 
+import android.icu.lang.UCharacter.GraphemeClusterBreak.L
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -103,11 +104,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         // 초기 위치 설정
         mNaverMap.locationTrackingMode = LocationTrackingMode.Follow
         var initialPosition = LatLng(35.1798159, 129.0750222) // 부산 시청
-        mNaverMap.addOnLocationChangeListener { location ->
-            Toast.makeText(requireContext(), "${location.latitude}, ${location.longitude}",
-                Toast.LENGTH_SHORT).show()
-            initialPosition = LatLng(location.latitude,location.longitude)
-        }// 네이버 맵의 내위치 표시
+        mNaverMap.addOnLocationChangeListener(object : NaverMap.OnLocationChangeListener {
+            override fun onLocationChange(location: Location) {
+                initialPosition = LatLng(location.latitude, location.longitude)
+
+                // 내 위치를 설정한 후에 리스너를 제거
+                mNaverMap.removeOnLocationChangeListener(this)
+            }
+        })
 
         val cameraPosition = CameraPosition(initialPosition, 17.0)
         mNaverMap.moveCamera(com.naver.maps.map.CameraUpdate.toCameraPosition(cameraPosition))
