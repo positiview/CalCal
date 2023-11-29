@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.DialogFragment
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentDirectSearchMapBinding
@@ -28,6 +29,12 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
     private lateinit var marker: Marker
     private lateinit var addressTextView: TextView
     private var currentLocation: LatLng? = null
+    private var selectedAddress: String? = null
+
+    fun setSelectedAddress(address: String) {
+        selectedAddress = address
+    }
+
 
     fun setCurrentLocation(location: CoordinateDTO) {
         currentLocation = LatLng(location.latidute, location.longitude)
@@ -38,7 +45,17 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
     fun setWaypointTextView(textView: TextView) {
         waypointTextView = textView
     }
+    private fun getLatLngFromAddress(address: String): LatLng {
+        val geocoder = Geocoder(requireContext(), Locale.KOREA)
+        val addresses = geocoder.getFromLocationName(address, 1)
 
+        if (addresses != null && addresses.isNotEmpty()) {
+            val location = addresses[0]
+            return LatLng(location.latitude, location.longitude)
+        }
+
+        return LatLng(0.0, 0.0) // 주소를 찾을 수 없을 경우 기본 값 반환
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,6 +73,10 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
 
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
         mapFragment.getMapAsync(this)
+
+        // Arguments로부터 전달된 주소값을 가져옴
+        val selectedAddress = arguments?.getString("selectedAddress")
+
 
         addressTextView = binding.addressTextView
 
@@ -81,15 +102,22 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
             addressTextView.text = address
         }
 
+
         // 현재 위치를 가져오는 로직 추가
-        currentLocation?.let {
-            val cameraPosition = CameraPosition(
-                LatLng(it.latitude, it.longitude),
-                16.0
-            )
+//        currentLocation?.let {
+//            val cameraPosition = CameraPosition(
+//                LatLng(it.latitude, it.longitude),
+//                16.0
+//            )
+//            naverMap.cameraPosition = cameraPosition
+        val latLng = selectedAddress?.let { getLatLngFromAddress(it) } // 검색된 주소를 좌표로 변환
+        val cameraPosition = latLng?.let { CameraPosition(it, 16.0) } // 변환된 좌표를 중심으로 카메라 위치 설정
+        if (cameraPosition != null) {
             naverMap.cameraPosition = cameraPosition
-        }
+        } // 카메라 위치 적용
+
     }
+
 
     private fun getAddressFromLatLng(latLng: LatLng): String {
         val geocoder = Geocoder(requireContext(), Locale.KOREA) // Locale을 한국어로 설정

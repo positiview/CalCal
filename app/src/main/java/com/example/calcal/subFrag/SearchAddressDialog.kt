@@ -184,7 +184,13 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
 
        binding.directChooseOnMap.setOnClickListener {
            val fragment = DirectSearchMapFragment<Any>()
-           fragment.setCurrentLocation(locations) // 현재 위치 정보를 전달
+
+           // 현재 위치 정보를 전달
+           fragment.setCurrentLocation(locations)
+
+           // 선택된 주소값을 DirectSearchMapFragment로 전달
+           fragment.setSelectedAddress(clickedTextView?.text.toString())
+
            fragment.show(parentFragmentManager, "DirectSearchMapFragment")
            dismiss()
        }
