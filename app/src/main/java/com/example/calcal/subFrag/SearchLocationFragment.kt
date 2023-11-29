@@ -227,6 +227,7 @@ class SearchLocationFragment:Fragment() {
 
     private fun openSearchAddressDialog(textView: TextView) {
         val searchAddressDialog = SearchAddressDialog(myArea)
+        searchAddressDialog.setWaypointTextView(textView)
         searchAddressDialog.setOnItemClickListener(object : SearchAddressDialog.OnItemClickListener {
             override fun onItemClicked(itemDTO: ItemDTO) {
                 Log.d("$$","onItemClicked 설정 textView = $textView , itemDTO = $itemDTO")

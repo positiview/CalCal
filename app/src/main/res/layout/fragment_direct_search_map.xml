@@ -59,7 +59,7 @@
             <TextView
                 android:id="@+id/addressTextView"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_height="60dp"
                 android:layout_marginLeft="10dp"
                 android:gravity="center_vertical"
                 android:text="주소"
@@ -68,40 +68,11 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingLeft="10dp">
-            <ImageView
-                android:id="@+id/post_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:src="@drawable/address_picker" />
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/search_query"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginLeft="10dp"
-                android:textAppearance="@style/white_bold_text"
-                android:hint="위치 입력"
-                android:textSize="14sp"
-                android:textColorHint="@color/white"
-                />
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_search"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="검색"
-                />
-
-        </LinearLayout>
 
 
          <androidx.appcompat.widget.AppCompatButton
+             android:id="@+id/addressOk"
             android:layout_width="match_parent"
             android:layout_height="30dp"
              android:layout_weight="1"
