@@ -64,6 +64,8 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
         fun onItemClicked(itemDTO: ItemDTO)
 
         fun onMyLocationClicked()
+
+        fun onMapClicked()
     }
 
 
@@ -175,6 +177,10 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             }
             directChooseOnMap.setOnClickListener {
 
+
+                onItemClickListener?.onMapClicked()
+
+                dismiss()
             }
             directChooseMyLocation.setOnClickListener {
                 onItemClickListener?.onMyLocationClicked()
@@ -182,7 +188,11 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             }
         }
 
-       binding.directChooseOnMap.setOnClickListener {
+       /*binding.directChooseOnMap.setOnClickListener {
+
+
+
+
            val fragment = DirectSearchMapFragment<Any>()
 
            // 현재 위치 정보를 전달
@@ -193,7 +203,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
 
            fragment.show(parentFragmentManager, "DirectSearchMapFragment")
            dismiss()
-       }
+       }*/
        val waypointText: String? = clickedTextView?.text.toString()
        if (!waypointText.isNullOrEmpty()) {
            binding.searchQuery.setText(waypointText)

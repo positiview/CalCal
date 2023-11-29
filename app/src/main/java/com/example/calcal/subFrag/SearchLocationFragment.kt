@@ -1,5 +1,6 @@
 package com.example.calcal.subFrag
 
+import DirectSearchMapFragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
@@ -249,6 +250,25 @@ class SearchLocationFragment:Fragment() {
                     }
                 }
             }
+
+            override fun onMapClicked() {
+
+                /*textView.text = ""
+                val coords = CoordinateDTO()
+                coordinateData(textView,coords)*/
+
+                /*val fragment = DirectSearchMapFragment<Any>()
+
+                // 현재 위치 정보를 전달
+                fragment.setCurrentLocation(locations)
+
+                // 선택된 주소값을 DirectSearchMapFragment로 전달
+                fragment.setSelectedAddress(clickedTextView?.text.toString())
+
+                fragment.show(parentFragmentManager, "DirectSearchMapFragment")*/
+
+            }
+
 
         })
 
