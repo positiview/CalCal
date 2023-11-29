@@ -4,9 +4,7 @@ import DirectSearchMapFragment
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.graphics.Point
-import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +17,6 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.calcal.adapter.AddressListAdapter
 import com.example.calcal.databinding.DialongFragmentSearchAddressBinding
@@ -90,7 +87,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
            // 다이얼로그를 화면의 상단에 위치하도록 설정
            params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
            // 화면의 상단부터 일정 거리를 띄우고 싶다면 아래와 같이 설정할 수 있습니다.
-           params.y = (resources.displayMetrics.heightPixels * 0.1).toInt() // 상단으로부터 20% 지점에 위치
+           params.y = (resources.displayMetrics.heightPixels * .18).toInt() // 상단으로부터 20% 지점에 위치
            window.attributes = params
        }
         binding = DialongFragmentSearchAddressBinding.inflate(inflater,container,false)
@@ -178,7 +175,8 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
         }
 
        binding.directChooseOnMap.setOnClickListener {
-           val fragment = DirectSearchMapFragment()
+           val fragment = DirectSearchMapFragment<Any>()
+           fragment.setCurrentLocation(locations) // 현재 위치 정보를 전달
            fragment.show(parentFragmentManager, "DirectSearchMapFragment")
            dismiss()
        }
