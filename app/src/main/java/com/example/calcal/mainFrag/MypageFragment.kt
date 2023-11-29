@@ -41,15 +41,12 @@ class MypageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMypageBinding.inflate(inflater, container, false)
         val view = inflater.inflate(R.layout.fragment_mypage, container, false)
 // SharedPreferences 초기화
@@ -60,9 +57,8 @@ class MypageFragment : Fragment() {
 
         val list = ArrayList<String>()
         list.add("프로필 수정")
-        list.add("알림설정")
-        list.add("고객센터")
         list.add("환경설정")
+        list.add("고객센터")
         list.add("로그아웃")
         list.add("회원탈퇴")
 
@@ -84,20 +80,16 @@ class MypageFragment : Fragment() {
                 .navigate(R.id.action_mypageFragment_to_modifyFragment)
 
             1 -> NavHostFragment.findNavController(this)
-                .navigate(R.id.action_mypageFragment_to_notisetFragment)
+                .navigate(R.id.action_mypageFragment_to_settingFragment)
 
             2 -> NavHostFragment.findNavController(this)
                 .navigate(R.id.action_mypageFragment_to_centerFragment)
 
-            3 -> NavHostFragment.findNavController(this)
-                .navigate(R.id.action_mypageFragment_to_settingFragment)
-
-
-            4 -> {
+            3 -> {
                 // 로그아웃 확인 창 표시
                 showLogoutConfirmationDialog()
             }
-            5 -> {
+            4 -> {
                 // 회원탈퇴 확인 창 표시
                 showWithdrawConfirmationDialog()
             }

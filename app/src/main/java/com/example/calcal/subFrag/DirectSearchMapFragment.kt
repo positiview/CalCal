@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentDirectSearchMapBinding
 import com.naver.maps.geometry.LatLng
@@ -56,4 +57,14 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
         // 예시로 주소를 "서울특별시 강남구"로 가정합니다.
         return "서울특별시 강남구"
     }
+    override fun onResume() {
+        super.onResume()
+        (activity as? MainActivity)?.hideBottomNavigation()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (activity as? MainActivity)?.showBottomNavigation()
+    }
+
 }

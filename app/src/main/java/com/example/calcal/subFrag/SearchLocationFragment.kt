@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import com.example.calcal.MainActivity
 import com.example.calcal.adapter.CourseListAdapter
 import com.example.calcal.adapter.LocationSearchAdapter
 import com.example.calcal.databinding.FragmentSearchLocationBinding
@@ -348,5 +349,14 @@ class SearchLocationFragment:Fragment() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as? MainActivity)?.hideBottomNavigation()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        (activity as? MainActivity)?.showBottomNavigation()
+    }
 
 }

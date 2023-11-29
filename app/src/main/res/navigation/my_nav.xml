@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+ <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/my_nav"
@@ -127,11 +127,6 @@
       app:launchSingleTop="true"
       app:popUpToInclusive="false"/>
   <action
-      android:id="@+id/action_mypageFragment_to_notisetFragment"
-      app:destination="@id/notisetFragment"
-      app:launchSingleTop="true"
-      app:popUpToInclusive="false"/>
-  <action
       android:id="@+id/action_mypageFragment_to_settingFragment"
       app:destination="@id/settingFragment"
       app:launchSingleTop="true"
@@ -214,12 +209,38 @@
         <action
             android:id="@+id/action_exercisestartFragment_to_exerciseInfoFragment2"
             app:destination="@id/exerciseInfoFragment" />
+        <action
+            android:id="@+id/navi_mypage"
+            app:destination="@id/mypageFragment" />
+        <action
+            android:id="@+id/navi_graph"
+            app:destination="@id/graphFragment" />
+        <action
+            android:id="@+id/navi_home"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/navi_calendar"
+            app:destination="@id/calendarFragment" />
     </fragment>
     <fragment
         android:id="@+id/exerciseInfoFragment"
         android:name="com.example.calcal.subFrag.ExerciseInfoFragment"
         android:label="fragment_exercise_info"
-        tools:layout="@layout/fragment_exercise_info" />
+        tools:layout="@layout/fragment_exercise_info">
+        <action
+            android:id="@+id/navi_mypage"
+            app:destination="@id/mypageFragment" />
+        <action
+            android:id="@+id/navi_graph"
+            app:destination="@id/graphFragment" />
+        <action
+            android:id="@+id/navi_home"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/navi_calendar"
+            app:destination="@id/calendarFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/notiFragment"
         android:name="com.example.calcal.mainFrag.NotiFragment"
@@ -230,25 +251,25 @@
         android:name="com.example.calcal.subFrag.CalcheckFragment"
         android:label="fragment_calcheck"
         tools:layout="@layout/fragment_calcheck" />
+
  <fragment
      android:id="@+id/centerFragment"
      android:name="com.example.calcal.mypagefrag.CenterFragment"
      android:label="fragment_center"
-     tools:layout="@layout/fragment_center" />
+     tools:layout="@layout/fragment_center" >
+
+ </fragment>
  <fragment
      android:id="@+id/modifyFragment"
      android:name="com.example.calcal.mypagefrag.ModifyFragment"
      android:label="fragment_modify"
      tools:layout="@layout/fragment_modify" />
  <fragment
-     android:id="@+id/notisetFragment"
-     android:name="com.example.calcal.mypagefrag.NotisetFragment"
-     android:label="fragment_notiset"
-     tools:layout="@layout/fragment_notiset" />
- <fragment
      android:id="@+id/settingFragment"
      android:name="com.example.calcal.mypagefrag.SettingFragment"
      android:label="fragment_setting"
-     tools:layout="@layout/fragment_setting" />
+     tools:layout="@layout/fragment_setting">
+
+ </fragment>
 
 </navigation>

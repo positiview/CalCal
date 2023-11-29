@@ -273,4 +273,5 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
         callback(deviceSizeDTO)
 
     }
+
 }
