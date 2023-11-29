@@ -17,9 +17,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.calcal.MainActivity
 import com.example.calcal.adapter.CourseListAdapter
 import com.example.calcal.adapter.LocationSearchAdapter
@@ -29,6 +31,7 @@ import com.example.calcal.modelDTO.Result
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.Coords
+import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.modelDTO.ItemDTO
 import com.example.calcal.modelDTO.DeviceSizeDTO
 import com.example.calcal.repository.CourseRepository
@@ -101,44 +104,60 @@ class SearchLocationFragment:Fragment() {
 
        /* val layoutManager = GridLayoutManager(requireContext(), 1)
         binding.selectedLocation.layoutManager = layoutManager*/
-        if(binding.departure.text.isEmpty()){
-            binding.btnRoundTrip.visibility = View.GONE
-        } else {
-            binding.btnRoundTrip.visibility = View.VISIBLE
-        }
+
+
 
 
 
         binding.apply{
             btnSwitch.setOnClickListener {
                 val temp = departure.text
+                val temp2 = location_departure
                 departure.text = arrival.text
+                location_departure = location_arrival
                 arrival.text = temp
+                location_arrival = temp2
+                courseConfirmBtnEnableCheck()
+
             }
             btnRoundTrip.setOnClickListener {
+                if(arrival.text != null && arrival.text != departure.text){
 
+                    val newWaypoint = when {
+                        waypoint1.visibility != View.VISIBLE -> waypoint1Text
+                        waypoint2.visibility != View.VISIBLE -> waypoint2Text
+                        waypoint3.visibility != View.VISIBLE -> waypoint3Text
+                        waypoint4.visibility != View.VISIBLE -> waypoint4Text
+                        waypoint5.visibility != View.VISIBLE -> waypoint5Text
+                        else -> null
+                    }
 
+                    addWaypoint.performClick()
 
-                val newWaypoint = when {
-                    waypoint1.visibility != View.VISIBLE -> waypoint1Text
-                    waypoint2.visibility != View.VISIBLE -> waypoint2Text
-                    waypoint3.visibility != View.VISIBLE -> waypoint3Text
-                    waypoint4.visibility != View.VISIBLE -> waypoint4Text
-                    waypoint5.visibility != View.VISIBLE -> waypoint5Text
-                    else -> null
+                    if(newWaypoint==null) {
+                        Toast.makeText(requireContext(),"경유지는 최대 5개까지 설정 할 수 있어, 목적지를 출발지로 설정했습니다.",Toast.LENGTH_SHORT).show()
+                    }
+                    newWaypoint?.text = arrival.text
+                    when(newWaypoint){
+                        waypoint1Text -> location_waypoint1 = location_arrival
+                        waypoint2Text -> location_waypoint2 = location_arrival
+                        waypoint3Text -> location_waypoint3 = location_arrival
+                        waypoint4Text -> location_waypoint4 = location_arrival
+                        waypoint5Text -> location_waypoint5 = location_arrival
+
+                    }
+                    arrival.text = departure.text
+                    location_arrival= location_departure
+                }else if(arrival.text == null){
+
+                    arrival.text = departure.text
+                    location_arrival= location_departure
                 }
 
-                addWaypoint.performClick()
-
-                if(newWaypoint==null) {
-                    Toast.makeText(requireContext(),"경유지는 최대 5개까지 설정 할 수 있어, 목적지를 출발지로 설정했습니다.",Toast.LENGTH_SHORT).show()
-                }
-
-                newWaypoint?.text = arrival.text
 
 
 
-                arrival.text = departure.text
+                courseConfirmBtnEnableCheck()
             }
 
             updateAddWaypointVisibility(waypointCount)
@@ -201,30 +220,66 @@ class SearchLocationFragment:Fragment() {
             waypoints.forEach { waypoint ->
                 waypoint.setOnClickListener{
                     openSearchAddressDialog(waypoint)
+
                 }
             }
 
             // location_departure 와 location_arrival이 설정되면 course_confirm 버튼 활성화
 
 
+            courseConfirmBtnEnableCheck()
+            // ViewModel 사용 ,
 
-            // ViewModel 사용
             courseConfirm.setOnClickListener {
-                /*val courseList = mutableListOf<CoordinateDTO>()
+                val courseList = mutableListOf<CoordinateDTO>()
 
                 if(location_departure != null){
                     courseList.add(location_departure)
-                }else if(location_waypoint1 != null){
-                    courseList.add(location_waypoint1)
-                }else if(location_waypoint2 != null){
                 }
-                viewModel.saveCourse()*/
+                if(location_waypoint1 != null){
+                    courseList.add(location_waypoint1!!)
+                }
+                if(location_waypoint2 != null){
+                    courseList.add(location_waypoint2!!)
+                }
+                if(location_waypoint3 != null){
+                    courseList.add(location_waypoint3!!)
+                }
+                if(location_waypoint4 != null){
+                    courseList.add(location_waypoint4!!)
+                }
+                if(location_waypoint5 != null){
+                    courseList.add(location_waypoint5!!)
+                }
+                if(location_arrival != null){
+                    courseList.add(location_arrival)
+                }
+                val courseName = binding.courseEdit.text.toString()
+                viewModel.saveCourse(courseName,courseList)
+                findNavController().navigateUp()
             }
         }
         return view
     }
 
+   /* private fun checkBtnRoundTrip() {
+        if(binding.departure.text.isEmpty()){
+            binding.btnRoundTrip.visibility = View.GONE
+        } else {
+            binding.btnRoundTrip.visibility = View.VISIBLE
+        }
+    }*/
 
+    private fun courseConfirmBtnEnableCheck() {
+        binding.courseConfirm.isEnabled = location_departure !=null && location_arrival !=null
+    }
+
+
+    // 어댑터뷰 리스트 목록을 클릭하면 동작...
+    fun onItemClick(courseList: CourseListDTO){
+
+
+    }
 
     private fun openSearchAddressDialog(textView: TextView) {
         val searchAddressDialog = SearchAddressDialog(myArea)
@@ -235,7 +290,7 @@ class SearchLocationFragment:Fragment() {
                 textView.text = itemDTO.title
                 val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble(), latidute = itemDTO.mapy.toDouble())
                 coordinateData(textView,coords)
-
+                courseConfirmBtnEnableCheck()
             }
 
             override fun onMyLocationClicked() {
@@ -245,8 +300,9 @@ class SearchLocationFragment:Fragment() {
                     if(it!=null){
 
                         textView.text = "[내 위치] ${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
-                        val coords = CoordinateDTO(it.region.area4.coords.center.y,it.region.area4.coords.center.x)
+                        val coords = CoordinateDTO(it.region.area4.coords.center.x,it.region.area4.coords.center.y)
                         coordinateData(textView,coords)
+                        courseConfirmBtnEnableCheck()
                     }
                 }
             }

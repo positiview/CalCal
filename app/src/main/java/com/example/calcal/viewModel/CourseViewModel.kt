@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.calcal.modelDTO.CoordinateDTO
+import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.repository.CourseRepository
 import com.example.calcal.util.Resource
 import kotlinx.coroutines.launch
@@ -12,17 +13,18 @@ import kotlinx.coroutines.launch
 class CourseViewModel(private val repository: CourseRepository): ViewModel() {
 
 
-    private val _getCourse : MutableLiveData<Resource<List<CoordinateDTO>>> = MutableLiveData()
+    private val _getCourse : MutableLiveData<Resource<CourseListDTO>> = MutableLiveData()
 
-    val getCourse : LiveData<Resource<List<CoordinateDTO>>> get() = _getCourse
+    val getCourse : LiveData<Resource<CourseListDTO>> get() = _getCourse
 
 
 
-    fun saveCourse(courseList:List<CoordinateDTO>){
+
+    fun saveCourse(courseName:String, courseList:List<CoordinateDTO>){
         viewModelScope.launch {
             _getCourse.value = Resource.Loading
             try{
-                repository.saveCourse(courseList) {
+                repository.saveCourse(courseName, courseList) {
                     _getCourse.value = it
                 }
             }catch (e:Exception){

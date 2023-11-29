@@ -125,7 +125,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                         .addOnSuccessListener { location: Location? ->
                             Log.d("$$","내 위치 정보 location = $location")
                             if (location != null) {
-                                locations = CoordinateDTO(location.latitude,location.longitude)
+                                locations = CoordinateDTO(location.longitude,location.latitude)
                             }
                             Log.d("$$","CoordinateDTO locations = $locations")
 
@@ -144,7 +144,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                 .addOnSuccessListener { location: Location? ->
                     Log.d("$$","내 위치 정보 location = $location")
                     if (location != null) {
-                        locations = CoordinateDTO(location.latitude,location.longitude)
+                        locations = CoordinateDTO(location.longitude,location.latitude)
                     }
 //                    Log.d("$$","CoordinateDTO locations = $locations")
 
