@@ -1,10 +1,12 @@
 package com.example.calcal.subFrag
 
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -99,13 +101,22 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val locationButtonView: LocationButtonView = binding.locationView
         locationButtonView.map = mNaverMap
         // 초기 위치 설정
-        val initialPosition = LatLng(35.1798159, 129.0750222)
+        mNaverMap.locationTrackingMode = LocationTrackingMode.Follow
+        var initialPosition = LatLng(35.1798159, 129.0750222) // 부산 시청
+        mNaverMap.addOnLocationChangeListener { location ->
+            Toast.makeText(requireContext(), "${location.latitude}, ${location.longitude}",
+                Toast.LENGTH_SHORT).show()
+            initialPosition = LatLng(location.latitude,location.longitude)
+        }// 네이버 맵의 내위치 표시
+
         val cameraPosition = CameraPosition(initialPosition, 17.0)
         mNaverMap.moveCamera(com.naver.maps.map.CameraUpdate.toCameraPosition(cameraPosition))
         mNaverMap.maxZoom = 18.0
         mNaverMap.minZoom = 5.0
 
     }
+
+
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000

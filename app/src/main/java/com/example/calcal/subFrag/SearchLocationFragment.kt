@@ -1,6 +1,7 @@
 package com.example.calcal.subFrag
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Point
@@ -24,6 +25,7 @@ import com.example.calcal.modelDTO.LocationDTO
 import com.example.calcal.modelDTO.Result
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.CoordinateDTO
+import com.example.calcal.modelDTO.Coords
 import com.example.calcal.modelDTO.ItemDTO
 import com.example.calcal.modelDTO.DeviceSizeDTO
 import com.example.calcal.retrofit.RequestFactory
@@ -41,15 +43,42 @@ class SearchLocationFragment:Fragment() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient //자동으로 gps값을 받아온다.
     private lateinit var locationCallback: LocationCallback //gps응답 값을 가져온다.
     private lateinit var selectLocation:List<LocationDTO>
-    private lateinit var departure: CoordinateDTO
-    private lateinit var waypoint1: CoordinateDTO
-    private lateinit var waypoint2: CoordinateDTO
-    private lateinit var waypoint3: CoordinateDTO
-    private lateinit var waypoint4: CoordinateDTO
-    private lateinit var waypoint5: CoordinateDTO
-    private lateinit var arrival: CoordinateDTO
-    private var myArea:String = ""
+    private lateinit var location_departure: CoordinateDTO
+    private var myLocation: Result? = null
+    private var location_waypoint1: CoordinateDTO? = null
+    private var location_waypoint2: CoordinateDTO? = null
+    private var location_waypoint3: CoordinateDTO? = null
+    private var location_waypoint4: CoordinateDTO? = null
+    private var location_waypoint5: CoordinateDTO? = null
 
+    private lateinit var location_arrival: CoordinateDTO
+    private var myArea:String = ""
+    /*private val locationPermissionRequest =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // 권한이 허용되면 위치 정보 가져오기
+                   getMyLocation(){
+                       if(it != null){
+
+                           myArea = it.region.area2.name
+                           val actualAddress = "${it.region.area1.name} $myArea ${it.region.area3.name} ${it.region.area4.name}".trim()
+                           myLocation = it
+                           binding.departure.text = "[내 위치] $actualAddress"
+                           location_departure = CoordinateDTO(longitude = myLocation!!.region.area4.coords.center.x, latidute = myLocation!!.region.area4.coords.center.y)
+                       }else{
+                           Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
+                       }
+                   }
+
+
+            } else {
+                // 권한이 거부된 경우 적절히 처리
+                Log.d("$$", "위치 권한이 거부되었습니다.")
+
+
+                // 사용자에게 위치 권한이 필요한 이유를 설명해야함
+            }
+        }*/
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,7 +92,12 @@ class SearchLocationFragment:Fragment() {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
-        setLocationList()
+        setLocationList(){
+            val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
+
+            binding.departure.text = "[내위치] $actualAddress"
+            location_departure = CoordinateDTO(longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y)
+        }
         Log.d("$$"," selectLocation 값 : $selectLocation")
 
        /* val layoutManager = GridLayoutManager(requireContext(), 1)
@@ -73,6 +107,7 @@ class SearchLocationFragment:Fragment() {
         } else {
             binding.btnRoundTrip.visibility = View.VISIBLE
         }
+
 
 
         binding.apply{
@@ -123,6 +158,7 @@ class SearchLocationFragment:Fragment() {
                 waypoint1.visibility = View.GONE
                 waypoint1Text.hint = "[경유지]"
                 waypoint1Text.text = ""
+                location_waypoint1 = null
                 waypointCount--
                 updateAddWaypointVisibility(waypointCount)
             }
@@ -130,6 +166,7 @@ class SearchLocationFragment:Fragment() {
                 waypoint2.visibility = View.GONE
                 waypoint2Text.hint = "[경유지]"
                 waypoint2Text.text = ""
+                location_waypoint2 = null
                 waypointCount--
                 updateAddWaypointVisibility(waypointCount)
             }
@@ -137,6 +174,7 @@ class SearchLocationFragment:Fragment() {
                 waypoint3.visibility = View.GONE
                 waypoint3Text.hint = "[경유지]"
                 waypoint3Text.text = ""
+                location_waypoint3 = null
                 waypointCount--
                 updateAddWaypointVisibility(waypointCount)
             }
@@ -144,6 +182,7 @@ class SearchLocationFragment:Fragment() {
                 waypoint4.visibility = View.GONE
                 waypoint4Text.hint = "[경유지]"
                 waypoint4Text.text = ""
+                location_waypoint4 = null
                 waypointCount--
                 updateAddWaypointVisibility(waypointCount)
 
@@ -152,39 +191,12 @@ class SearchLocationFragment:Fragment() {
                 waypoint5.visibility = View.GONE
                 waypoint5Text.hint = "[경유지]"
                 waypoint5Text.text = ""
+                location_waypoint5 = null
                 waypointCount--
                 updateAddWaypointVisibility(waypointCount)
             }
 
 
-            val waypointClickListener: View.OnClickListener = View.OnClickListener {
-
-
-                when (it) {
-                    departure -> {
-                        openSearchAddressDialog(departure)
-                    }
-                    waypoint1Text -> {
-                        openSearchAddressDialog(waypoint1Text)
-                    }
-                    waypoint2Text -> {
-                        openSearchAddressDialog(waypoint2Text)
-                    }
-                    waypoint3Text -> {
-                        openSearchAddressDialog(waypoint3Text)
-                    }
-                    waypoint4Text -> {
-                        openSearchAddressDialog(waypoint4Text)
-                    }
-                    waypoint5Text -> {
-                        openSearchAddressDialog(waypoint5Text)
-                    }
-                    arrival -> {
-                        openSearchAddressDialog(arrival)
-                    }
-                }
-
-            }
             val waypoints = arrayOf(departure,waypoint1Text, waypoint2Text, waypoint3Text, waypoint4Text, waypoint5Text,arrival)
 
             waypoints.forEach { waypoint ->
@@ -192,13 +204,7 @@ class SearchLocationFragment:Fragment() {
                     openSearchAddressDialog(waypoint)
                 }
             }
-
-
         }
-
-
-
-
         return view
     }
 
@@ -208,11 +214,21 @@ class SearchLocationFragment:Fragment() {
         val searchAddressDialog = SearchAddressDialog(myArea)
         searchAddressDialog.setOnItemClickListener(object : SearchAddressDialog.OnItemClickListener {
             override fun onItemClicked(itemDTO: ItemDTO) {
-                textView.text = itemDTO.title
+                Log.d("$$","onItemClicked 설정 textView = $textView , itemDTO = $itemDTO")
+                binding.textView.text = itemDTO.title
+                val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble(), latidute = itemDTO.mapy.toDouble())
+                coordinateData(textView,coords)
+
             }
 
-            override fun onMyLocationClicked(myLocation: CoordinateDTO) {
+            override fun onMyLocationClicked() {
 
+
+                setLocationList(){
+                    binding.textView.text = "[내 위치] $it"
+                    val coords = CoordinateDTO(it.region.area4.coords.center.y,it.region.area4.coords.center.x)
+                    coordinateData(textView,coords)
+                }
             }
 
         })
@@ -223,104 +239,87 @@ class SearchLocationFragment:Fragment() {
 
     }
 
+    private fun coordinateData(textView: TextView, coordinateDTO: CoordinateDTO) {
+        when(textView.id.toString()){
+            "departure" ->{
+                location_departure = coordinateDTO
+            }
+            "waypoint1Text"->{
+                location_waypoint1 = coordinateDTO
+            }
+            "waypoint2Text"->{
+                location_waypoint2 = coordinateDTO
+            }
+            "waypoint3Text"->{
+                location_waypoint3 = coordinateDTO
+            }
+            "waypoint4Text"->{
+                location_waypoint4 = coordinateDTO
+            }
+            "waypoint5Text"->{
+                location_waypoint5 = coordinateDTO
+            }
+            "arrival"->{
+                location_arrival = coordinateDTO
+            }
+        }
+    }
+
     private fun updateAddWaypointVisibility(waypointCount:Int) {
         binding.addWaypoint.visibility = if (waypointCount < 5) View.VISIBLE else View.GONE    }
 
 
-    private fun setLocationList(){
-        var locationList = mutableListOf<LocationDTO>()
-        initMyLocation(){
-            val name = "[내 위치]"
-            val area = it[0].region.area2.name
-            myArea = area
-            var actualAddress = "${it[0].region.area1.name} $area ${it[0].region.area3.name} ${it[0].region.area4.name}".trim()
-            Log.d("$$" , "actualAddress = $actualAddress")
-            locationList.add(LocationDTO(actualAddress,name))
+    private fun setLocationList(callback : (Result) -> Unit){
+        // 내위치 가져오기
 
+        checkGrantAndGetLocation(){
 
+            if(it != null){
 
-           /* if (selectLocation.isEmpty()) {
-                // locationList가 비어 있다면 출발지와 목적지를 나타내는 두 데이터를 추가합니다.
-                Log.d("$$","location size 는 없습니다.")
-                selectLocation = listOf(
-                    LocationDTO("출발지 내용", "[출발지]"),
-                    LocationDTO("목적지 내용", "[목적지]")
-                )
-            } else if (selectLocation.size == 1) {
-                // locationList에 항목이 하나만 있다면 목적지를 나타내는 데이터를 추가합니다.
-                Log.d("$$","location size 는 1입니다.")
-                selectLocation =  listOf(
-                    selectLocation[0],LocationDTO("목적지 내용", "[목적지]")
-                )
-            } else {
-                // 그 외의 경우는 주어진 locationList를 그대로 사용합니다.
-                Log.d("$$","location size 는 ${selectLocation.size}입니다.")
-            }*/
+                myArea = it.region.area2.name // 내 지역 데이터 저장
 
-            binding.departure.text = locationList[0].name + locationList[0].location
+                callback(it)
+            }else{
+                Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
+            }
 
 
         }
+
+
     }
-    private fun initMyLocation(callback: (List<Result>) -> Unit) {
+    private fun checkGrantAndGetLocation(callback: (Result?) -> Unit) {
+        val locationPermissionRequest =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // 권한이 허용되면 위치 정보 가져오기
+                getMyLocation(){
+                    callback(it)
+                }
+
+
+            } else {
+                // 권한이 거부된 경우 적절히 처리
+                Log.d("$$", "위치 권한이 거부되었습니다.")
+
+
+                // 사용자에게 위치 권한이 필요한 이유를 설명해야함
+            }
+        }
 
         Log.d("$$","setLocationList 에서 내 위치 가져오기")
 
-        val locationPermissionRequest =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-                if (isGranted) {
-                    // 권한이 허용되면 위치 정보 가져오기
 
-                    fusedLocationProviderClient.lastLocation
-                        .addOnSuccessListener { location: Location? ->
-                            location?.let {
-                                getAddressName(it) { address ->
-
-                                    callback(address)
-                                }
-                            } ?: run {
-                                // 마지막으로 알려진 위치가 없는 경우 처리
-                                Log.d("$$", "마지막으로 알려진 위치가 없습니다.")
-
-//                                callback(locationList)
-                            }
-                        }
-                } else {
-                    // 권한이 거부된 경우 적절히 처리
-                    Log.d("$$", "위치 권한이 거부되었습니다.")
-
-//                    callback(locationList)
-                    // 사용자에게 위치 권한이 필요한 이유를 설명하는 메시지를 표시하는 것이 좋습니다.
-                }
-            }
-
-        // 내위치 정보 가져오기
             // 위치 권한이 허용되어 있는 경우
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            fusedLocationProviderClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    location?.let { // it 이 latitude와 longitude를 가지고 있음
-                        getAddressName(it) { address ->
-                            /*val name = "[내 위치]"
-                            var actualAddress = "${address[0].region.area1.name} ${address[0].region.area2.name} ${address[0].region.area3.name} ${address[0].region.area4.name}".trim()
-                            Log.d("$$" , "actualAddress = $actualAddress")
-                            locationList.add(LocationDTO(actualAddress,name))*/
-                            callback(address)
-                        }
-                    } ?: run {
-                        // 마지막으로 알려진 위치가 없는 경우에 대한 처리
-                        // 예: 위치 권한이 거부되어 있을 때
-                        Log.d("$$", "마지막으로 알려진 위치가 없습니다.")
-                        // 적절한 에러 처리 또는 기본 위치 설정 등을 수행할 수 있습니다.
-                        // 이 예제에서는 빈 주소로 설정합니다.
+            getMyLocation(){
 
-//                        callback(locationList)
-                    }
-                }
+                callback(it)
+            }
 
         }else{
             locationPermissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -331,6 +330,26 @@ class SearchLocationFragment:Fragment() {
 
 
 
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getMyLocation(callback: (Result?) -> Unit) {
+
+        fusedLocationProviderClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                location?.let {
+                    getAddressName(it) { address ->
+                        callback(address.firstOrNull())
+
+                    }
+                } ?: run {
+                    // 마지막으로 알려진 위치가 없는 경우 처리
+                    Log.d("$$", "마지막으로 알려진 위치가 없습니다.")
+                    callback(null)
+
+                }
+            }
 
     }
 
@@ -378,3 +397,5 @@ class SearchLocationFragment:Fragment() {
 
 
 }
+
+
