@@ -21,6 +21,7 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.calcal.MainActivity
 import com.example.calcal.adapter.CourseListAdapter
@@ -53,7 +54,7 @@ class SearchLocationFragment:Fragment() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient //자동으로 gps값을 받아온다.
     private lateinit var locationCallback: LocationCallback //gps응답 값을 가져온다.
     private lateinit var selectLocation:List<LocationDTO>
-    private lateinit var location_departure: CoordinateDTO
+    private var location_departure: CoordinateDTO? = null
     private var myLocation: Result? = null
     private var location_waypoint1: CoordinateDTO? = null
     private var location_waypoint2: CoordinateDTO? = null
@@ -61,12 +62,15 @@ class SearchLocationFragment:Fragment() {
     private var location_waypoint4: CoordinateDTO? = null
     private var location_waypoint5: CoordinateDTO? = null
 
-    private lateinit var location_arrival: CoordinateDTO
+    private var location_arrival: CoordinateDTO? = null
     private var myArea:String = ""
     
     private val courseRepository: CourseRepository = CourseRepositoryImpl()
     private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
-    private val viewModel: CourseViewModel by viewModels() { courseViewModelFactory }
+    private val viewModel: CourseViewModel by lazy {
+        ViewModelProvider(this, courseViewModelFactory)[CourseViewModel::class.java]
+    }
+//    private val viewModel: CourseViewModel by viewModels() { courseViewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -91,7 +95,8 @@ class SearchLocationFragment:Fragment() {
                 val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
 
                 binding.departure.text = "[내 위치] $actualAddress"
-                location_departure = CoordinateDTO(longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y)
+                location_departure = CoordinateDTO(longitude = it.region.area1.coords.center.x, latidute = it.region.area1.coords.center.y)
+                Log.d("$$","00 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
 
             }else{
                 Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
@@ -99,12 +104,11 @@ class SearchLocationFragment:Fragment() {
 
 
         }
-
         Log.d("$$"," selectLocation 값 : $selectLocation")
+        courseConfirmBtnEnableCheck()
 
        /* val layoutManager = GridLayoutManager(requireContext(), 1)
         binding.selectedLocation.layoutManager = layoutManager*/
-
 
 
 
@@ -117,7 +121,6 @@ class SearchLocationFragment:Fragment() {
                 location_departure = location_arrival
                 arrival.text = temp
                 location_arrival = temp2
-                courseConfirmBtnEnableCheck()
 
             }
             btnRoundTrip.setOnClickListener {
@@ -157,7 +160,7 @@ class SearchLocationFragment:Fragment() {
 
 
 
-                courseConfirmBtnEnableCheck()
+
             }
 
             updateAddWaypointVisibility(waypointCount)
@@ -227,14 +230,13 @@ class SearchLocationFragment:Fragment() {
             // location_departure 와 location_arrival이 설정되면 course_confirm 버튼 활성화
 
 
-            courseConfirmBtnEnableCheck()
             // ViewModel 사용 ,
 
             courseConfirm.setOnClickListener {
                 val courseList = mutableListOf<CoordinateDTO>()
 
                 if(location_departure != null){
-                    courseList.add(location_departure)
+                    courseList.add(location_departure!!)
                 }
                 if(location_waypoint1 != null){
                     courseList.add(location_waypoint1!!)
@@ -252,10 +254,11 @@ class SearchLocationFragment:Fragment() {
                     courseList.add(location_waypoint5!!)
                 }
                 if(location_arrival != null){
-                    courseList.add(location_arrival)
+                    courseList.add(location_arrival!!)
                 }
                 val courseName = binding.courseEdit.text.toString()
                 viewModel.saveCourse(courseName,courseList)
+                Log.d("$$","저장 버튼 누름")
                 findNavController().navigateUp()
             }
         }
@@ -288,9 +291,10 @@ class SearchLocationFragment:Fragment() {
             override fun onItemClicked(itemDTO: ItemDTO) {
                 Log.d("$$","onItemClicked 설정 textView = $textView , itemDTO = $itemDTO")
                 textView.text = itemDTO.title
-                val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble(), latidute = itemDTO.mapy.toDouble())
+                val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000)
                 coordinateData(textView,coords)
                 courseConfirmBtnEnableCheck()
+                Log.d("$$","33 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
             }
 
             override fun onMyLocationClicked() {
@@ -303,6 +307,7 @@ class SearchLocationFragment:Fragment() {
                         val coords = CoordinateDTO(it.region.area4.coords.center.x,it.region.area4.coords.center.y)
                         coordinateData(textView,coords)
                         courseConfirmBtnEnableCheck()
+                        Log.d("$$","44 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
                     }
                 }
             }
@@ -335,7 +340,9 @@ class SearchLocationFragment:Fragment() {
     }
 
     private fun coordinateData(textView: TextView, coordinateDTO: CoordinateDTO) {
-        when(textView.id.toString()){
+        val viewIdName = resources.getResourceEntryName(textView.id)
+        Log.d("$$", "textView id 값 : $viewIdName")
+        when(viewIdName){
             "departure" ->{
                 location_departure = coordinateDTO
             }

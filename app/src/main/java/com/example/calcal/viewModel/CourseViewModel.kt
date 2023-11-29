@@ -1,5 +1,6 @@
 package com.example.calcal.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,6 +26,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
             _getCourse.value = Resource.Loading
             try{
                 repository.saveCourse(courseName, courseList) {
+                    Log.d("$$","saveCourse 부분 $it")
                     _getCourse.value = it
                 }
             }catch (e:Exception){
