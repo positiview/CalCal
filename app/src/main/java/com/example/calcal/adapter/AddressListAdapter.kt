@@ -10,6 +10,7 @@ import com.example.calcal.R
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.ItemDTO
 import com.example.calcal.subFrag.SearchAddressDialog
+import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -37,14 +38,16 @@ class AddressListAdapter(private val address: MutableList<ItemDTO>, private val 
         fun bind(addressDTO: ItemDTO,location: CoordinateDTO){
             placeTitleTextView.text = addressDTO.title
             roadAddress.text = addressDTO.roadAddress
-            distance.text = haversine(location.latidute,location.longitude,addressDTO.mapx.toDouble(),addressDTO.mapy.toDouble()).toString()+"km"
-
+            Log.d("$$","location x : ${location.latidute} location y : ${location.longitude}")
+            distance.text = haversine(location.latidute,location.longitude,addressDTO.mapy.toDouble(),addressDTO.mapx.toDouble()).toString()+"km"
+            Log.d("$$","distance 값 : ${distance.text}")
 
         }
 
-        private fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        private fun haversine(lat1: Double, lon1: Double, lat22: Double, lon22: Double): Double {
             val R = 6371.0 // 지구의 반지름 (단위: km)
-
+            val lat2 = lat22/ 10000000.0
+            val lon2 = lon22/ 10000000.0
             val dLat = Math.toRadians(lat2 - lat1)
             val dLon = Math.toRadians(lon2 - lon1)
 
@@ -52,9 +55,16 @@ class AddressListAdapter(private val address: MutableList<ItemDTO>, private val 
                     cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
                     sin(dLon / 2) * sin(dLon / 2)
 
+//            val c = 2 * asin(sqrt(a))
             val c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
-            return R * c
+            val result = R * c
+
+            return if (result >= 10) {
+                result.toInt().toDouble() // 10 이상인 경우 소수점을 표시하지 않고 정수 부분만 반환
+            } else {
+                String.format("%.2f", result).toDouble() // 10 미만인 경우 소수점 두 자리까지 표시
+            }
         }
 
 

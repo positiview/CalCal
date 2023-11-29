@@ -4,9 +4,7 @@ import DirectSearchMapFragment
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.graphics.Point
-import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -19,7 +17,6 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.DialogFragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.calcal.adapter.AddressListAdapter
 import com.example.calcal.databinding.DialongFragmentSearchAddressBinding
@@ -40,6 +37,12 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
     private lateinit var addressListAdapter: AddressListAdapter
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locations : CoordinateDTO
+
+    private var waypointTextView: TextView? = null
+
+    fun setWaypointTextView(textView: TextView) {
+        waypointTextView = textView
+    }
     companion object {
         const val TAG = "SearchAddressDialog"
     }
@@ -53,12 +56,14 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
 
     private fun handleItemClicked(itemDTO: ItemDTO) {
         clickedTextView?.text = itemDTO.title
+
+
         dismiss()
     }
     interface OnItemClickListener {
         fun onItemClicked(itemDTO: ItemDTO)
 
-        fun onMyLocationClicked(myLocation: CoordinateDTO)
+        fun onMyLocationClicked()
     }
 
 
@@ -90,7 +95,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             // 다이얼로그를 화면의 상단에 위치하도록 설정
             params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
             // 화면의 상단부터 일정 거리를 띄우고 싶다면 아래와 같이 설정할 수 있습니다.
-            params.y = (resources.displayMetrics.heightPixels * 0.1).toInt() // 상단으로부터 20% 지점에 위치
+            params.y = (resources.displayMetrics.heightPixels * .18).toInt() // 상단으로부터 20% 지점에 위치
             window.attributes = params
         }
         binding = DialongFragmentSearchAddressBinding.inflate(inflater,container,false)
@@ -172,15 +177,20 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
 
             }
             directChooseMyLocation.setOnClickListener {
-                onItemClickListener?.onMyLocationClicked(locations)
+                onItemClickListener?.onMyLocationClicked()
                 dismiss()
             }
         }
 
         binding.directChooseOnMap.setOnClickListener {
-            val fragment = DirectSearchMapFragment()
+            val fragment = DirectSearchMapFragment<Any>()
+            fragment.setCurrentLocation(locations) // 현재 위치 정보를 전달
             fragment.show(parentFragmentManager, "DirectSearchMapFragment")
             dismiss()
+        }
+        val waypointText: String? = clickedTextView?.text.toString()
+        if (!waypointText.isNullOrEmpty()) {
+            binding.searchQuery.setText(waypointText)
         }
 
         return binding.root
@@ -223,8 +233,8 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                         for (address in addressList) {
                             val roadAddress = address.roadAddress
                             val jibunAddress = address.address
-                            val x = address.mapx
-                            val y = address.mapy
+                            val y = address.mapx
+                            val x = address.mapy
 
                             // 필요한 작업 수행
                             Log.d("$$","roadAddress: $roadAddress")
@@ -258,6 +268,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             val params: ViewGroup.LayoutParams? = dialog?.window?.attributes
             val deviceWidth = it.deviceWidth
             params?.width = (deviceWidth * 0.9).toInt()
+
             dialog?.window?.attributes = params as WindowManager.LayoutParams
         }
 
@@ -273,5 +284,4 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
         callback(deviceSizeDTO)
 
     }
-
 }

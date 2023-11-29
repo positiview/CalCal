@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:background="@drawable/exer_content">
+
+    <!-- 여기에 기존의 세부 정보 레이아웃 코드를 붙여넣습니다. -->
+    <TextView
+        android:id="@+id/ex_info_go"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="20dp"
+        android:fontFamily="@font/poppins_black"
+        android:paddingTop="4dp"
+        android:text="운동하러가기"
+        android:textColor="@color/red"
+        android:textSize="12sp"
+       />
+
+    <ImageView
+            android:id="@+id/ex_info_img"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:src="@drawable/pictogram_walk"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+            android:id="@+id/ex_info_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:maxLines="2"
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
+            android:text="기본적인 걷기 운동으로 관절에 무리가 안가며 오래 운동하기에 적합하다."
+            android:textAlignment="center"
+            android:textColor="@color/semigray"
+        android:layout_marginBottom="20dp"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/ex_info_cal_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            android:text="시간당 칼로리"
+            android:textAppearance="@style/main_text" />
+
+        <TextView
+            android:id="@+id/ex_info_cal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="30dp"
+            android:text="200 kcal/h"
+            android:textAppearance="@style/red_text" />
+
+        <TextView
+            android:id="@+id/ex_info_time_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="권장시간"
+            android:textAppearance="@style/main_text" />
+
+        <TextView
+            android:id="@+id/ex_info_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="2H"
+            android:textAppearance="@style/red_text" />
+    </LinearLayout>
+
+
+</LinearLayout>
