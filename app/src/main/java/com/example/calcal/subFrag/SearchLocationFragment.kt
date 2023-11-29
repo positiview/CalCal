@@ -92,12 +92,26 @@ class SearchLocationFragment:Fragment() {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
-        setLocationList(){
-            val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
 
-            binding.departure.text = "[내위치] $actualAddress"
-            location_departure = CoordinateDTO(longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y)
+
+        checkGrantAndGetLocation(){
+
+            if(it != null){
+
+                myArea = it.region.area2.name // 내 지역 데이터 저장
+
+                val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
+
+                binding.departure.text = "[내 위치] $actualAddress"
+                location_departure = CoordinateDTO(longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y)
+
+            }else{
+                Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
+            }
+
+
         }
+
         Log.d("$$"," selectLocation 값 : $selectLocation")
 
        /* val layoutManager = GridLayoutManager(requireContext(), 1)
@@ -216,7 +230,7 @@ class SearchLocationFragment:Fragment() {
         searchAddressDialog.setOnItemClickListener(object : SearchAddressDialog.OnItemClickListener {
             override fun onItemClicked(itemDTO: ItemDTO) {
                 Log.d("$$","onItemClicked 설정 textView = $textView , itemDTO = $itemDTO")
-                binding.textView.text = itemDTO.title
+                textView.text = itemDTO.title
                 val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble(), latidute = itemDTO.mapy.toDouble())
                 coordinateData(textView,coords)
 
@@ -225,10 +239,13 @@ class SearchLocationFragment:Fragment() {
             override fun onMyLocationClicked() {
 
 
-                setLocationList(){
-                    binding.textView.text = "[내 위치] $it"
-                    val coords = CoordinateDTO(it.region.area4.coords.center.y,it.region.area4.coords.center.x)
-                    coordinateData(textView,coords)
+                getMyLocation {
+                    if(it!=null){
+
+                        textView.text = "[내 위치] ${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
+                        val coords = CoordinateDTO(it.region.area4.coords.center.y,it.region.area4.coords.center.x)
+                        coordinateData(textView,coords)
+                    }
                 }
             }
 
@@ -270,25 +287,7 @@ class SearchLocationFragment:Fragment() {
         binding.addWaypoint.visibility = if (waypointCount < 5) View.VISIBLE else View.GONE    }
 
 
-    private fun setLocationList(callback : (Result) -> Unit){
-        // 내위치 가져오기
 
-        checkGrantAndGetLocation(){
-
-            if(it != null){
-
-                myArea = it.region.area2.name // 내 지역 데이터 저장
-
-                callback(it)
-            }else{
-                Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
-            }
-
-
-        }
-
-
-    }
     private fun checkGrantAndGetLocation(callback: (Result?) -> Unit) {
         val locationPermissionRequest =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
