@@ -33,6 +33,12 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
         currentLocation = LatLng(location.latidute, location.longitude)
     }
 
+    private var waypointTextView: TextView? = null
+
+    fun setWaypointTextView(textView: TextView) {
+        waypointTextView = textView
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,6 +71,8 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
         marker = Marker()
         marker.position = naverMap.cameraPosition.target
         marker.map = naverMap
+
+
 
         // 카메라 이동 이벤트 감지
         naverMap.addOnCameraChangeListener { _, _ ->
@@ -101,14 +109,19 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        fragmentSize(){
-
+        fragmentSize { deviceSizeDTO ->
             val params: ViewGroup.LayoutParams? = dialog?.window?.attributes
-            val deviceWidth = it.deviceWidth
+            val deviceWidth = deviceSizeDTO.deviceWidth
             params?.width = (deviceWidth * 0.9).toInt()
             dialog?.window?.attributes = params as WindowManager.LayoutParams
-        }
 
+            // 확인 버튼 클릭 시 주소 가져와서 텍스트 표시
+            binding.addressOk.setOnClickListener {
+                val address = getAddressFromLatLng(marker.position)
+                waypointTextView?.text = address
+                dismiss()
+            }
+        }
     }
 
     private fun fragmentSize(callback: (DeviceSizeDTO) -> Unit){
