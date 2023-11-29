@@ -18,6 +18,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.example.calcal.MainActivity
 import com.example.calcal.adapter.CourseListAdapter
 import com.example.calcal.adapter.LocationSearchAdapter
 import com.example.calcal.databinding.FragmentSearchLocationBinding
@@ -28,7 +30,11 @@ import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.Coords
 import com.example.calcal.modelDTO.ItemDTO
 import com.example.calcal.modelDTO.DeviceSizeDTO
+import com.example.calcal.repository.CourseRepository
+import com.example.calcal.repository.CourseRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.viewModel.CourseViewModel
+import com.example.calcal.viewModelFactory.CourseViewModelFactory
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationServices
@@ -38,8 +44,8 @@ import retrofit2.Response
 
 class SearchLocationFragment:Fragment() {
     private lateinit var binding : FragmentSearchLocationBinding
-    private lateinit var locationSearchAdapter: LocationSearchAdapter
-    private lateinit var courseListAdapter: CourseListAdapter
+
+    private lateinit var courseListAdapter: CourseListAdapter // DB에서 저장한 코스 리스트를 가져온다
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient //자동으로 gps값을 받아온다.
     private lateinit var locationCallback: LocationCallback //gps응답 값을 가져온다.
     private lateinit var selectLocation:List<LocationDTO>
@@ -53,32 +59,10 @@ class SearchLocationFragment:Fragment() {
 
     private lateinit var location_arrival: CoordinateDTO
     private var myArea:String = ""
-    /*private val locationPermissionRequest =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                // 권한이 허용되면 위치 정보 가져오기
-                   getMyLocation(){
-                       if(it != null){
-
-                           myArea = it.region.area2.name
-                           val actualAddress = "${it.region.area1.name} $myArea ${it.region.area3.name} ${it.region.area4.name}".trim()
-                           myLocation = it
-                           binding.departure.text = "[내 위치] $actualAddress"
-                           location_departure = CoordinateDTO(longitude = myLocation!!.region.area4.coords.center.x, latidute = myLocation!!.region.area4.coords.center.y)
-                       }else{
-                           Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
-                       }
-                   }
-
-
-            } else {
-                // 권한이 거부된 경우 적절히 처리
-                Log.d("$$", "위치 권한이 거부되었습니다.")
-
-
-                // 사용자에게 위치 권한이 필요한 이유를 설명해야함
-            }
-        }*/
+    
+    private val courseRepository: CourseRepository = CourseRepositoryImpl()
+    private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
+    private val viewModel: CourseViewModel by viewModels() { courseViewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -212,11 +196,28 @@ class SearchLocationFragment:Fragment() {
 
 
             val waypoints = arrayOf(departure,waypoint1Text, waypoint2Text, waypoint3Text, waypoint4Text, waypoint5Text,arrival)
-
+            // 위치 검색을 위한 DIALOG 열림
             waypoints.forEach { waypoint ->
                 waypoint.setOnClickListener{
                     openSearchAddressDialog(waypoint)
                 }
+            }
+
+            // location_departure 와 location_arrival이 설정되면 course_confirm 버튼 활성화
+
+
+
+            // ViewModel 사용
+            courseConfirm.setOnClickListener {
+                /*val courseList = mutableListOf<CoordinateDTO>()
+
+                if(location_departure != null){
+                    courseList.add(location_departure)
+                }else if(location_waypoint1 != null){
+                    courseList.add(location_waypoint1)
+                }else if(location_waypoint2 != null){
+                }
+                viewModel.saveCourse()*/
             }
         }
         return view
@@ -390,10 +391,19 @@ class SearchLocationFragment:Fragment() {
 
             override fun onFailure(call: Call<ReverseGeocodingResponseDTO>, t: Throwable) {
                 Log.d("$$","요청 실패 onFailure")
+
             }
         })
     }
+    override fun onResume() {
+        super.onResume()
+        (activity as? MainActivity)?.hideBottomNavigation()
+    }
 
+    override fun onPause() {
+        super.onPause()
+        (activity as? MainActivity)?.showBottomNavigation()
+    }
 
 }
 
