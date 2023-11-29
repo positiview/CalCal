@@ -58,7 +58,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
     interface OnItemClickListener {
         fun onItemClicked(itemDTO: ItemDTO)
 
-        fun onMyLocationClicked(myLocation: CoordinateDTO)
+        fun onMyLocationClicked()
     }
 
 
@@ -172,7 +172,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
 
             }
             directChooseMyLocation.setOnClickListener {
-                onItemClickListener?.onMyLocationClicked(locations)
+                onItemClickListener?.onMyLocationClicked()
                 dismiss()
             }
         }
@@ -223,8 +223,8 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                         for (address in addressList) {
                             val roadAddress = address.roadAddress
                             val jibunAddress = address.address
-                            val x = address.mapx
-                            val y = address.mapy
+                            val y = address.mapx
+                            val x = address.mapy
 
                             // 필요한 작업 수행
                             Log.d("$$","roadAddress: $roadAddress")
@@ -258,6 +258,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             val params: ViewGroup.LayoutParams? = dialog?.window?.attributes
             val deviceWidth = it.deviceWidth
             params?.width = (deviceWidth * 0.9).toInt()
+
             dialog?.window?.attributes = params as WindowManager.LayoutParams
         }
 
