@@ -8,6 +8,8 @@ import android.widget.Button
 import android.widget.ExpandableListView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import com.example.calcal.R
 import com.example.calcal.adapter.ExInfoExpandableListAdapter
 import com.example.calcal.databinding.FragmentExerciseInfoBinding
 
@@ -36,6 +38,10 @@ class ExerciseInfoFragment : Fragment() {
 
         val adapter = ExInfoExpandableListAdapter(requireContext(), list)
         binding.exerciseInfoRecycler.setAdapter(adapter)
+
+        binding.btnExPlus.setOnClickListener {
+            findNavController().navigate(R.id.action_exerciseInfoFragment_to_etcExerciseFragment)
+        }
 
         binding.exerciseInfoRecycler.setOnGroupExpandListener(object : ExpandableListView.OnGroupExpandListener {
             var previousGroup = -1

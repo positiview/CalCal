@@ -64,6 +64,8 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
         fun onItemClicked(itemDTO: ItemDTO)
 
         fun onMyLocationClicked()
+
+        fun onMapClicked()
     }
 
 
@@ -123,7 +125,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                         .addOnSuccessListener { location: Location? ->
                             Log.d("$$","내 위치 정보 location = $location")
                             if (location != null) {
-                                locations = CoordinateDTO(location.latitude,location.longitude)
+                                locations = CoordinateDTO(location.longitude,location.latitude)
                             }
                             Log.d("$$","CoordinateDTO locations = $locations")
 
@@ -142,7 +144,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                 .addOnSuccessListener { location: Location? ->
                     Log.d("$$","내 위치 정보 location = $location")
                     if (location != null) {
-                        locations = CoordinateDTO(location.latitude,location.longitude)
+                        locations = CoordinateDTO(location.longitude,location.latitude)
                     }
 //                    Log.d("$$","CoordinateDTO locations = $locations")
 
@@ -175,6 +177,10 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             }
             directChooseOnMap.setOnClickListener {
 
+
+                onItemClickListener?.onMapClicked()
+
+                dismiss()
             }
             directChooseMyLocation.setOnClickListener {
                 onItemClickListener?.onMyLocationClicked()
@@ -182,12 +188,22 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             }
         }
 
-        binding.directChooseOnMap.setOnClickListener {
+        /*binding.directChooseOnMap.setOnClickListener {
+
+
+
+
             val fragment = DirectSearchMapFragment<Any>()
-            fragment.setCurrentLocation(locations) // 현재 위치 정보를 전달
+
+            // 현재 위치 정보를 전달
+            fragment.setCurrentLocation(locations)
+
+            // 선택된 주소값을 DirectSearchMapFragment로 전달
+            fragment.setSelectedAddress(clickedTextView?.text.toString())
+
             fragment.show(parentFragmentManager, "DirectSearchMapFragment")
             dismiss()
-        }
+        }*/
         val waypointText: String? = clickedTextView?.text.toString()
         if (!waypointText.isNullOrEmpty()) {
             binding.searchQuery.setText(waypointText)

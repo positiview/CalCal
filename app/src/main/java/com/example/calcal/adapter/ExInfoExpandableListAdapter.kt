@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.calcal.R
 
@@ -54,7 +55,17 @@ class ExInfoExpandableListAdapter(
         val view = inflater.inflate(R.layout.list_group, parent, false) // 여기서 your_group_layout은 그룹 뷰에 해당하는 레이아웃 파일 이름입니다.
 
         val titleText = view.findViewById<TextView>(R.id.ex_info_title_text)
+        val titleBack = view.findViewById<LinearLayout>(R.id.ex_info_title)
+
         titleText.text = getGroup(groupPosition) as String
+
+        if (isExpanded) {
+            titleText.visibility = View.GONE
+            titleBack.visibility = View.GONE
+        } else {
+            titleText.visibility = View.VISIBLE
+            titleBack.visibility = View.VISIBLE
+        }
 
         return view
     }

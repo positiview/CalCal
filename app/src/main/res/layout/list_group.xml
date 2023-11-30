@@ -5,15 +5,16 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:layout_marginBottom="4dp">
 
     <!-- 여기에 기존의 제목 레이아웃 코드를 붙여넣습니다. -->
     <LinearLayout
         android:id="@+id/ex_info_title"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="4dp"
-
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/graph_back"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"

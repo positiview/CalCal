@@ -3,17 +3,25 @@ package com.example.calcal.subFrag
 import android.icu.lang.UCharacter.GraphemeClusterBreak.L
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMapBinding
+import com.example.calcal.modelDTO.CoordinateDTO
+import com.example.calcal.repository.CourseRepository
+import com.example.calcal.repository.CourseRepositoryImpl
+import com.example.calcal.util.Resource
+import com.example.calcal.viewModel.CourseViewModel
+import com.example.calcal.viewModelFactory.CourseViewModelFactory
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.LocationTrackingMode
@@ -32,6 +40,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mNaverMap: NaverMap
     private lateinit var uiSettings: UiSettings
     private lateinit var btn_back:ImageView
+
+    private val courseRepository: CourseRepository = CourseRepositoryImpl()
+    private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
+    private val viewModel: CourseViewModel by lazy {
+        ViewModelProvider(this, courseViewModelFactory).get(CourseViewModel::class.java)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -74,6 +89,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         btn_back = binding.btnBack
         btn_back.setOnClickListener {
             NavHostFragment.findNavController(this).navigateUp()
+        }
+
+        viewModel.getCourse.observe(viewLifecycleOwner) {
+            when (it) {
+                is Resource.Success -> {
+                    val courseList = it.data
+                    val courseName = courseList.courseName
+                    val coordLists : List<CoordinateDTO> = courseList.courseList
+
+                }
+
+                is Resource.Loading -> {
+                    // 로딩 중 처리
+                }
+
+                is Resource.Error -> {
+                    // 에러 처리
+                    Log.e("$$", "에러발생!!!")
+                }
+            }
         }
 
 

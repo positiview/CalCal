@@ -170,6 +170,9 @@
             android:id="@+id/action_mapFragment_to_searchLocationFragment"
             app:destination="@+id/searchLocationFragment"
             />
+        <action
+            android:id="@+id/action_mapFragment_to_timeFragment"
+            app:destination="@id/timeFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchLocationFragment"
@@ -207,9 +210,6 @@
             android:id="@+id/action_exercisestartFragment_to_exerciseInfoFragment"
             app:destination="@id/exerciseInfoFragment" />
         <action
-            android:id="@+id/action_exercisestartFragment_to_exerciseInfoFragment2"
-            app:destination="@id/exerciseInfoFragment" />
-        <action
             android:id="@+id/navi_mypage"
             app:destination="@id/mypageFragment" />
         <action
@@ -221,6 +221,13 @@
         <action
             android:id="@+id/navi_calendar"
             app:destination="@id/calendarFragment" />
+        <action
+            android:id="@+id/action_exercisestartFragment_to_fragment_search_location"
+            app:destination="@id/searchLocationFragment" />
+        <action
+            android:id="@+id/action_exercisestartFragment_to_timeFragment"
+            app:destination="@id/timeFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/exerciseInfoFragment"
@@ -282,5 +289,14 @@
         android:name="com.example.calcal.subFrag.EtcExerciseFragment"
         android:label="fragment_etc_exercise"
         tools:layout="@layout/fragment_etc_exercise" />
+    <fragment
+        android:id="@+id/timeFragment"
+        android:name="com.example.calcal.subFrag.TimeFragment"
+        android:label="fragment_time"
+        tools:layout="@layout/fragment_time" >
+        <action
+            android:id="@+id/action_timeFragment_to_graphFragment"
+            app:destination="@id/graphFragment" />
+    </fragment>
 
 </navigation>

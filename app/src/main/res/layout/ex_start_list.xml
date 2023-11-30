@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp">
+
+    <TextView
+        android:id="@+id/ex_start_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:text="시간당 예상 칼로리" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="bottom">
+        <TextView
+            android:id="@+id/ex_start_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="TextView"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"/>
+        <Button
+            android:id="@+id/btn_ex_start_cal"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:background="@drawable/graph_back"
+            android:text="200kcal"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            />
+    </LinearLayout>
+
+</LinearLayout>
