@@ -295,7 +295,8 @@ class SearchLocationFragment:Fragment() {
 
     // 어댑터뷰 리스트 목록을 클릭하면 동작...
     fun onItemClick(courseList: CourseListDTO){
-
+        viewModel.getPlaceList(courseList)
+        findNavController().navigateUp() // 추후 수정
 
     }
 

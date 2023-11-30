@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.calcal.R
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.repository.CourseRepository
@@ -18,6 +19,10 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
     private val _getCourse : MutableLiveData<Resource<List<CourseListDTO>?>> = MutableLiveData()
 
     val getCourse : LiveData<Resource<List<CourseListDTO>?>> get() = _getCourse
+
+    private val _getPlaceList : MutableLiveData<CourseListDTO> = MutableLiveData()
+
+    val getPlaceList : LiveData<CourseListDTO> get() =_getPlaceList
 
 
 
@@ -84,6 +89,10 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
                 _getCourse.value = Resource.Error(e.message.toString())
             }
         }
+    }
+
+    fun getPlaceList(selectedPlaceList:CourseListDTO){
+        _getPlaceList.value = selectedPlaceList
     }
 
 }
