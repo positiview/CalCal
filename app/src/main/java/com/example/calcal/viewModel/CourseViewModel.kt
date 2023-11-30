@@ -10,30 +10,79 @@ import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.repository.CourseRepository
 import com.example.calcal.util.Resource
 import kotlinx.coroutines.launch
+import java.util.Collections.addAll
 
 class CourseViewModel(private val repository: CourseRepository): ViewModel() {
 
 
-    private val _getCourse : MutableLiveData<Resource<CourseListDTO>> = MutableLiveData()
+    private val _getCourse : MutableLiveData<Resource<List<CourseListDTO>?>> = MutableLiveData()
 
-    val getCourse : LiveData<Resource<CourseListDTO>> get() = _getCourse
-
-
+    val getCourse : LiveData<Resource<List<CourseListDTO>?>> get() = _getCourse
 
 
-    fun saveCourse(courseName:String, courseList:List<CoordinateDTO>){
+
+
+    fun saveCourse(courseName:String, placeList:List<CoordinateDTO>){
+        Log.d("$$","saveCourse 에 접근")
         viewModelScope.launch {
-            _getCourse.value = Resource.Loading
+
             try{
-                repository.saveCourse(courseName, courseList) {
-                    Log.d("$$","saveCourse 부분 $it")
-                    _getCourse.value = it
+                repository.saveCourse(courseName, placeList) {
+                    val currentResource: Resource<List<CourseListDTO>?> = _getCourse.value ?: Resource.Success(emptyList())
+                    val currentList: List<CourseListDTO>? =
+                        when (currentResource) {
+                        is Resource.Success -> currentResource.data
+                        else -> emptyList()
+                    }
+
+                    val transformedResource: Resource<List<CourseListDTO>> = when (it) {
+                        is Resource.Success -> {
+                            // Success인 경우, 데이터를 리스트에 감싸서 새로운 Success를 생성
+
+                            Resource.Success( (currentList ?: emptyList()) + it.data)
+                        }
+                        is Resource.Error -> {
+                            // Error인 경우, 그대로 전달
+                            Resource.Error(it.string)
+                        }
+                        is Resource.Loading -> {
+                            Resource.Loading
+                        }
+                    }
+
+                    _getCourse.value = transformedResource
                 }
             }catch (e:Exception){
                 _getCourse.value = Resource.Error(e.message.toString())
             }
 
 
+        }
+    }
+
+    fun getCourse(){
+        viewModelScope.launch {
+            _getCourse.value = Resource.Loading
+            try{
+                repository.getCourse(){
+                    _getCourse.value = it
+                }
+            }catch (e:Exception){
+                _getCourse.value = Resource.Error(e.message.toString())
+            }
+        }
+    }
+
+    fun delete(cid:Long){
+        viewModelScope.launch {
+            _getCourse.value = Resource.Loading
+            try{
+                repository.getCourse(){
+                    _getCourse.value = it
+                }
+            }catch (e:Exception){
+                _getCourse.value = Resource.Error(e.message.toString())
+            }
         }
     }
 

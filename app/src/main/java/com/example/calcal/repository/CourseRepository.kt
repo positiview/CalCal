@@ -7,4 +7,8 @@ import com.example.calcal.util.Resource
 interface CourseRepository {
 
     suspend fun saveCourse(courseName:String, courseList: List<CoordinateDTO>, result: (Resource<CourseListDTO>) -> Unit)
+
+    suspend fun getCourse(result: (Resource<List<CourseListDTO>?>)->Unit)
+
+    suspend fun deleteCourse(num: Int)
 }

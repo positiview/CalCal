@@ -1,6 +1,5 @@
 package com.example.calcal.subFrag
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.L
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
@@ -8,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
@@ -95,8 +93,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             when (it) {
                 is Resource.Success -> {
                     val courseList = it.data
-                    val courseName = courseList.courseName
-                    val coordLists : List<CoordinateDTO> = courseList.courseList
+
 
                 }
 

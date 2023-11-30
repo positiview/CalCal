@@ -1,6 +1,7 @@
 package com.example.calcal.modelDTO
 
 data class CourseListDTO(
+    var cid:Long,
     var courseName:String,
-    var courseList: List<CoordinateDTO>
+    var placeList: List<CoordinateDTO>
 )

@@ -1,43 +1,36 @@
 package com.example.calcal.subFrag
 
-import DirectSearchMapFragment
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Point
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.calcal.MainActivity
 import com.example.calcal.adapter.CourseListAdapter
-import com.example.calcal.adapter.LocationSearchAdapter
 import com.example.calcal.databinding.FragmentSearchLocationBinding
 import com.example.calcal.modelDTO.LocationDTO
 import com.example.calcal.modelDTO.Result
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.CoordinateDTO
-import com.example.calcal.modelDTO.Coords
 import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.modelDTO.ItemDTO
-import com.example.calcal.modelDTO.DeviceSizeDTO
 import com.example.calcal.repository.CourseRepository
 import com.example.calcal.repository.CourseRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.CourseViewModel
 import com.example.calcal.viewModelFactory.CourseViewModelFactory
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -67,10 +60,10 @@ class SearchLocationFragment:Fragment() {
     
     private val courseRepository: CourseRepository = CourseRepositoryImpl()
     private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
-    private val viewModel: CourseViewModel by lazy {
-        ViewModelProvider(this, courseViewModelFactory)[CourseViewModel::class.java]
-    }
-//    private val viewModel: CourseViewModel by viewModels() { courseViewModelFactory }
+//    private val viewModel: CourseViewModel by lazy {
+//        ViewModelProvider(this, courseViewModelFactory)[CourseViewModel::class.java]
+//    }
+    private val viewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -109,10 +102,30 @@ class SearchLocationFragment:Fragment() {
 
        /* val layoutManager = GridLayoutManager(requireContext(), 1)
         binding.selectedLocation.layoutManager = layoutManager*/
+        val recyclerView = binding.courseList
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        // 코스 목록 관찰
+        viewModel.getCourse.observe(viewLifecycleOwner){
+            when(it){
+                is Resource.Loading->{
+
+                }
+                is Resource.Success->{
+                    if(it.data != null){
+                        courseListAdapter = CourseListAdapter(it.data.toMutableList(),this)
+                        recyclerView.adapter = courseListAdapter
+                    }
+                }
+                else->{
+
+                }
 
 
+            }
+        }
 
-
+        // 버튼들
         binding.apply{
             btnSwitch.setOnClickListener {
                 val temp = departure.text
@@ -227,39 +240,41 @@ class SearchLocationFragment:Fragment() {
                 }
             }
 
-            // location_departure 와 location_arrival이 설정되면 course_confirm 버튼 활성화
+
 
 
             // ViewModel 사용 ,
 
             courseConfirm.setOnClickListener {
-                val courseList = mutableListOf<CoordinateDTO>()
+                val placeList = mutableListOf<CoordinateDTO>()
 
                 if(location_departure != null){
-                    courseList.add(location_departure!!)
+                    placeList.add(location_departure!!)
                 }
                 if(location_waypoint1 != null){
-                    courseList.add(location_waypoint1!!)
+                    placeList.add(location_waypoint1!!)
                 }
                 if(location_waypoint2 != null){
-                    courseList.add(location_waypoint2!!)
+                    placeList.add(location_waypoint2!!)
                 }
                 if(location_waypoint3 != null){
-                    courseList.add(location_waypoint3!!)
+                    placeList.add(location_waypoint3!!)
                 }
                 if(location_waypoint4 != null){
-                    courseList.add(location_waypoint4!!)
+                    placeList.add(location_waypoint4!!)
                 }
                 if(location_waypoint5 != null){
-                    courseList.add(location_waypoint5!!)
+                    placeList.add(location_waypoint5!!)
                 }
                 if(location_arrival != null){
-                    courseList.add(location_arrival!!)
+                    placeList.add(location_arrival!!)
                 }
-                val courseName = binding.courseEdit.text.toString()
-                viewModel.saveCourse(courseName,courseList)
-                Log.d("$$","저장 버튼 누름")
-                findNavController().navigateUp()
+
+                val courseName = binding.courseEdit.text.toString().takeIf { it.isNotBlank() } ?: "내 코스"
+                Log.d("$$","저장 버튼 누름 / 코스이름 $courseName")
+
+                viewModel.saveCourse(courseName,placeList)
+                findNavController().navigateUp() // <-- 향후 수정 필요
             }
         }
         return view

@@ -2,6 +2,7 @@ package com.example.calcal.request
 
 import com.example.calcal.modelDTO.ChannelDTO
 import com.example.calcal.modelDTO.CoordinateDTO
+import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.TestDTO
@@ -27,9 +28,12 @@ interface ApiService {
 
     @POST("course/save")
     fun saveCourseList(
-        @Body courseName: String,
+        @Query("courseName") courseName: String,
         @Body courseList: List<CoordinateDTO>
     ): Call<String>
+
+    @GET("course/getList")
+    fun getCourseList():Call<List<CourseListDTO>>
 
     @GET("v1/search/local.json")
     fun searchLocation(

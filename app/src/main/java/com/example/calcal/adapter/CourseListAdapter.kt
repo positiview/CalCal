@@ -3,6 +3,7 @@ package com.example.calcal.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.calcal.R
 import com.example.calcal.modelDTO.CourseListDTO
@@ -12,6 +13,8 @@ class CourseListAdapter(private val courseList: MutableList<CourseListDTO>, priv
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view), View.OnClickListener{
 
+        private val courseName: TextView = view.findViewById(R.id.course_name)
+        private val courseSummary : TextView = view.findViewById(R.id.course_summary)
 
         init{
             view.setOnClickListener(this)
@@ -25,6 +28,8 @@ class CourseListAdapter(private val courseList: MutableList<CourseListDTO>, priv
         }
 
         fun bind(cList:CourseListDTO){
+            courseName.text = cList.courseName
+            courseSummary.text = cList.placeList.size.toString()+"개 루트"
 
         }
     }
@@ -44,7 +49,5 @@ class CourseListAdapter(private val courseList: MutableList<CourseListDTO>, priv
         holder.bind(cList)
     }
 
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getItemCount(): Int = courseList.size
 }
