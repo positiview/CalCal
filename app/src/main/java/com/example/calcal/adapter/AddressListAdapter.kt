@@ -10,13 +10,14 @@ import com.example.calcal.R
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.ItemDTO
 import com.example.calcal.subFrag.SearchAddressDialog
+import com.naver.maps.geometry.LatLng
 import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class AddressListAdapter(private val address: MutableList<ItemDTO>, private val location: CoordinateDTO, private val listener: SearchAddressDialog): RecyclerView.Adapter<AddressListAdapter.ViewHolder>() {
+class AddressListAdapter(private val address: MutableList<ItemDTO>, private val location: LatLng, private val listener: SearchAddressDialog): RecyclerView.Adapter<AddressListAdapter.ViewHolder>() {
 
 
 
@@ -35,11 +36,10 @@ class AddressListAdapter(private val address: MutableList<ItemDTO>, private val 
                 listener.onItemClick(address[position])
             }
         }
-        fun bind(addressDTO: ItemDTO,location: CoordinateDTO){
+        fun bind(addressDTO: ItemDTO,location: LatLng){
             placeTitleTextView.text = addressDTO.title
             roadAddress.text = addressDTO.roadAddress
-            Log.d("$$","location x : ${location.latidute} location y : ${location.longitude}")
-            distance.text = haversine(location.latidute,location.longitude,addressDTO.mapy.toDouble(),addressDTO.mapx.toDouble()).toString()+"km"
+            distance.text = haversine(location.latitude,location.longitude,addressDTO.mapy.toDouble(),addressDTO.mapx.toDouble()).toString()+"km"
             Log.d("$$","distance 값 : ${distance.text}")
 
         }
