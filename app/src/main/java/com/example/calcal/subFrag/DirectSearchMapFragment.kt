@@ -33,6 +33,7 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
     private lateinit var addressTextView: TextView
     private var currentLocation: LatLng? = null
     private var selectedAddress: String? = null
+    private var selectedLocation: LatLng? = null
 
 
     fun setItemDTO(item: ItemDTO) {
@@ -40,15 +41,15 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
         Log.d("$$","wetfwsfewsfffffffffffffffffO = $item")
     }
 
-    fun setSelectedAddress(address: String) {
+   /* fun setSelectedAddress(address: String) {
         selectedAddress = address
 
         Log.d("$$","qqqqqqqqqqqqqqqqqqq = $address") //장소명
-    }
+    }*/
 
 
-    fun setCurrentLocation(location: CoordinateDTO) {
-        currentLocation = LatLng(location.longitude, location.latidute)
+    fun setCurrentLocation(location: LatLng) {
+        currentLocation = LatLng(location.longitude, location.latitude)
         Log.d("$$","aaaaaaaaaaaaaaaaaaa = $location") // 내위치
     }
 
@@ -86,11 +87,16 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
         mapFragment.getMapAsync(this)
 
-        // Arguments로부터 전달된 주소값을 가져옴
-        val selectedAddress = arguments?.getString("selectedAddress")
+//        // Arguments로부터 전달된 주소값을 가져옴
+//        val selectedAddress = arguments?.getString("selectedAddress")
 
 
         addressTextView = binding.addressTextView
+        if (selectedAddress != null) {
+            addressTextView.text = selectedAddress
+        }
+
+
 
         return binding.root
     }
@@ -122,7 +128,8 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
 //                16.0
 //            )
 //            naverMap.cameraPosition = cameraPosition
-        val latLng = selectedAddress?.let { getLatLngFromAddress(it) } // 검색된 주소를 좌표로 변환
+        /*val latLng = selectedAddress?.let { getLatLngFromAddress(it) } // 검색된 주소를 좌표로 변환*/
+        val latLng = selectedLocation?:currentLocation
         val cameraPosition = latLng?.let { CameraPosition(it, 16.0) } // 변환된 좌표를 중심으로 카메라 위치 설정
         if (cameraPosition != null) {
             naverMap.cameraPosition = cameraPosition
@@ -174,5 +181,14 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
         val deviceSizeDTO = DeviceSizeDTO(deviceWidth = size.x, deviceHeight = size.y)
         callback(deviceSizeDTO)
 
+    }
+
+    fun setLocationAndAddress(coordinateDTO: CoordinateDTO?) {
+        if (coordinateDTO != null) {
+            selectedAddress = coordinateDTO.addressName
+        }
+        if (coordinateDTO != null) {
+            selectedLocation = LatLng(coordinateDTO.latidute,coordinateDTO.longitude)
+        }
     }
 }
