@@ -65,7 +65,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 fm.beginTransaction().add(R.id.map, it).commit()
             }
 
-//        mapFragment.getMapAsync(this)
+        mapFragment.getMapAsync(this)
 
 
         locationSource =
@@ -97,7 +97,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         val marker = Marker() // 지도에 마커 표시
         viewModel.getPlaceList.observe(viewLifecycleOwner) {result ->
-
+            Log.d("$$","getPlaceList LiveData 사용")
             lateinit var start : LatLng
             lateinit var end :LatLng
             var waypoint1 :LatLng? = null
@@ -206,7 +206,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mNaverMap.locationSource = locationSource
         uiSettings = naverMap.uiSettings
         uiSettings.isLocationButtonEnabled = false
-        val locationButtonView: LocationButtonView = binding.locationView
+        val locationButtonView: LocationButtonView = binding.mylocationView
         locationButtonView.map = mNaverMap
         // 초기 위치 설정
         mNaverMap.locationTrackingMode = LocationTrackingMode.Follow
@@ -214,7 +214,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mNaverMap.addOnLocationChangeListener(object : NaverMap.OnLocationChangeListener {
             override fun onLocationChange(location: Location) {
                 initialPosition = LatLng(location.latitude, location.longitude)
-
+                Log.d("$$","onLocationChange 발동!")
                 // 내 위치를 설정한 후에 리스너를 제거
                 mNaverMap.removeOnLocationChangeListener(this)
             }

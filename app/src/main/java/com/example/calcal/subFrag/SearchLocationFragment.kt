@@ -19,6 +19,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.calcal.MainActivity
+import com.example.calcal.R
 import com.example.calcal.adapter.CourseListAdapter
 import com.example.calcal.databinding.FragmentSearchLocationBinding
 import com.example.calcal.modelDTO.LocationDTO
@@ -39,6 +40,7 @@ import com.google.android.gms.location.LocationServices
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Integer.min
 
 class SearchLocationFragment:Fragment() {
     private lateinit var binding : FragmentSearchLocationBinding
@@ -57,6 +59,7 @@ class SearchLocationFragment:Fragment() {
 
     private var location_arrival: CoordinateDTO? = null
     private var myArea:String = ""
+    private var selectedPlaceOrNot: Boolean = false
     
     private val courseRepository: CourseRepository = CourseRepositoryImpl()
     private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
@@ -78,23 +81,54 @@ class SearchLocationFragment:Fragment() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
 
+        Log.d("$$", "viewmodel.getPlaceList : ${viewModel.getPlaceList}")
+        if(selectedPlaceOrNot){
+            viewModel.getPlaceList.observe(viewLifecycleOwner){
+                when(it.placeList.size){
+                    in 2 .. 7 ->{
+                        binding.courseEdit.setText(it.courseName)
+                        binding.departure.text = it.placeList[0].addressName
+                        location_departure = CoordinateDTO(it.placeList[0].addressName,it.placeList[0].longitude,it.placeList[0].latidute)
+                        binding.arrival.text = it.placeList.last().addressName
+                        location_arrival = CoordinateDTO(it.placeList.last().addressName,it.placeList.last().longitude,it.placeList.last().latidute)
 
-        checkGrantAndGetLocation(){
+                        for(i in 1 until it.placeList.size-1){
+                            val addressName = it.placeList[i].addressName
+                            val coordinate = CoordinateDTO(it.placeList[i].addressName,it.placeList[i].longitude,it.placeList[i].latidute)
+                            when(i){
+                                1 -> {
+                                    binding.waypoint1Text.text = addressName
+                                    location_waypoint1 = coordinate
+                                }
+                                2 -> {
+                                    binding.waypoint2Text.text = addressName
+                                    location_waypoint2 = coordinate
+                                }
+                                3 -> {
+                                    binding.waypoint3Text.text = addressName
+                                    location_waypoint3 = coordinate
+                                }
+                                4 -> {
+                                    binding.waypoint4Text.text = addressName
+                                    location_waypoint4 = coordinate
+                                }
+                                5 -> {
+                                    binding.waypoint5Text.text = addressName
+                                    location_waypoint5 = coordinate
+                                }
+                            }
+                        }
 
-            if(it != null){
+                    }
+                    else->{
 
-                myArea = it.region.area2.name // 내 지역 데이터 저장
+                    }
+                }
 
-                val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
 
-                binding.departure.text = "[내 위치] $actualAddress"
-                location_departure = CoordinateDTO(longitude = it.region.area1.coords.center.x, latidute = it.region.area1.coords.center.y)
-                Log.d("$$","00 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
-
-            }else{
-                Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
             }
-
+        }else{
+            checkGrantAndGetMyLocation()
 
         }
         Log.d("$$"," selectLocation 값 : $selectLocation")
@@ -127,6 +161,7 @@ class SearchLocationFragment:Fragment() {
 
         // 버튼들
         binding.apply{
+            // 출발 도착 변경 스위치
             btnSwitch.setOnClickListener {
                 val temp = departure.text
                 val temp2 = location_departure
@@ -136,6 +171,7 @@ class SearchLocationFragment:Fragment() {
                 location_arrival = temp2
 
             }
+            // 왕복 입력 스위치 //수정 필요
             btnRoundTrip.setOnClickListener {
                 if(arrival.text != null && arrival.text != departure.text){
 
@@ -170,14 +206,12 @@ class SearchLocationFragment:Fragment() {
                     location_arrival= location_departure
                 }
 
-
-
-
+                updateAddWaypointVisibility(waypointCount)
 
             }
 
-            updateAddWaypointVisibility(waypointCount)
 
+            // 경유지 추가 버튼
             addWaypoint.setOnClickListener {
                 waypointCount++
                 updateAddWaypointVisibility(waypointCount)
@@ -187,7 +221,7 @@ class SearchLocationFragment:Fragment() {
 
             }
 
-
+            // 경유지1 취소 버튼
             waypoint1Cancel.setOnClickListener {
                 waypoint1.visibility = View.GONE
                 waypoint1Text.hint = "[경유지]"
@@ -196,6 +230,7 @@ class SearchLocationFragment:Fragment() {
                 waypointCount--
                 updateAddWaypointVisibility(waypointCount)
             }
+            // 경유지2 취소 버튼
             waypoint2Cancel.setOnClickListener {
                 waypoint2.visibility = View.GONE
                 waypoint2Text.hint = "[경유지]"
@@ -204,6 +239,7 @@ class SearchLocationFragment:Fragment() {
                 waypointCount--
                 updateAddWaypointVisibility(waypointCount)
             }
+            // 경유지3 취소 버튼
             waypoint3Cancel.setOnClickListener {
                 waypoint3.visibility = View.GONE
                 waypoint3Text.hint = "[경유지]"
@@ -212,6 +248,7 @@ class SearchLocationFragment:Fragment() {
                 waypointCount--
                 updateAddWaypointVisibility(waypointCount)
             }
+            // 경유지4 취소 버튼
             waypoint4Cancel.setOnClickListener {
                 waypoint4.visibility = View.GONE
                 waypoint4Text.hint = "[경유지]"
@@ -221,6 +258,7 @@ class SearchLocationFragment:Fragment() {
                 updateAddWaypointVisibility(waypointCount)
 
             }
+            // 경유지5 취소 버튼
             waypoint5Cancel.setOnClickListener {
                 waypoint5.visibility = View.GONE
                 waypoint5Text.hint = "[경유지]"
@@ -230,7 +268,7 @@ class SearchLocationFragment:Fragment() {
                 updateAddWaypointVisibility(waypointCount)
             }
 
-
+            // 경유지 주소 선택 버튼 --> 해당 SearchAddressDialog 열림
             val waypoints = arrayOf(departure,waypoint1Text, waypoint2Text, waypoint3Text, waypoint4Text, waypoint5Text,arrival)
             // 위치 검색을 위한 DIALOG 열림
             waypoints.forEach { waypoint ->
@@ -240,11 +278,7 @@ class SearchLocationFragment:Fragment() {
                 }
             }
 
-
-
-
-            // ViewModel 사용 ,
-
+            // 코스 확인 및 저장 버튼
             courseConfirm.setOnClickListener {
                 val placeList = mutableListOf<CoordinateDTO>()
 
@@ -272,34 +306,29 @@ class SearchLocationFragment:Fragment() {
 
                 val courseName = binding.courseEdit.text.toString().takeIf { it.isNotBlank() } ?: "내 코스"
                 Log.d("$$","저장 버튼 누름 / 코스이름 $courseName")
-
+                selectedPlaceOrNot = true
                 viewModel.saveCourse(courseName,placeList)
-                findNavController().navigateUp() // <-- 향후 수정 필요
+                findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment) // <-- 향후 수정 필요
             }
         }
         return view
     }
 
-   /* private fun checkBtnRoundTrip() {
-        if(binding.departure.text.isEmpty()){
-            binding.btnRoundTrip.visibility = View.GONE
-        } else {
-            binding.btnRoundTrip.visibility = View.VISIBLE
-        }
-    }*/
 
+    // 출발 도착 주소 설정시, 확인 버튼 활성화
     private fun courseConfirmBtnEnableCheck() {
         binding.courseConfirm.isEnabled = location_departure !=null && location_arrival !=null
     }
 
 
-    // 어댑터뷰 리스트 목록을 클릭하면 동작...
+    // 저장된 리스트 목록을 클릭하면 동작...
     fun onItemClick(courseList: CourseListDTO){
         viewModel.getPlaceList(courseList)
-        findNavController().navigateUp() // 추후 수정
+        findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment) // 추후 추가 작업 및 수정 필요 할수도..?
 
     }
 
+    // 지역 검색을 위한 다이아로그 활성화
     private fun openSearchAddressDialog(textView: TextView) {
         val searchAddressDialog = SearchAddressDialog(myArea)
         searchAddressDialog.setWaypointTextView(textView)
@@ -307,7 +336,7 @@ class SearchLocationFragment:Fragment() {
             override fun onItemClicked(itemDTO: ItemDTO) {
                 Log.d("$$","onItemClicked 설정 textView = $textView , itemDTO = $itemDTO")
                 textView.text = itemDTO.title
-                val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000)
+                val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000, addressName = itemDTO.roadAddress)
                 coordinateData(textView,coords)
                 courseConfirmBtnEnableCheck()
                 Log.d("$$","33 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
@@ -320,7 +349,7 @@ class SearchLocationFragment:Fragment() {
                     if(it!=null){
 
                         textView.text = "[내 위치] ${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
-                        val coords = CoordinateDTO(it.region.area4.coords.center.x,it.region.area4.coords.center.y)
+                        val coords = CoordinateDTO(longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y, addressName = textView.text.toString())
                         coordinateData(textView,coords)
                         courseConfirmBtnEnableCheck()
                         Log.d("$$","44 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
@@ -355,6 +384,7 @@ class SearchLocationFragment:Fragment() {
 
     }
 
+    // 해당 좌표 저장
     private fun coordinateData(textView: TextView, coordinateDTO: CoordinateDTO) {
         val viewIdName = resources.getResourceEntryName(textView.id)
         Log.d("$$", "textView id 값 : $viewIdName")
@@ -388,13 +418,30 @@ class SearchLocationFragment:Fragment() {
 
 
 
-    private fun checkGrantAndGetLocation(callback: (Result?) -> Unit) {
+    // 내위치 권한 및 정보 가져오기
+    private fun checkGrantAndGetMyLocation() {
+
         val locationPermissionRequest =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
                 // 권한이 허용되면 위치 정보 가져오기
                 getMyLocation(){
-                    callback(it)
+                    if(it != null){
+
+                        myArea = it.region.area2.name // 내 지역 데이터 저장
+
+                        val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
+
+                        binding.departure.text = "[내 위치] $actualAddress"
+                        location_departure = CoordinateDTO(longitude = it.region.area1.coords.center.x, latidute = it.region.area1.coords.center.y, addressName = actualAddress)
+                        Log.d("$$","00 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
+
+                    }else{
+                        Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
+                    }
+
+
+
                 }
 
 
@@ -417,8 +464,20 @@ class SearchLocationFragment:Fragment() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             getMyLocation(){
+                if(it != null){
 
-                callback(it)
+                    myArea = it.region.area2.name // 내 지역 데이터 저장
+
+                    val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
+
+                    binding.departure.text = "[내 위치] $actualAddress"
+                    location_departure = CoordinateDTO(longitude = it.region.area1.coords.center.x, latidute = it.region.area1.coords.center.y, addressName = actualAddress)
+                    Log.d("$$","00 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
+
+                }else{
+                    Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
+                }
+
             }
 
         }else{
@@ -453,6 +512,7 @@ class SearchLocationFragment:Fragment() {
 
     }
 
+    // 지역검색 API
     private fun getAddressName(location: Location?, callback: (List<Result>) -> Unit ) {
         Log.d("$$","getAddressName 주소 정보 요청 location : $location")
         val apiKeyId = "clurvbfncz"

@@ -37,7 +37,7 @@ class MainFragment : Fragment() {
         binding = FragmentMainBinding.inflate(inflater, container, false) // 뷰 바인딩 초기화
 
         binding.mapMain.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_mapFragment)
+            findNavController().navigate(R.id.action_mainFragment_to_searchLocationFragment)
         }
 
 

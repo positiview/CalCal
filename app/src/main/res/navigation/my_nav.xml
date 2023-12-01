@@ -35,8 +35,8 @@
         app:popUpTo="@id/mainFragment"
         app:popUpToInclusive="false"/>
     <action
-        android:id="@+id/action_mainFragment_to_mapFragment"
-        app:destination="@id/mapFragment"
+        android:id="@+id/action_mainFragment_to_searchLocationFragment"
+        app:destination="@id/searchLocationFragment"
         app:launchSingleTop="true"
         app:popUpTo="@id/mainFragment"
         app:popUpToInclusive="false"/>
@@ -170,8 +170,8 @@
         >
 
       <action
-          android:id="@+id/action_searchLocationFragment_to_searchAddressFragment"
-          app:destination="@+id/searchAddressFragment"
+          android:id="@+id/action_searchlocationFragment_to_mapFragment"
+          app:destination="@+id/mapFragment"
        />
     </fragment>
     <fragment
