@@ -340,7 +340,7 @@ class SearchLocationFragment:Fragment() {
                 Log.d("$$","onItemClicked 설정 textView = $textView , itemDTO = $itemDTO")
                 textView.text = itemDTO.title
                 val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000, addressName = itemDTO.roadAddress)
-                coordinateData(textView,coords)
+                coordinateData(index,coords)
                 courseConfirmBtnEnableCheck()
                 Log.d("$$","33 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
             }
@@ -353,7 +353,7 @@ class SearchLocationFragment:Fragment() {
 
                         textView.text = "[내 위치] ${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
                         val coords = CoordinateDTO(longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y, addressName = textView.text.toString())
-                        coordinateData(textView,coords)
+                        coordinateData(index,coords)
                         courseConfirmBtnEnableCheck()
                         Log.d("$$","44 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
                     }
@@ -413,29 +413,28 @@ class SearchLocationFragment:Fragment() {
     }
 
     // 해당 좌표 저장
-    private fun coordinateData(textView: TextView, coordinateDTO: CoordinateDTO) {
-        val viewIdName = resources.getResourceEntryName(textView.id)
-        Log.d("$$", "textView id 값 : $viewIdName")
-        when(viewIdName){
-            "departure" ->{
+    private fun coordinateData(index: Int, coordinateDTO: CoordinateDTO) {
+
+        when(index){
+            0 ->{
                 location_departure = coordinateDTO
             }
-            "waypoint1Text"->{
+            1->{
                 location_waypoint1 = coordinateDTO
             }
-            "waypoint2Text"->{
+            2->{
                 location_waypoint2 = coordinateDTO
             }
-            "waypoint3Text"->{
+            3->{
                 location_waypoint3 = coordinateDTO
             }
-            "waypoint4Text"->{
+            4->{
                 location_waypoint4 = coordinateDTO
             }
-            "waypoint5Text"->{
+            5->{
                 location_waypoint5 = coordinateDTO
             }
-            "arrival"->{
+            6->{
                 location_arrival = coordinateDTO
             }
         }
