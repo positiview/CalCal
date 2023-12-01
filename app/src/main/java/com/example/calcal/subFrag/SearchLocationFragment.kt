@@ -1,5 +1,6 @@
 package com.example.calcal.subFrag
 
+import DirectSearchMapFragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -37,10 +38,10 @@ import com.example.calcal.viewModelFactory.CourseViewModelFactory
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationServices
+import com.naver.maps.geometry.LatLng
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Integer.min
 
 class SearchLocationFragment:Fragment() {
     private lateinit var binding : FragmentSearchLocationBinding
@@ -271,9 +272,11 @@ class SearchLocationFragment:Fragment() {
             // 경유지 주소 선택 버튼 --> 해당 SearchAddressDialog 열림
             val waypoints = arrayOf(departure,waypoint1Text, waypoint2Text, waypoint3Text, waypoint4Text, waypoint5Text,arrival)
             // 위치 검색을 위한 DIALOG 열림
-            waypoints.forEach { waypoint ->
+
+
+            waypoints.forEachIndexed() {index, waypoint ->
                 waypoint.setOnClickListener{
-                    openSearchAddressDialog(waypoint)
+                    openSearchAddressDialog(waypoint,index)
 
                 }
             }
@@ -329,7 +332,7 @@ class SearchLocationFragment:Fragment() {
     }
 
     // 지역 검색을 위한 다이아로그 활성화
-    private fun openSearchAddressDialog(textView: TextView) {
+    private fun openSearchAddressDialog(textView: TextView, index: Int) {
         val searchAddressDialog = SearchAddressDialog(myArea)
         searchAddressDialog.setWaypointTextView(textView)
         searchAddressDialog.setOnItemClickListener(object : SearchAddressDialog.OnItemClickListener {
@@ -357,28 +360,53 @@ class SearchLocationFragment:Fragment() {
                 }
             }
 
-            override fun onMapClicked() {
+            override fun onMapClicked(coordinateDTO: CoordinateDTO?, locations: LatLng) { // 선택한 위치 정보(주소와 좌표)와 내위치 좌표
 
-                /*textView.text = ""
-                val coords = CoordinateDTO()
-                coordinateData(textView,coords)*/
+                val fragment = DirectSearchMapFragment()
 
-                /*val fragment = DirectSearchMapFragment<Any>()
+
+                // 선택된 주소이름 위치정보를 전달
+                fragment.setLocationAndAddress(coordinateDTO)
 
                 // 현재 위치 정보를 전달
                 fragment.setCurrentLocation(locations)
 
-                // 선택된 주소값을 DirectSearchMapFragment로 전달
-                fragment.setSelectedAddress(clickedTextView?.text.toString())
 
-                fragment.show(parentFragmentManager, "DirectSearchMapFragment")*/
+
+
+
+                // selectedItemDTO를 Bundle에 담아서 DirectSearchMapFragment로 전달
+                /*selectedItemDTO?.let {
+                    val bundle = Bundle()
+                    bundle.putParcelable("itemDTO", it)
+                    fragment.arguments = bundle
+                }*/
+
+                fragment.show(parentFragmentManager, "DirectSearchMapFragment")
+
 
             }
 
 
         })
 
-        searchAddressDialog.setClickedTextView(textView)
+
+        val clickedAddress =  when(index){
+            0 -> location_departure
+            1 -> location_waypoint1
+            2 -> location_waypoint2
+            3 -> location_waypoint3
+            4 -> location_waypoint4
+            5 -> location_waypoint5
+            6 -> location_arrival
+            else -> {
+                null
+            }
+        }
+
+
+
+        searchAddressDialog.setClickedTextView(textView,clickedAddress)
 
         searchAddressDialog.show(childFragmentManager, SearchAddressDialog.TAG)
 

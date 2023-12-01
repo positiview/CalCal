@@ -1,6 +1,5 @@
 package com.example.calcal.subFrag
 
-import DirectSearchMapFragment
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -37,6 +36,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
     lateinit var binding: DialongFragmentSearchAddressBinding
     private lateinit var addressListAdapter: AddressListAdapter
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var clickedAddress:CoordinateDTO? = null
 
     private var selectedItemDTO: ItemDTO? = null
     private lateinit var locations : LatLng
@@ -51,8 +51,9 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
     }
     private var clickedTextView: TextView? = null
 
-    fun setClickedTextView(textView: TextView) {
+    fun setClickedTextView(textView: TextView?, clickedAddress: CoordinateDTO?) {
         clickedTextView = textView
+        this.clickedAddress = clickedAddress
     }
 
     // Other existing code...
@@ -68,7 +69,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
 
         fun onMyLocationClicked()
 
-        fun onMapClicked()
+        fun onMapClicked(coordinateDTO: CoordinateDTO?, locations: LatLng)
     }
 
 
@@ -184,7 +185,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             directChooseOnMap.setOnClickListener {
 
 
-                onItemClickListener?.onMapClicked()
+                onItemClickListener?.onMapClicked(clickedAddress,locations)
 
                 dismiss()
             }
@@ -194,7 +195,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             }
         }
 
-       binding.directChooseOnMap.setOnClickListener {
+       /*binding.directChooseOnMap.setOnClickListener {
            val fragment = DirectSearchMapFragment()
 
            // 현재 위치 정보를 전달
@@ -202,6 +203,8 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
 
            // 선택된 주소값을 DirectSearchMapFragment로 전달
            fragment.setSelectedAddress(clickedTextView?.text.toString())
+
+
 
            // selectedItemDTO를 Bundle에 담아서 DirectSearchMapFragment로 전달
            selectedItemDTO?.let {
@@ -212,7 +215,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
 
            fragment.show(parentFragmentManager, "DirectSearchMapFragment")
            dismiss()
-       }
+       }*/
 
 
 
