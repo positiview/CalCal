@@ -40,7 +40,7 @@ class CourseRepositoryImpl: CourseRepository {
         })
     }
 
-    override suspend fun getCourse(result: (Resource<List<CourseListDTO>?>) -> Unit) {
+    override suspend fun getCourses(result: (Resource<List<CourseListDTO>?>) -> Unit) {
         val call : Call<List<CourseListDTO>> = apiService.getCourseList()
 
         call.enqueue(object : Callback<List<CourseListDTO>>{

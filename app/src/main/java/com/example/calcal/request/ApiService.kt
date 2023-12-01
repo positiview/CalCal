@@ -3,13 +3,17 @@ package com.example.calcal.request
 import com.example.calcal.modelDTO.ChannelDTO
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.CourseListDTO
+import com.example.calcal.modelDTO.DataDTO
 import com.example.calcal.modelDTO.DirectionResponseDTO
+import com.example.calcal.modelDTO.FeatureCollection
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
+import com.example.calcal.modelDTO.TMapRouteRequest
 import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.signlogin.MemberDTO
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -83,4 +87,30 @@ interface ApiService {
         @Body member: MemberDTO
     ): Call<String>
 
+    @POST("routes/pedestrian")
+    fun pedestrianRoute(
+        @Query("version") version: String,
+//        @Query("format") format:String,
+        @Body data: DataDTO,
+        @Header("appKey") appKey:String
+    ): Call<FeatureCollection>
+
+    @GET("routes/pedestrian")
+    fun getPedestrianPath(
+        @Query("version") version: String,
+        @Query("format") format: String,
+        @Query("appKey") appKey: String,
+        @Query("startX") startX: Double,
+        @Query("startY") startY: Double,
+        @Query("endX") endX: Double,
+        @Query("endY") endY: Double
+    ): Call<FeatureCollection>
+
+
+    @POST("routes/pedestrian")
+    fun getPedestrianRoute(
+        @Header("appKey") appKey: String,
+        @Body request: TMapRouteRequest,
+        @Query("version") version: String
+    ): Call<FeatureCollection>
 }

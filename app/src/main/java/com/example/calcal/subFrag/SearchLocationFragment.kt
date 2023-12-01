@@ -23,7 +23,6 @@ import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.adapter.CourseListAdapter
 import com.example.calcal.databinding.FragmentSearchLocationBinding
-import com.example.calcal.modelDTO.LocationDTO
 import com.example.calcal.modelDTO.Result
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.CoordinateDTO
@@ -49,7 +48,6 @@ class SearchLocationFragment:Fragment() {
     private lateinit var courseListAdapter: CourseListAdapter // DB에서 저장한 코스 리스트를 가져온다
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient //자동으로 gps값을 받아온다.
     private lateinit var locationCallback: LocationCallback //gps응답 값을 가져온다.
-    private lateinit var selectLocation:List<LocationDTO>
     private var location_departure: CoordinateDTO? = null
     private var myLocation: Result? = null
     private var location_waypoint1: CoordinateDTO? = null
@@ -77,7 +75,6 @@ class SearchLocationFragment:Fragment() {
         binding = FragmentSearchLocationBinding.inflate(inflater,container,false)
         val view = binding.root
         var waypointCount = 0
-        selectLocation = emptyList()
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
@@ -132,7 +129,6 @@ class SearchLocationFragment:Fragment() {
             checkGrantAndGetMyLocation()
 
         }
-        Log.d("$$"," selectLocation 값 : $selectLocation")
         courseConfirmBtnEnableCheck()
 
        /* val layoutManager = GridLayoutManager(requireContext(), 1)
@@ -269,7 +265,7 @@ class SearchLocationFragment:Fragment() {
                 updateAddWaypointVisibility(waypointCount)
             }
 
-            // 경유지 주소 선택 버튼 --> 해당 SearchAddressDialog 열림
+            // 중요함!! 출발 경유지 도착 주소 선택 시 값 저장 --> 해당 SearchAddressDialog 열림
             val waypoints = arrayOf(departure,waypoint1Text, waypoint2Text, waypoint3Text, waypoint4Text, waypoint5Text,arrival)
             // 위치 검색을 위한 DIALOG 열림
 
@@ -364,29 +360,15 @@ class SearchLocationFragment:Fragment() {
 
                 val fragment = DirectSearchMapFragment()
 
-
                 // 선택된 주소이름 위치정보를 전달
                 fragment.setLocationAndAddress(coordinateDTO)
 
                 // 현재 위치 정보를 전달
                 fragment.setCurrentLocation(locations)
 
-
-
-
-
-                // selectedItemDTO를 Bundle에 담아서 DirectSearchMapFragment로 전달
-                /*selectedItemDTO?.let {
-                    val bundle = Bundle()
-                    bundle.putParcelable("itemDTO", it)
-                    fragment.arguments = bundle
-                }*/
-
                 fragment.show(parentFragmentManager, "DirectSearchMapFragment")
 
-
             }
-
 
         })
 
@@ -403,7 +385,6 @@ class SearchLocationFragment:Fragment() {
                 null
             }
         }
-
 
 
         searchAddressDialog.setClickedTextView(textView,clickedAddress)
