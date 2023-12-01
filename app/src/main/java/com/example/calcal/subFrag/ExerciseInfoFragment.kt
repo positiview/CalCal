@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ExpandableListView
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
@@ -36,7 +37,8 @@ class ExerciseInfoFragment : Fragment() {
 
         val list = listOf("러닝", "축구")
 
-        val adapter = ExInfoExpandableListAdapter(requireContext(), list)
+        val navController = findNavController()
+        val adapter = ExInfoExpandableListAdapter(requireContext(), list, navController)
         binding.exerciseInfoRecycler.setAdapter(adapter)
 
         binding.btnExPlus.setOnClickListener {

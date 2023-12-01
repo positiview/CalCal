@@ -19,6 +19,7 @@ import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.ActivitySignBinding
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.viewModel.MemberViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -32,9 +33,9 @@ import java.security.MessageDigest
 class SignActivity : AppCompatActivity() {
     private val apiService = RequestFactory.create()
     private lateinit var binding: ActivitySignBinding
+    private val viewModel: MemberViewModel by viewModels()
 
     //구글로그인
-    private val viewModel: SignViewModel by viewModels()
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result?.data)
@@ -90,7 +91,7 @@ class SignActivity : AppCompatActivity() {
             val phone = phoneEditText.text.toString()
             val password = passwordEditText.text.toString()
             val password2 = password2EditText.text.toString()
-
+            viewModel.updateEmail(email)
 
             // EditText 값이 비어있는지 확인하고 메시지 표시
             if (email.isEmpty()) {
@@ -253,8 +254,6 @@ class SignActivity : AppCompatActivity() {
     private fun isNetworkConnected(): Boolean {
         return networkInfo != null && networkInfo.isConnected
     }
-    class SignViewModel : ViewModel() {
-        // 필요한 뷰모델 기능 구현
-    }
+
 }
 

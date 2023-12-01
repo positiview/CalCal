@@ -1,11 +1,13 @@
 package com.example.calcal.adapter
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -15,6 +17,7 @@ import com.example.calcal.R
 import com.example.calcal.subFrag.ExercisestartFragment
 
 class ExStartAdapter (private val mData: List<String>, private val listener: ExercisestartFragment, private val navController: NavController): RecyclerView.Adapter<RecyclerView.ViewHolder,>() {
+    @SuppressLint("SetTextI18n")
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         val exStartTitle: TextView = itemView.findViewById(R.id.ex_start_title)
         val exStartContent: TextView = itemView.findViewById(R.id.ex_start_content)
@@ -25,7 +28,7 @@ class ExStartAdapter (private val mData: List<String>, private val listener: Exe
             itemView.setOnClickListener(this)
             btnExStartCal.visibility = View.GONE
             btnExStartCal.setOnClickListener { v ->
-                val builder = AlertDialog.Builder(v.context)
+                val builder = AlertDialog.Builder(v.context,R.style.DialogTheme)
                 val inflater = LayoutInflater.from(v.context)
                 val view = inflater.inflate(R.layout.ex_custom_dialog, null)
                 val input = view.findViewById<EditText>(R.id.dialog_input)
@@ -34,11 +37,15 @@ class ExStartAdapter (private val mData: List<String>, private val listener: Exe
 
                 builder.setView(view)
 
+
                 val dialog = builder.create()
+                val dialogBack = inflater.inflate(R.layout.ex_info_dialog, null, false)
+                dialogBack.background = ColorDrawable(Color.TRANSPARENT)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
                 okButton.setOnClickListener {
-                    btnExStartCal.text = input.text.toString()
+                    val userInput = input.text.toString()
+                    btnExStartCal.text = "$userInput kcal"
                     dialog.dismiss()
                 }
                 cancelButton.setOnClickListener {
@@ -54,7 +61,6 @@ class ExStartAdapter (private val mData: List<String>, private val listener: Exe
                 if (v == btnExStartCal) {
 
                 } else {
-
                     listener.onItemClick(position)
                 }
             }

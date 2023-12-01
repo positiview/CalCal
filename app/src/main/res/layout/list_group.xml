@@ -26,13 +26,13 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:orientation="horizontal"
             android:paddingEnd="10dp">
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="40dp"
                 android:layout_weight="1"
                 android:orientation="horizontal"
                 android:paddingStart="10dp">
@@ -44,7 +44,7 @@
                     android:layout_gravity="center_vertical"
                     android:text="러닝"
                     android:textColor="@color/white"
-                    android:textSize="24sp"
+                    android:textSize="20sp"
                     android:layout_marginStart="10dp"
                     android:textStyle="bold"
 

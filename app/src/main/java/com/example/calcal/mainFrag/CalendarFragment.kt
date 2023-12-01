@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentCalendarBinding
 import com.example.calcal.decorator.SelectionDecorator
@@ -57,8 +58,8 @@ class CalendarFragment : Fragment() {
         binding.relayExercise.findViewById<TextView>(R.id.relay_exercise)
 
         eventDates.addAll(listOf(
-            CalendarDay.from(2023, 11, 21),
-            CalendarDay.from(2023, 11, 22)
+            CalendarDay.from(2023, 12, 21),
+            CalendarDay.from(2023, 12, 22)
         ))
 
         eventDecorator = EventDecorator(requireContext(), eventDates)
@@ -95,6 +96,7 @@ class CalendarFragment : Fragment() {
                     // 다른 날짜를 선택하면 이전에 선택한 날짜의 선택을 취소하고, 새로운 날짜를 선택합니다.
                     selectedDates.clear()
                     selectedDates.add(date)
+
                 }
             }
 

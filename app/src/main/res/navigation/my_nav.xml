@@ -227,6 +227,9 @@
         <action
             android:id="@+id/action_exercisestartFragment_to_timeFragment"
             app:destination="@id/timeFragment" />
+        <action
+            android:id="@+id/action_exercisestartFragment_to_etcExerciseFragment"
+            app:destination="@id/etcExerciseFragment" />
 
     </fragment>
     <fragment
@@ -288,12 +291,16 @@
         android:id="@+id/etcExerciseFragment"
         android:name="com.example.calcal.subFrag.EtcExerciseFragment"
         android:label="fragment_etc_exercise"
-        tools:layout="@layout/fragment_etc_exercise" />
+        tools:layout="@layout/fragment_etc_exercise" >
+        <action
+            android:id="@+id/action_etcExerciseFragment_to_exerciseInfoFragment"
+            app:destination="@id/exerciseInfoFragment" />
+    </fragment>
     <fragment
         android:id="@+id/timeFragment"
-        android:name="com.example.calcal.subFrag.TimeFragment"
+        android:name="com.example.calcal.subFrag.RecodeFragment"
         android:label="fragment_time"
-        tools:layout="@layout/fragment_time" >
+        tools:layout="@layout/fragment_recode" >
         <action
             android:id="@+id/action_timeFragment_to_graphFragment"
             app:destination="@id/graphFragment" />

@@ -8,11 +8,13 @@ import android.widget.BaseExpandableListAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.navigation.NavController
 import com.example.calcal.R
 
 class ExInfoExpandableListAdapter(
     private val context: Context,
-    private val list: List<String>
+    private val list: List<String>,
+    private val navController: NavController
 ) : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int {
@@ -95,6 +97,10 @@ class ExInfoExpandableListAdapter(
         // '운동하러가기' 텍스트뷰의 가시성 설정
         val goToExerciseText = view.findViewById<TextView>(R.id.ex_info_go)
         goToExerciseText.visibility = View.VISIBLE
+        goToExerciseText.setOnClickListener {
+            // 여기서 actionId는 네비게이션 그래프에서 해당 페이지로 이동하는 액션의 ID입니다.
+            navController.navigate(R.id.action_exerciseInfoFragment_to_exercisestartFragment)
+        }
 
         return view
     }

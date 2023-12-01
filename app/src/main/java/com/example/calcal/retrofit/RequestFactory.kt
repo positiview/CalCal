@@ -1,9 +1,13 @@
 package com.example.calcal.retrofit
 
 import com.example.calcal.request.ApiService
+import com.example.calcal.signlogin.MemberDTO
 import com.google.gson.GsonBuilder
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Path
 
 object RequestFactory {
 
@@ -43,5 +47,7 @@ object RequestFactory {
             .build()
         return retrofit.create(ApiService::class.java)
     }
+
+
 
 }
