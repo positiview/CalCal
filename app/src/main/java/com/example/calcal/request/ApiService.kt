@@ -1,6 +1,9 @@
 package com.example.calcal.request
 
 import com.example.calcal.modelDTO.ChannelDTO
+import com.example.calcal.modelDTO.CoordinateDTO
+import com.example.calcal.modelDTO.CourseListDTO
+import com.example.calcal.modelDTO.DirectionResponseDTO
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.TestDTO
@@ -24,6 +27,15 @@ interface ApiService {
     ): Call<String>
 
 
+    @POST("course/save")
+    fun saveCourseList(
+        @Query("courseName") courseName: String,
+        @Body courseList: List<CoordinateDTO>
+    ): Call<String>
+
+    @GET("course/getList")
+    fun getCourseList():Call<List<CourseListDTO>>
+
     @GET("v1/search/local.json")
     fun searchLocation(
         @Query("query") query: String,
@@ -42,6 +54,12 @@ interface ApiService {
         @Header("X-NCP-APIGW-API-KEY") apiKey: String
     ): Call<NaverGeocodingResponseDTO>
 
+    @GET("map-direction/v1/driving")
+    fun directions5(
+        @Query("start") start:String,
+        @Query("end") end:String,
+        @Query("waypoints") waypoints:String
+    ):Call<DirectionResponseDTO>
 
     @GET("map-reversegeocode/v2/gc")
     fun reverseGeocode(

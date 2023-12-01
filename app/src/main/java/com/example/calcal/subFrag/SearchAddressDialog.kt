@@ -27,6 +27,7 @@ import com.example.calcal.modelDTO.ItemDTO
 import com.example.calcal.retrofit.RequestFactory
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.naver.maps.geometry.LatLng
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,8 +37,10 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
     lateinit var binding: DialongFragmentSearchAddressBinding
     private lateinit var addressListAdapter: AddressListAdapter
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var locations : CoordinateDTO
+
     private var selectedItemDTO: ItemDTO? = null
+    private lateinit var locations : LatLng
+
     private var waypointTextView: TextView? = null
 
     fun setWaypointTextView(textView: TextView) {
@@ -125,7 +128,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                         .addOnSuccessListener { location: Location? ->
                             Log.d("$$","내 위치 정보 location = $location")
                             if (location != null) {
-                                locations = CoordinateDTO(location.latitude,location.longitude)
+                                locations = LatLng(location.latitude,location.longitude)
                             }
                             Log.d("$$","CoordinateDTO locations = $locations")
 
@@ -144,7 +147,9 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                 .addOnSuccessListener { location: Location? ->
                     Log.d("$$","내 위치 정보 location = $location")
                     if (location != null) {
-                        locations = CoordinateDTO(location.latitude,location.longitude)
+                        locations = LatLng(location.latitude,location.longitude)
+                        Log.d("$$","내 위치 정보 location y / x = ${location.latitude} / ${location.longitude}")
+
                     }
 //                    Log.d("$$","CoordinateDTO locations = $locations")
 
@@ -162,6 +167,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             Log.d("$$","쿼리 : $query")
             if (query.isNotEmpty()) { // 입력내용이 있을경우에만 처리
                 requestAddress(query) { itemDTOMutableList ->
+
                     addressListAdapter = AddressListAdapter(itemDTOMutableList,locations,this)
                     recyclerView.adapter = addressListAdapter
 
