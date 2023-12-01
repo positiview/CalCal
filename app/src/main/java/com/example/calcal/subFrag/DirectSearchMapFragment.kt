@@ -1,3 +1,5 @@
+package com.example.calcal.subFrag
+
 import android.content.Context
 import android.graphics.Point
 import android.location.Geocoder
@@ -105,39 +107,32 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
     override fun onMapReady(map: NaverMap) {
         naverMap = map
 
+        // 주소를 LatLng로 변환
+        val latLng = selectedAddress?.let { getLatLngFromAddress(it) } ?: currentLocation
+        val cameraPosition = latLng?.let { CameraPosition(it, 16.0) } // 변환된 좌표를 중심으로 카메라 위치 설정
 
         // 중앙에 마커 추가
         marker = Marker()
-        marker.position = naverMap.cameraPosition.target
+        marker.position = cameraPosition?.target ?: LatLng(0.0, 0.0)
         marker.map = naverMap
-
-
 
         // 카메라 이동 이벤트 감지
         naverMap.addOnCameraChangeListener { _, _ ->
             marker.position = naverMap.cameraPosition.target
-            val address = getAddressFromLatLng(marker.position)
-            addressTextView.text = address
+
+            // 이벤트가 발생할 때만 주소를 업데이트
+            val newAddress = getAddressFromLatLng(marker.position)
+            if (newAddress != addressTextView.text) {
+                addressTextView.text = newAddress
+            }
         }
 
-
-        // 현재 위치를 가져오는 로직 추가
-//        currentLocation?.let {
-//            val cameraPosition = CameraPosition(
-//                LatLng(it.latitude, it.longitude),
-//                16.0
-//            )
-//            naverMap.cameraPosition = cameraPosition
-        /*val latLng = selectedAddress?.let { getLatLngFromAddress(it) } // 검색된 주소를 좌표로 변환*/
-        val latLng = selectedLocation?:currentLocation
-        val cameraPosition = latLng?.let { CameraPosition(it, 16.0) } // 변환된 좌표를 중심으로 카메라 위치 설정
+        // 카메라 위치 적용
         if (cameraPosition != null) {
             naverMap.cameraPosition = cameraPosition
-            Log.d("$$","cameraPositioncameraPosition = $cameraPosition")
-        } // 카메라 위치 적용
-
+            Log.d("$$", "cameraPositioncameraPosition = $cameraPosition")
+        }
     }
-
 
     private fun getAddressFromLatLng(latLng: LatLng): String {
         val geocoder = Geocoder(requireContext(), Locale.KOREA) // Locale을 한국어로 설정
@@ -167,6 +162,17 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
             binding.addressOk.setOnClickListener {
                 val address = getAddressFromLatLng(marker.position)
                 waypointTextView?.text = address
+
+                // 위치 정보를 CoordinateDTO에 저장
+                val coordinateDTO = CoordinateDTO(
+                    addressName = address,
+                    latidute = marker.position.latitude,
+                    longitude = marker.position.longitude
+                )
+
+                // setLocationAndAddress 메서드를 호출하여 값을 업데이트
+                setLocationAndAddress(coordinateDTO)
+
                 dismiss()
             }
         }
