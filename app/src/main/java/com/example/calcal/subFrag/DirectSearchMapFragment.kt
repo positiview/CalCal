@@ -2,6 +2,7 @@ import android.content.Context
 import android.graphics.Point
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import com.example.calcal.R
 import com.example.calcal.databinding.FragmentDirectSearchMapBinding
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.DeviceSizeDTO
+import com.example.calcal.modelDTO.ItemDTO
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
@@ -22,7 +24,8 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import java.util.Locale
 
-class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
+class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
+    private lateinit var itemDTO: ItemDTO // 전달받은 itemDTO 값
     private lateinit var binding: FragmentDirectSearchMapBinding
     private lateinit var mapFragment: MapFragment
     private lateinit var naverMap: NaverMap
@@ -31,13 +34,22 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
     private var currentLocation: LatLng? = null
     private var selectedAddress: String? = null
 
+
+    fun setItemDTO(item: ItemDTO) {
+        this.itemDTO = item
+        Log.d("$$","wetfwsfewsfffffffffffffffffO = $item")
+    }
+
     fun setSelectedAddress(address: String) {
         selectedAddress = address
+
+        Log.d("$$","qqqqqqqqqqqqqqqqqqq = $address") //장소명
     }
 
 
     fun setCurrentLocation(location: CoordinateDTO) {
-        currentLocation = LatLng(location.latidute, location.longitude)
+        currentLocation = LatLng(location.longitude, location.latidute)
+        Log.d("$$","aaaaaaaaaaaaaaaaaaa = $location") // 내위치
     }
 
     private var waypointTextView: TextView? = null
@@ -51,9 +63,9 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
 
         if (addresses != null && addresses.isNotEmpty()) {
             val location = addresses[0]
-            return LatLng(location.latitude, location.longitude)
+            return LatLng(location.latitude, location.longitude) // 위도와 경도의 순서를 올바르게 수정
         }
-
+        Log.e("SearchAddressDialog", "Dialog window is null.")
         return LatLng(0.0, 0.0) // 주소를 찾을 수 없을 경우 기본 값 반환
     }
     override fun onCreateView(
@@ -114,6 +126,7 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
         val cameraPosition = latLng?.let { CameraPosition(it, 16.0) } // 변환된 좌표를 중심으로 카메라 위치 설정
         if (cameraPosition != null) {
             naverMap.cameraPosition = cameraPosition
+            Log.d("$$","cameraPositioncameraPosition = $cameraPosition")
         } // 카메라 위치 적용
 
     }
@@ -121,7 +134,7 @@ class DirectSearchMapFragment<Location> : DialogFragment(), OnMapReadyCallback {
 
     private fun getAddressFromLatLng(latLng: LatLng): String {
         val geocoder = Geocoder(requireContext(), Locale.KOREA) // Locale을 한국어로 설정
-        val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+        val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1) // 위도와 경도의 순서를 올바르게 수정
 
         if (addresses != null) {
             return if (addresses.isNotEmpty()) {

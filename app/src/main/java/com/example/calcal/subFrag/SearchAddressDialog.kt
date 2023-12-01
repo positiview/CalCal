@@ -37,7 +37,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
     private lateinit var addressListAdapter: AddressListAdapter
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locations : CoordinateDTO
-
+    private var selectedItemDTO: ItemDTO? = null
     private var waypointTextView: TextView? = null
 
     fun setWaypointTextView(textView: TextView) {
@@ -56,7 +56,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
 
     private fun handleItemClicked(itemDTO: ItemDTO) {
         clickedTextView?.text = itemDTO.title
-
+        selectedItemDTO = itemDTO
 
         dismiss()
     }
@@ -188,12 +188,8 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             }
         }
 
-       /*binding.directChooseOnMap.setOnClickListener {
-
-
-
-
-           val fragment = DirectSearchMapFragment<Any>()
+       binding.directChooseOnMap.setOnClickListener {
+           val fragment = DirectSearchMapFragment()
 
            // 현재 위치 정보를 전달
            fragment.setCurrentLocation(locations)
@@ -201,9 +197,19 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
            // 선택된 주소값을 DirectSearchMapFragment로 전달
            fragment.setSelectedAddress(clickedTextView?.text.toString())
 
+           // selectedItemDTO를 Bundle에 담아서 DirectSearchMapFragment로 전달
+           selectedItemDTO?.let {
+               val bundle = Bundle()
+               bundle.putParcelable("itemDTO", it)
+               fragment.arguments = bundle
+           }
+
            fragment.show(parentFragmentManager, "DirectSearchMapFragment")
            dismiss()
-       }*/
+       }
+
+
+
        val waypointText: String? = clickedTextView?.text.toString()
        if (!waypointText.isNullOrEmpty()) {
            binding.searchQuery.setText(waypointText)
