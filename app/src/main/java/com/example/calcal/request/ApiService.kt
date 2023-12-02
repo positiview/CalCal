@@ -6,6 +6,7 @@ import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.modelDTO.DataDTO
 import com.example.calcal.modelDTO.DirectionResponseDTO
 import com.example.calcal.modelDTO.FeatureCollection
+import com.example.calcal.modelDTO.Goal
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.TMapRouteRequest
@@ -58,12 +59,17 @@ interface ApiService {
         @Header("X-NCP-APIGW-API-KEY") apiKey: String
     ): Call<NaverGeocodingResponseDTO>
 
+
+
     @GET("map-direction/v1/driving")
     fun directions5(
-        @Query("start") start:String,
-        @Query("end") end:String,
-        @Query("waypoints") waypoints:String
-    ):Call<DirectionResponseDTO>
+        @Query("start") start: String,
+        @Query("goal") goal: String,
+        @Query("waypoints") waypoints: String,
+        @Query("option") option: String,
+        @Header("X-NCP-APIGW-API-KEY-ID") apiKeyId: String,
+        @Header("X-NCP-APIGW-API-KEY") apiKey: String
+    ): Call<DirectionResponseDTO>
 
     @GET("map-reversegeocode/v2/gc")
     fun reverseGeocode(
@@ -90,22 +96,10 @@ interface ApiService {
     @POST("routes/pedestrian")
     fun pedestrianRoute(
         @Query("version") version: String,
-//        @Query("format") format:String,
+        @Query("format") format:String,
         @Body data: DataDTO,
         @Header("appKey") appKey:String
     ): Call<FeatureCollection>
-
-    @GET("routes/pedestrian")
-    fun getPedestrianPath(
-        @Query("version") version: String,
-        @Query("format") format: String,
-        @Query("appKey") appKey: String,
-        @Query("startX") startX: Double,
-        @Query("startY") startY: Double,
-        @Query("endX") endX: Double,
-        @Query("endY") endY: Double
-    ): Call<FeatureCollection>
-
 
     @POST("routes/pedestrian")
     fun getPedestrianRoute(
@@ -114,3 +108,4 @@ interface ApiService {
         @Query("version") version: String
     ): Call<FeatureCollection>
 }
+

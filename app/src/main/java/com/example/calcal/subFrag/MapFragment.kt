@@ -1,5 +1,6 @@
 package com.example.calcal.subFrag
 
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.provider.ContactsContract.Data
@@ -18,6 +19,7 @@ import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMapBinding
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.DataDTO
+import com.example.calcal.modelDTO.DirectionResponseDTO
 import com.example.calcal.modelDTO.FeatureCollection
 import com.example.calcal.modelDTO.TMapRouteRequest
 import com.example.calcal.repository.CourseRepository
@@ -27,6 +29,7 @@ import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.CourseViewModel
 import com.example.calcal.viewModelFactory.CourseViewModelFactory
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
@@ -37,6 +40,7 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.UiSettings
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.PathOverlay
+import com.naver.maps.map.overlay.PolylineOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
 import com.naver.maps.map.widget.LocationButtonView
@@ -102,6 +106,41 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 findNavController().navigateUp()
             }
 
+            btnStart.setOnClickListener {
+                 //위치 추적 모드, 현위치 오버레이와 카메라 좌표가 사용자의 위치를 따라 움직입니다. API나 제스터를 사용시 위치추적모드 해제
+                mNaverMap.locationTrackingMode = LocationTrackingMode.Follow // <-- 에뮬에서는 안되는듯
+
+
+                val myRouteRecord: MutableList<LatLng> = mutableListOf()
+
+                val polyline = PolylineOverlay()
+                polyline.color = Color.BLUE
+                polyline.width = 10
+                polyline.map = mNaverMap
+
+                // 위치추적모드가 활성화 될때 이벤트 처리
+                mNaverMap.addOnLocationChangeListener(object : NaverMap.OnLocationChangeListener {
+                    override fun onLocationChange(location: Location) {
+                        myRouteRecord.add(LatLng(location.latitude,location.longitude))
+
+                        polyline.coords = myRouteRecord
+                        /*val initialPosition = LatLng(location.latitude, location.longitude)
+                        val cameraPosition = CameraPosition(initialPosition, 17.0)
+                        mNaverMap.moveCamera(CameraUpdate.toCameraPosition(cameraPosition))
+                        mNaverMap.maxZoom = 18.0
+                        mNaverMap.minZoom = 5.0
+                        Log.d("$$","onLocationChange 발동!")*/
+                        // 내 위치를 설정한 후에 리스너를 제거
+//                        mNaverMap.removeOnLocationChangeListener(this)
+                    }
+                })
+            }
+            // 일시 중지 버튼 (토글 버튼 추천)
+
+
+            // 영구 중지 버튼 + 저장
+
+
         }
 
         btn_back = binding.btnBack
@@ -116,48 +155,79 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         return binding.root
     }
 
+    // 좌표 리스트로부터 경계를 계산하는 함수
+    fun calculateBounds(coords: List<LatLng>): LatLngBounds {
+        var minLat = Double.MAX_VALUE
+        var maxLat = Double.MIN_VALUE
+        var minLng = Double.MAX_VALUE
+        var maxLng = Double.MIN_VALUE
 
+        for (coord in coords) {
+            minLat = minOf(minLat, coord.latitude)
+            maxLat = maxOf(maxLat, coord.latitude)
+            minLng = minOf(minLng, coord.longitude)
+            maxLng = maxOf(maxLng, coord.longitude)
+        }
+
+        return LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng))
+    }
 
     private fun getRoute(start: LatLng, end: LatLng, waypointList: List<LatLng>) {
-        getTmapInfo(start,end)
-       /* val pathData = mNaverMap.findPathData(start, end)
-            ?: return // 경로 데이터를 가져오지 못한 경우 종료*/
+        getMapInfo(start,end, waypointList){
+            val startInfo = it.route.traavoidcaronly[0].summary.start.location
+            val startLocation =  LatLng(startInfo[1],startInfo[0])
+            val goalInfo = it.route.traavoidcaronly[0].summary.goal.location
+            val goalLocation = LatLng(goalInfo[1],goalInfo[0])
 
-        // 출발지와 도착지에 마커 추가
-        Marker().apply {
-            position = start
-            map = mNaverMap
-            icon = MarkerIcons.BLUE
-        }
 
-        Marker().apply {
-            position = end
-            map = mNaverMap
-            icon = MarkerIcons.RED
-        }
-
-        waypointList.forEach {
+            binding.expectedTimeView.text = it.route.traavoidcaronly[0].summary.duration.toString()
+//            mNaverMap.moveCamera(CameraUpdate.scrollTo(startLocation))
             Marker().apply {
-                position = it
+                position = startLocation
                 map = mNaverMap
-                icon = MarkerIcons.GREEN
+                icon = MarkerIcons.BLUE
             }
-        }
 
-        // 도보 경로를 지도에 표시
+            Marker().apply {
+                position = goalLocation
+                map = mNaverMap
+                icon = MarkerIcons.RED
+            }
+
+            val waypoints = it.route.traavoidcaronly[0].summary.waypoints
+            if(waypoints != null){
+                waypoints.forEach { go ->
+                    Marker().apply{
+                       position = LatLng(go.location[1],go.location[0])
+                        map = mNaverMap
+                        icon = MarkerIcons.GREEN
+                    }
+                }
+            }
+
+
+            // 도보 경로를 지도에 표시
             val pathOverlay = PathOverlay()
             val list : MutableList<LatLng> = mutableListOf()
-            list.add(start)
-            list.add(end)
+            list.add(startLocation)
+            lateinit var pathLatLng: LatLng
+            val pathList = it.route.traavoidcaronly[0].path
+            for( i in pathList){
+                pathLatLng = LatLng(i[1],i[0])
+                list.add(pathLatLng)
+            }
 
-            list.addAll(waypointList)
+            list.add(goalLocation)
+
+            val cameraUpdate = CameraUpdate.fitBounds(calculateBounds(list), 100)
 
             pathOverlay.coords = list
             pathOverlay.map = mNaverMap
 
-        // 출발지와 도착지가 모두 표시될 수 있도록 지도의 카메라 이동
-//        val cameraUpdate = CameraUpdate.fitBounds(pathData.bounds, 100)
-//        mNaverMap.moveCamera(cameraUpdate)
+            mNaverMap.moveCamera(cameraUpdate)
+        }
+
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -180,25 +250,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         uiSettings.isLocationButtonEnabled = false
         val locationButtonView: LocationButtonView = binding.mylocationView
         locationButtonView.map = mNaverMap
-        // 위치 추적 모드, 현위치 오버레이와 카메라 좌표가 사용자의 위치를 따라 움직입니다. API나 제스터를 사용시 위치추적모드 해제
-//        mNaverMap.locationTrackingMode = LocationTrackingMode.Follow // <-- 에뮬에서는 안되는듯
 
-        var initialPosition = LatLng(35.1798159, 129.0750222) // 부산 시청
-
-        // 위치추적모드가 활성화 될때 이벤트 처리
-        /*mNaverMap.addOnLocationChangeListener(object : NaverMap.OnLocationChangeListener {
-            override fun onLocationChange(location: Location) {
-                initialPosition = LatLng(location.latitude, location.longitude)
-                Log.d("$$","onLocationChange 발동!")
-                // 내 위치를 설정한 후에 리스너를 제거
-                mNaverMap.removeOnLocationChangeListener(this)
-            }
-        })*/
-
-        val cameraPosition = CameraPosition(initialPosition, 17.0)
-        mNaverMap.moveCamera(CameraUpdate.toCameraPosition(cameraPosition))
-        mNaverMap.maxZoom = 18.0
-        mNaverMap.minZoom = 5.0
 
 
 
@@ -217,6 +269,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             when (result.placeList.size) {
                 in 2..7 -> {
                     start = LatLng(result.placeList[0].latidute, result.placeList[0].longitude)
+                        Log.d("$$","start = $start")
                     end = LatLng(result.placeList.last().latidute, result.placeList.last().longitude)
 
                     for (i in 1 until min(result.placeList.size - 1, 6)) {
@@ -259,35 +312,41 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    private fun getTmapInfo(start: LatLng, end: LatLng) {
+    private fun getMapInfo(start: LatLng, end: LatLng, waypointList: List<LatLng>, result: (DirectionResponseDTO)->Unit) {
         Log.d("$$","start  :  $start  end  :  $end")
-        val service = RequestFactory.create4()
-        val appKey = "f7ToVSBulf2Aj1yZM7FiS8lTT8xjKkyFJ5HEpmi1"
-        val data = DataDTO(start.longitude,start.latitude,end.longitude,end.latitude,"출발지","도착지")
-        val version = "1"
-        val format = "json"
+        val service = RequestFactory.create2()
+//        val appKey = "f7ToVSBulf2Aj1yZM7FiS8lTT8xjKkyFJ5HEpmi1"
+        val apiKeyId = "clurvbfncz"
+        val apiKey = "WuVnFkJnFdIt7L03dhCZw7iCyNCeLGtNh3UsrhrI"
+//        val data = DataDTO(start.longitude,start.latitude,end.longitude,end.latitude,"출발지","도착지")
+//        val version = "1"
+//        val format = "json"
 //        val request = TMapRouteRequest(start.longitude,start.latitude,0,4,end.longitude,end.latitude,"출발지","도착지",0,"WGS84GEO")
-        val callTmapInfo : Call<FeatureCollection> = service.pedestrianRoute(version,data,appKey)
+        val start = "${start.longitude},${start.latitude},name=출발지"
+        val goal = "${end.longitude},${end.latitude},name=목적지"
+        val waypointListString = waypointList.joinToString(separator = "|") { "${it.longitude},${it.latitude}" }
+        val option = "traavoidcaronly"
+        val callMapInfo : Call<DirectionResponseDTO> = service.directions5(start,goal,waypointListString,option, apiKeyId,apiKey)
 
 
 
-
-
-
-        callTmapInfo.enqueue(object : Callback<FeatureCollection> {
-            override fun onResponse(call: Call<FeatureCollection>, response: Response<FeatureCollection>) {
+        callMapInfo.enqueue(object : Callback<DirectionResponseDTO> {
+            override fun onResponse(call: Call<DirectionResponseDTO>, response: Response<DirectionResponseDTO>) {
                 Log.d("$$", "response값은.... $response")
                 Log.d("$$", "dataBody값은.... ${response.body()}")
                 if(response.isSuccessful){
                     Log.d("$$","성공?")
                     val dataBody = response.body()
+                    if (dataBody != null) {
+                        result.invoke(dataBody)
+                    }
 
                 }else{
                     Log.d("$$","에러: ${response.code()} - ${response.message()}")
                 }
             }
 
-            override fun onFailure(call: Call<FeatureCollection>, t: Throwable) {
+            override fun onFailure(call: Call<DirectionResponseDTO>, t: Throwable) {
                 Log.e("$$", "call $call")
                 Log.e("$$","Tmap 요청한 응답 실패!!!")
             }

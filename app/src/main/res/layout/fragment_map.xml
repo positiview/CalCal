@@ -210,7 +210,7 @@
             >
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/btn_start"
                 android:background="@drawable/redgradient"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"

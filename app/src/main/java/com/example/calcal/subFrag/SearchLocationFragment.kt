@@ -41,6 +41,9 @@ import com.naver.maps.geometry.LatLng
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class SearchLocationFragment:Fragment() {
     private lateinit var binding : FragmentSearchLocationBinding
@@ -55,6 +58,9 @@ class SearchLocationFragment:Fragment() {
     private var location_waypoint3: CoordinateDTO? = null
     private var location_waypoint4: CoordinateDTO? = null
     private var location_waypoint5: CoordinateDTO? = null
+    private var waypointCount = 0
+    private var placeList = listOf<CoordinateDTO>()
+
 
     private var location_arrival: CoordinateDTO? = null
     private var myArea:String = ""
@@ -74,7 +80,7 @@ class SearchLocationFragment:Fragment() {
     ): View? {
         binding = FragmentSearchLocationBinding.inflate(inflater,container,false)
         val view = binding.root
-        var waypointCount = 0
+
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
@@ -279,32 +285,17 @@ class SearchLocationFragment:Fragment() {
 
             // 코스 확인 및 저장 버튼
             courseConfirm.setOnClickListener {
-                val placeList = mutableListOf<CoordinateDTO>()
+                updatePlaceList()
 
-                if(location_departure != null){
-                    placeList.add(location_departure!!)
-                }
-                if(location_waypoint1 != null){
-                    placeList.add(location_waypoint1!!)
-                }
-                if(location_waypoint2 != null){
-                    placeList.add(location_waypoint2!!)
-                }
-                if(location_waypoint3 != null){
-                    placeList.add(location_waypoint3!!)
-                }
-                if(location_waypoint4 != null){
-                    placeList.add(location_waypoint4!!)
-                }
-                if(location_waypoint5 != null){
-                    placeList.add(location_waypoint5!!)
-                }
-                if(location_arrival != null){
-                    placeList.add(location_arrival!!)
+                fun getCurrentDateTimeAsString(): String {
+                    val dateFormat = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
+                    return dateFormat.format(Date())
                 }
 
-                val courseName = binding.courseEdit.text.toString().takeIf { it.isNotBlank() } ?: "내 코스"
-                Log.d("$$","저장 버튼 누름 / 코스이름 $courseName")
+                val current = getCurrentDateTimeAsString()
+
+                val courseName = binding.courseEdit.text.toString().takeIf { it.isNotBlank() } ?: "코스 $current"
+                Log.d("$$","저장 버튼 누름 / 코스이름 $courseName placeList = $placeList")
                 selectedPlaceOrNot = true
                 viewModel.saveCourse(courseName,placeList)
                 findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment) // <-- 향후 수정 필요
@@ -313,10 +304,40 @@ class SearchLocationFragment:Fragment() {
         return view
     }
 
+    private fun updatePlaceList() {
+        val placeList = mutableListOf<CoordinateDTO>()
+        if(location_departure != null){
+            placeList.add(location_departure!!)
+        }
+        if(location_waypoint1 != null){
+            placeList.add(location_waypoint1!!)
+        }
+        if(location_waypoint2 != null){
+            placeList.add(location_waypoint2!!)
+        }
+        if(location_waypoint3 != null){
+            placeList.add(location_waypoint3!!)
+        }
+        if(location_waypoint4 != null){
+            placeList.add(location_waypoint4!!)
+        }
+        if(location_waypoint5 != null){
+            placeList.add(location_waypoint5!!)
+        }
+        if(location_arrival != null){
+            placeList.add(location_arrival!!)
+        }
+        this.placeList = placeList
+    }
+
 
     // 출발 도착 주소 설정시, 확인 버튼 활성화
     private fun courseConfirmBtnEnableCheck() {
-        binding.courseConfirm.isEnabled = location_departure !=null && location_arrival !=null
+        binding.courseConfirm.isEnabled = location_departure !=null && location_arrival !=null && location_departure != location_arrival
+        if(location_departure !=null && location_arrival !=null && location_departure == location_arrival && waypointCount == 0){
+            Toast.makeText(requireContext(),"출발지와 목적지가 같을때 최소 1개의 추가 경유지가 필요합니다.",Toast.LENGTH_SHORT).show()
+        }
+
     }
 
 
@@ -338,6 +359,7 @@ class SearchLocationFragment:Fragment() {
                 val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000, addressName = itemDTO.roadAddress)
                 coordinateData(index,coords)
                 courseConfirmBtnEnableCheck()
+                updatePlaceList()
                 Log.d("$$","33 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
             }
 
@@ -351,6 +373,7 @@ class SearchLocationFragment:Fragment() {
                         val coords = CoordinateDTO(longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y, addressName = textView.text.toString())
                         coordinateData(index,coords)
                         courseConfirmBtnEnableCheck()
+                        updatePlaceList()
                         Log.d("$$","44 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
                     }
                 }
@@ -365,6 +388,8 @@ class SearchLocationFragment:Fragment() {
 
                 // 현재 위치 정보를 전달
                 fragment.setCurrentLocation(locations)
+                courseConfirmBtnEnableCheck()
+                updatePlaceList()
 
                 fragment.show(parentFragmentManager, "DirectSearchMapFragment")
 
@@ -491,11 +516,6 @@ class SearchLocationFragment:Fragment() {
         }else{
             locationPermissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
-
-
-
-
-
 
 
     }
