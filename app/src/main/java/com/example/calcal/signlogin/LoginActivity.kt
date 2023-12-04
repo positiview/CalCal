@@ -12,14 +12,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.ActivityLoginBinding
-import com.example.calcal.databinding.ActivitySignBinding
 import com.example.calcal.repository.MemberRepository
-import com.example.calcal.retrofit.MemberViewModelFactory
+import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import com.example.calcal.retrofit.RequestFactory
 import com.example.calcal.viewModel.MemberViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -93,6 +91,7 @@ class LoginActivity : AppCompatActivity() {
         // 이미 로그인된 상태라면 MainActivity로 이동
         if (isLoggedIn) {
             moveMainActivity()
+
             finish() // LoginActivity 종료
         }
 
@@ -124,7 +123,7 @@ class LoginActivity : AppCompatActivity() {
             val hashedPassword = hashPassword(password)
 
             // Retrofit을 통한 로그인 요청
-            val call: Call<String> = apiService.login(MemberDTO(email = email, phone = "", password = hashedPassword, password2 = ""))
+            val call: Call<String> = apiService.login(MemberDTO(email = email, phone = "", password = hashedPassword, password2 = "", weight = null, length = null,age = null, gender = "" ))
             call.enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.isSuccessful) {
@@ -213,7 +212,7 @@ class LoginActivity : AppCompatActivity() {
             // 추가로 필요한 사용자 정보도 가져올 수 있습니다.
 
             // 회원 정보를 데이터베이스에 저장하기 위한 API 요청
-            val memberDTO = MemberDTO(email, "", "", "") // memberDTO에 필요한 정보 추가
+            val memberDTO = MemberDTO(email, "", "", "",null,null,null,"") // memberDTO에 필요한 정보 추가
             val call: Call<String> = apiService.memberData(memberDTO)
 
             call.enqueue(object : Callback<String> {

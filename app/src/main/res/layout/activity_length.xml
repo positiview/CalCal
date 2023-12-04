@@ -4,15 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundblack"
-    tools:context=".MainActivity">
+    tools:context=".signlogin.LengthActivity"
+    android:background="@color/backgroundblack">
+
+
+    <NumberPicker
+        android:id="@+id/lengthNumberPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@style/NumberPickerStyle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout4"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout4"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="550dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="300dp"
+            android:src="@drawable/sign_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
             android:id="@+id/btn_next"
@@ -26,7 +49,9 @@
             app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
     <LinearLayout
+        android:id="@+id/linearLayout4"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -46,38 +71,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:fontFamily="@font/poppins_bold"
-            android:text="성별을 입력해주세요!"
-            android:textColor="@color/white"
             android:layout_marginBottom="30dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="키도 알려주세요"
+            android:textColor="@color/white"
             android:textSize="10sp" />
-
-        <Button
-            android:id="@+id/btn_male"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/white"
-            android:textSize="20dp"
-            android:layout_marginTop="75dp"
-            android:background="@drawable/male_select"
-            android:textAllCaps="false"
-            android:fontFamily="@font/notosanskr_bold"
-            app:cornerRadius="20dp" />
-
-        <Button
-            android:id="@+id/btn_female"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="@color/white"
-            android:textSize="20dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/female_select"
-            android:textAllCaps="false"
-            android:fontFamily="@font/notosanskr_bold"
-            app:cornerRadius="20dp" />
 
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

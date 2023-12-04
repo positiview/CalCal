@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
@@ -24,7 +23,6 @@ import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.signlogin.MemberDTO
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MypageFragment : Fragment() {
@@ -131,6 +129,7 @@ class MypageFragment : Fragment() {
         alertDialogBuilder.setPositiveButton("예") { _, _ ->
             // 사용자가 "예"를 선택한 경우, 회원탈퇴 처리
             performWithdraw()
+
         }
         alertDialogBuilder.setNegativeButton("취소", null)
         alertDialogBuilder.create().show()
@@ -146,7 +145,12 @@ class MypageFragment : Fragment() {
             email = email ?: "", // null인 경우 빈 문자열로 설정
             phone = "", // 필요 없는 값이므로 빈 문자열로 설정
             password = "", // 필요 없는 값이므로 빈 문자열로 설정
-            password2 = "" // 필요 없는 값이므로 빈 문자열로 설정
+            password2 = "", // 필요 없는 값이므로 빈 문자열로 설정
+            weight = null,
+            length = null,
+            age = null,
+            gender = ""
+
         )
 
         val call: Call<String> = apiService.withdraw(memberDTO)

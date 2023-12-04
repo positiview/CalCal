@@ -4,50 +4,48 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.ImageView
-import android.widget.Toast
+import android.widget.NumberPicker
 import androidx.appcompat.app.AppCompatActivity
+import com.example.calcal.MainActivity
 import com.example.calcal.R
-import com.example.calcal.databinding.ActivityGenderBinding
-import com.example.calcal.databinding.ActivityLoginBinding
+import com.example.calcal.databinding.ActivityAgeBinding
+import com.example.calcal.databinding.ActivityWeightBinding
 import com.example.calcal.retrofit.RequestFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class GenderActivity : AppCompatActivity() {
-    private lateinit var binding:ActivityGenderBinding
-    private var selectedGender: String? = null
+
+class WeightActivity : AppCompatActivity() {
+    private lateinit var numberPicker: NumberPicker
+    private lateinit var binding:ActivityWeightBinding
     private val apiService = RequestFactory.create()
     private lateinit var memberDTO: MemberDTO
-
-    @SuppressLint("WrongViewCast")
+    @SuppressLint("WrongViewCast", "SoonBlockedPrivateApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityGenderBinding.inflate(layoutInflater)
-        memberDTO = intent.getSerializableExtra("memberDTO") as MemberDTO
+        binding = ActivityWeightBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        memberDTO = intent.getSerializableExtra("memberDTO") as MemberDTO
+        numberPicker = findViewById<NumberPicker>(R.id.WeightNumberPicker)
 
 
-        val btnNext = findViewById<ImageView>(R.id.btn_next)
+        numberPicker.minValue = 20  // 최소 키 값
+        numberPicker.maxValue = 200 // 최대 키 값
+        numberPicker.value = 60
+        numberPicker.wrapSelectorWheel = false
 
-        binding.btnFemale.setOnClickListener {
-            it.isSelected = true
-            binding.btnMale.isSelected = false
-            selectedGender = "female"
-            updateBackground()
+        val btnBack = findViewById<ImageView>(R.id.btn_back)
+
+        btnBack.setOnClickListener {
+            val intent = Intent(this, GenderActivity::class.java)
+            intent.putExtra("memberDTO", memberDTO)
+            startActivity(intent)
         }
-        binding.btnMale.setOnClickListener {
-            it.isSelected = true
-            binding.btnFemale.isSelected = false
-            selectedGender = "male"
-            updateBackground()
-        }
 
-
-        btnNext.setOnClickListener {
-            memberDTO.gender = selectedGender.toString()
+        binding.btnNext.setOnClickListener {
+            memberDTO.weight = numberPicker.value
             val call: Call<String> = apiService.updateMemberData(memberDTO)
 
             call.enqueue(object : Callback<String> {
@@ -58,14 +56,14 @@ class GenderActivity : AppCompatActivity() {
                         val responseBody: String? = response.body()
 
                         // 젠더페이지로 이동
-                        val intent = Intent(this@GenderActivity, AgeActivity::class.java)
+                        val intent = Intent(this@WeightActivity, LoginActivity::class.java)
                         intent.putExtra("memberDTO", memberDTO)
                         startActivity(intent)
 
 
                         // responseBody에서 "Success" 등의 값을 확인하거나 원하는 처리를 수행
                         if (responseBody == "Success") {
-                            // 성공 처리
+                            Log.d("$$", "onResponse Success response : ${response.code()}")
                         } else {
                             // 다른 응답 처리
                         }
@@ -83,11 +81,6 @@ class GenderActivity : AppCompatActivity() {
 
         }
 
-
-    }
-
-    private fun updateBackground() {
-        binding.btnFemale.setBackgroundResource(if (binding.btnFemale.isSelected) R.drawable.female_on else R.drawable.female)
-        binding.btnMale.setBackgroundResource(if (binding.btnMale.isSelected) R.drawable.male_on else R.drawable.male)
     }
 }
+

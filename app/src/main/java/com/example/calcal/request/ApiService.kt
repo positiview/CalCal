@@ -12,6 +12,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -73,5 +74,8 @@ interface ApiService {
     fun withdraw(
         @Body member: MemberDTO
     ): Call<String>
+
+    @PUT("api/updateMemberData")
+    fun updateMemberData(@Body memberDTO: MemberDTO): Call<String>
 
 }

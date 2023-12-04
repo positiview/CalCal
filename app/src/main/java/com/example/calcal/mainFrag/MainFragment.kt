@@ -3,21 +3,17 @@ package com.example.calcal.mainFrag
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMainBinding
 import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.repository.MemberRepository
-import com.example.calcal.retrofit.MemberViewModelFactory
+import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import com.example.calcal.retrofit.RequestFactory
 import com.example.calcal.viewModel.MemberViewModel
 import retrofit2.Call
@@ -41,9 +37,9 @@ class MainFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMainBinding.inflate(inflater, container, false) // 뷰 바인딩 초기화
-        val sharedPreferences = requireActivity().getSharedPreferences("your_prefs_name", Context.MODE_PRIVATE)
+        val sharedPreferences = requireActivity().getSharedPreferences("login_pref", Context.MODE_PRIVATE)
         val repository = MemberRepository(sharedPreferences)
         val viewModelFactory = MemberViewModelFactory(repository)
         memberViewModel = ViewModelProvider(this, viewModelFactory)[MemberViewModel::class.java]

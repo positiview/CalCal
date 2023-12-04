@@ -14,12 +14,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.ActivitySignBinding
+import com.example.calcal.repository.MemberRepository
 import com.example.calcal.retrofit.RequestFactory
 import com.example.calcal.viewModel.MemberViewModel
+import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -65,6 +66,10 @@ class SignActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign)
+        val sharedPreferences = getSharedPreferences("login_pref", Context.MODE_PRIVATE)
+        val repository = MemberRepository(sharedPreferences)
+        val viewModelFactory = MemberViewModelFactory(repository)
+        val viewModel: MemberViewModel by viewModels { viewModelFactory }
 
 
         binding = ActivitySignBinding.inflate(layoutInflater)
@@ -121,7 +126,7 @@ class SignActivity : AppCompatActivity() {
             val hashedPassword2 = hashPassword(password2)
 
             //값 반영
-            val memberDTO = MemberDTO(email,phone,hashedPassword,hashedPassword2)
+            val memberDTO = MemberDTO(email,phone,hashedPassword,hashedPassword2, weight = null, length = null,age = null, gender = "" )
             val call: Call<String> = apiService.memberData(memberDTO)
 
             call.enqueue(object : Callback<String> {
@@ -131,12 +136,13 @@ class SignActivity : AppCompatActivity() {
                         // 서버 응답이 성공적으로 받아졌을 때
                         val responseBody: String? = response.body()
 
-                        // 로그인페이지로 이동
-                        val intent = Intent(this@SignActivity, LoginActivity::class.java)
+                        // 젠더페이지로 이동
+                        val intent = Intent(this@SignActivity, GenderActivity::class.java)
+                        intent.putExtra("memberDTO", memberDTO)
                         startActivity(intent)
 
 
-                        Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+
 
                         // responseBody에서 "Success" 등의 값을 확인하거나 원하는 처리를 수행
                         if (responseBody == "Success") {
@@ -220,7 +226,7 @@ class SignActivity : AppCompatActivity() {
             // 추가로 필요한 사용자 정보도 가져올 수 있습니다.
 
             // 회원 정보를 데이터베이스에 저장하기 위한 API 요청
-            val memberDTO = MemberDTO(email, "", "", "") // memberDTO에 필요한 정보 추가
+            val memberDTO = MemberDTO(email, "", "", "",null,null,null,"") // memberDTO에 필요한 정보 추가
             val call: Call<String> = apiService.memberData(memberDTO)
 
             call.enqueue(object : Callback<String> {
