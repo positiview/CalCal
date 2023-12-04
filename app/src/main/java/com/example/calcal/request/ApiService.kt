@@ -6,7 +6,7 @@ import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.modelDTO.DataDTO
 import com.example.calcal.modelDTO.DirectionResponseDTO
 import com.example.calcal.modelDTO.FeatureCollection
-import com.example.calcal.modelDTO.Goal
+import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.TMapRouteRequest
@@ -14,7 +14,6 @@ import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.signlogin.MemberDTO
 import retrofit2.Call
 import retrofit2.http.Body
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -109,5 +108,14 @@ interface ApiService {
         @Body request: TMapRouteRequest,
         @Query("version") version: String
     ): Call<FeatureCollection>
+
+    @POST("record/save")
+    fun saveRouteRecord(
+        @Body routeRecord: List<RouteAndTimeDTO>,
+        @Query("userEmail") userEmail: String
+    ): Call<String>
+
+    @GET("record/get")
+    fun getRouteRecord(): Call<List<RouteAndTimeDTO>>
 }
 

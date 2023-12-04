@@ -160,8 +160,8 @@
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" >
      <action
-         android:id="@+id/action_mapFragment_to_searchLocationFragment"
-         app:destination="@+id/searchLocationFragment"
+         android:id="@+id/action_mapFragment_to_historyFragment"
+         app:destination="@+id/historyFragment"
          />
     </fragment>
     <fragment
@@ -199,22 +199,22 @@
         android:name="com.example.calcal.subFrag.CalcheckFragment"
         android:label="fragment_calcheck"
         tools:layout="@layout/fragment_calcheck" />
- <fragment
+    <fragment
      android:id="@+id/centerFragment"
      android:name="com.example.calcal.mypagefrag.CenterFragment"
      android:label="fragment_center"
      tools:layout="@layout/fragment_center" />
- <fragment
+    <fragment
      android:id="@+id/modifyFragment"
      android:name="com.example.calcal.mypagefrag.ModifyFragment"
      android:label="fragment_modify"
      tools:layout="@layout/fragment_modify" />
- <fragment
+    <fragment
      android:id="@+id/notisetFragment"
      android:name="com.example.calcal.mypagefrag.NotisetFragment"
      android:label="fragment_notiset"
      tools:layout="@layout/fragment_notiset" />
- <fragment
+    <fragment
      android:id="@+id/settingFragment"
      android:name="com.example.calcal.mypagefrag.SettingFragment"
      android:label="fragment_setting"
@@ -230,6 +230,13 @@
             app:destination="@id/searchLocationFragment"
             app:launchSingleTop="true"
             app:popUpToInclusive="false"/>
+
+    </fragment>
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.calcal.subFrag.HistoryFragment"
+        android:label="fragment_history"
+        >
 
     </fragment>
 </navigation>

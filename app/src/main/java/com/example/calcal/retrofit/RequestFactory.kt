@@ -46,6 +46,7 @@ object RequestFactory {
         return retrofit.create(ApiService::class.java)
     }
 
+    // Tmap 연결 테스트
     fun create4():ApiService{
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(tmapUrl)

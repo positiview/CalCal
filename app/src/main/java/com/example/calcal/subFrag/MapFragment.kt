@@ -3,37 +3,35 @@ package com.example.calcal.subFrag
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-import android.provider.ContactsContract.Data
+import android.os.Handler
+import android.os.SystemClock
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.Chronometer
 import android.widget.ImageView
-import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMapBinding
-import com.example.calcal.modelDTO.CoordinateDTO
-import com.example.calcal.modelDTO.DataDTO
 import com.example.calcal.modelDTO.DirectionResponseDTO
-import com.example.calcal.modelDTO.FeatureCollection
-import com.example.calcal.modelDTO.TMapRouteRequest
+import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.repository.CourseRepository
 import com.example.calcal.repository.CourseRepositoryImpl
+import com.example.calcal.repository.RecordRepository
+import com.example.calcal.repository.RecordRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
-import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.CourseViewModel
+import com.example.calcal.viewModel.RecordViewModel
 import com.example.calcal.viewModelFactory.CourseViewModelFactory
+import com.example.calcal.viewModelFactory.RecordViewModelFactory
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
-import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -50,12 +48,8 @@ import com.naver.maps.map.widget.LocationButtonView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.Header
-import retrofit2.http.POST
 import java.lang.Integer.min
+import java.lang.System.currentTimeMillis
 
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -67,9 +61,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val courseRepository: CourseRepository = CourseRepositoryImpl()
     private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
-    private val viewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
+    private val courseViewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
 
-
+    private val recordRepository: RecordRepository = RecordRepositoryImpl()
+    private val recordViewModelFactory = RecordViewModelFactory(recordRepository)
+    private val recordViewModel: RecordViewModel by viewModels() { recordViewModelFactory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,19 +84,29 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 fm.beginTransaction().add(R.id.map, it).commit()
             }
 
-        binding.startbutton.setOnClickListener {
-            binding.singleLayout.visibility = View.GONE
-            binding.stopwatchChronometer.visibility = View.VISIBLE
-        }
-
-
         locationSource =
             FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-        val myRouteRecord: MutableList<LatLng> = mutableListOf()
+        val myRoute: MutableList<LatLng> = mutableListOf()
+        val handler = Handler()
+        val touchTimeout = 5000L // 5초
+        var lastTouchTime = 0L
+        var recordTime = 0L
+        var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
 
+
+        mNaverMap.setOnMapClickListener { _, _ ->
+            // 지도 터치시 현재 시간 업데이트
+            lastTouchTime = currentTimeMillis()
+
+            // 터치가 있으면 10초 뒤에 다시 확인하는 핸들러 콜백 제거
+            handler.removeCallbacksAndMessages(null)
+        }
 
         binding.apply {
-            toggleCourse.textOff = null
+            // 옵션 토글 버튼
+            // 1. 모든 레이아웃 숨기기
+            // 2. 예상 경로 숨기기
+            /*toggleCourse.textOff = null
             toggleCourse.textOn = null
             toggleCourse.setOnCheckedChangeListener { _, isChecked ->
                 if(isChecked){
@@ -110,7 +116,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     toggleCourse.setBackgroundResource(R.drawable.ic_plus_shape)
                     toggleCourse.visibility = View.GONE
                 }
-            }
+            }*/
 
             selectCourse.setOnClickListener{
                 findNavController().navigateUp()
@@ -120,13 +126,24 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             val onLocationChangeListener = object : NaverMap.OnLocationChangeListener {
                 override fun onLocationChange(location: Location) {
-                    myRouteRecord.add(LatLng(location.latitude, location.longitude))
+
+                    myRoute.add(LatLng(location.latitude, location.longitude))
                     val polyline = PolylineOverlay()
                     polyline.color = Color.BLUE
                     polyline.width = 10
                     polyline.map = mNaverMap
-                    polyline.coords = myRouteRecord
-                    // 내 위치를 설정한 후에 리스너를 제거
+                    polyline.coords = myRoute
+
+
+
+                    val chronometerTime = chronometer.base
+                    Log.d("$$","ChronometerTime : $chronometerTime")
+//                    // 기록 저장
+                    routeAndTimeDTO.add(RouteAndTimeDTO(
+                        longitude = location.longitude,
+                        latitude = location.latitude ,
+                        recordTime = chronometerTime
+                    ))
                 }
             }
             btnStart.setOnClickListener {
@@ -136,26 +153,56 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                 // 위치추적모드가 활성화 될때 이벤트 처리
                 mNaverMap.addOnLocationChangeListener(onLocationChangeListener)
-                        /*val initialPosition = LatLng(location.latitude, location.longitude)
-                        val cameraPosition = CameraPosition(initialPosition, 17.0)
-                        mNaverMap.moveCamera(CameraUpdate.toCameraPosition(cameraPosition))
-                        mNaverMap.maxZoom = 18.0
-                        mNaverMap.minZoom = 5.0
-                        Log.d("$$","onLocationChange 발동!")*/
-                        // 내 위치를 설정한 후에 리스너를 제거
 
+                calculateCalories()
+
+
+                handler.postDelayed({
+                    if (currentTimeMillis() - lastTouchTime >= touchTimeout) {
+                        mNaverMap.locationTrackingMode = LocationTrackingMode.Follow
+                    }
+                }, touchTimeout) // -> 오류 확인 필요
+
+
+                chronometer.start()
+                textViewMap.text = textCourse.text
+                stopwatchChronometer.visibility = View.VISIBLE
+                singleLayout.visibility = View.GONE
 
 
 
             }
-            // 일시 중지 버튼 (토글 버튼 추천)
-            btnPause.setOnClickListener {
+            // 중지/재개 버튼 (토글 버튼 추천)
+            btnStop.setOnCheckedChangeListener{ _, isChecked ->
+                if(isChecked){
+                    chronometer.stop()
+                    mNaverMap.removeOnLocationChangeListener(onLocationChangeListener)
+                }else{
+                    chronometer.start()
+                    mNaverMap.addOnLocationChangeListener(onLocationChangeListener)
+                }
 
             }
 
-            // 종료 버튼 + 저장
-            btnStop.setOnClickListener {
+            // 완료버튼 + 저장
+            btnComplete.setOnClickListener {
+                Toast.makeText(requireContext(),"기록을 종료합니다",Toast.LENGTH_SHORT).show()
+                chronometer.stop()
+                chronometer.base = SystemClock.elapsedRealtime()
+                textViewMap.text = "MAP"
+                mNaverMap.removeOnLocationChangeListener(onLocationChangeListener)
 
+                Toast.makeText(requireContext(),"잠시후 내 기록실로 이동합니다.",Toast.LENGTH_SHORT).show()
+
+
+
+                recordViewModel.saveRecord(routeAndTimeDTO)
+                Handler().postDelayed({
+                    findNavController().navigate(R.id.action_mapFragment_to_historyFragment)
+                }, 5000)
+                stopwatchChronometer.visibility = View.GONE
+                singleLayout.visibility = View.VISIBLE
+                // 위 두개의 코드를 어떻게 처리해야할 지 고민해봐야함
             }
 
         }
@@ -169,7 +216,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
 
-        return binding.root
+        return view
+    }
+
+    private fun calculateCalories() {
+
     }
 
     // 좌표 리스트로부터 경계를 계산하는 함수
@@ -268,11 +319,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val locationButtonView: LocationButtonView = binding.mylocationView
         locationButtonView.map = mNaverMap
 
+        mNaverMap.maxZoom = 18.0
+        mNaverMap.minZoom = 5.0
 
 
 
-
-        viewModel.getPlaceList.observe(viewLifecycleOwner) {result ->
+        courseViewModel.getPlaceList.observe(viewLifecycleOwner) { result ->
             binding.textCourse.text = result.courseName
             Log.d("$$","getPlaceList LiveData 사용")
             lateinit var start : LatLng
