@@ -39,7 +39,7 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
     private var clickedAddress:CoordinateDTO? = null
 
     private var selectedItemDTO: ItemDTO? = null
-    private lateinit var locations : LatLng
+    private var locations : LatLng = LatLng(0.0,0.0)
 
     private var waypointTextView: TextView? = null
 
