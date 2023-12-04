@@ -86,7 +86,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         locationSource =
             FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-
+        val myRouteRecord: MutableList<LatLng> = mutableListOf()
 
 
         binding.apply {
@@ -106,24 +106,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 findNavController().navigateUp()
             }
 
+
+
+            val onLocationChangeListener = object : NaverMap.OnLocationChangeListener {
+                override fun onLocationChange(location: Location) {
+                    myRouteRecord.add(LatLng(location.latitude, location.longitude))
+                    val polyline = PolylineOverlay()
+                    polyline.color = Color.BLUE
+                    polyline.width = 10
+                    polyline.map = mNaverMap
+                    polyline.coords = myRouteRecord
+                    // 내 위치를 설정한 후에 리스너를 제거
+                }
+            }
             btnStart.setOnClickListener {
                  //위치 추적 모드, 현위치 오버레이와 카메라 좌표가 사용자의 위치를 따라 움직입니다. API나 제스터를 사용시 위치추적모드 해제
                 mNaverMap.locationTrackingMode = LocationTrackingMode.Follow // <-- 에뮬에서는 안되는듯
 
 
-                val myRouteRecord: MutableList<LatLng> = mutableListOf()
-
-                val polyline = PolylineOverlay()
-                polyline.color = Color.BLUE
-                polyline.width = 10
-                polyline.map = mNaverMap
-
                 // 위치추적모드가 활성화 될때 이벤트 처리
-                mNaverMap.addOnLocationChangeListener(object : NaverMap.OnLocationChangeListener {
-                    override fun onLocationChange(location: Location) {
-                        myRouteRecord.add(LatLng(location.latitude,location.longitude))
-
-                        polyline.coords = myRouteRecord
+                mNaverMap.addOnLocationChangeListener(onLocationChangeListener)
                         /*val initialPosition = LatLng(location.latitude, location.longitude)
                         val cameraPosition = CameraPosition(initialPosition, 17.0)
                         mNaverMap.moveCamera(CameraUpdate.toCameraPosition(cameraPosition))
@@ -131,15 +133,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         mNaverMap.minZoom = 5.0
                         Log.d("$$","onLocationChange 발동!")*/
                         // 내 위치를 설정한 후에 리스너를 제거
-//                        mNaverMap.removeOnLocationChangeListener(this)
-                    }
-                })
+
+
+
+
             }
             // 일시 중지 버튼 (토글 버튼 추천)
+            btnPause.setOnClickListener {
 
+            }
 
-            // 영구 중지 버튼 + 저장
+            // 종료 버튼 + 저장
+            btnStop.setOnClickListener {
 
+            }
 
         }
 

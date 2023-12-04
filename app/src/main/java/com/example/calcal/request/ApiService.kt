@@ -98,7 +98,9 @@ interface ApiService {
         @Query("version") version: String,
         @Query("format") format:String,
         @Body data: DataDTO,
-        @Header("appKey") appKey:String
+        @Header("appKey") appKey:String,
+        @Header("Accept") accept: String,
+        @Header("Content-Type") contentType: String,
     ): Call<FeatureCollection>
 
     @POST("routes/pedestrian")

@@ -27,7 +27,7 @@
             android:layout_gravity="left|center_vertical"
             android:background="@drawable/ic_arrow" />
         <TextView
-            android:id="@+id/textView9"
+            android:id="@+id/text_view_map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="MAP"
@@ -221,8 +221,40 @@
                 android:textColor="@color/white"
                 android:elevation="5dp"
                 />
+            <ToggleButton
+                android:id="@+id/btn_pause"
+                android:background="@drawable/redgradient"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:textOff="일시 중지"
+                android:textOn="재개"
+                android:visibility="gone"
+                android:textSize="20sp"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:fontFamily="@font/notosanskr_bold"
+                android:textColor="@color/white"
+                android:elevation="5dp"
+                />
+            <Button
+                android:id="@+id/btn_stop"
+                android:background="@drawable/redgradient"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:text="종료"
+                android:textSize="20sp"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:fontFamily="@font/notosanskr_bold"
+                android:textColor="@color/white"
+                android:elevation="5dp"
+                />
         </LinearLayout>
-
 
     </LinearLayout>
 
