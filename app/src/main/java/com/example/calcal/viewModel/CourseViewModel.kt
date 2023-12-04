@@ -28,7 +28,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
 
 
     fun saveCourse(courseName:String, placeList:List<CoordinateDTO>){
-        _getPlaceList.value = CourseListDTO(cid = 0,courseName,placeList)
+        _getPlaceList.value = CourseListDTO(cid = 0,courseName,placeList,coordinateCount=0)
         Log.d("$$","saveCourse 에 접근")
         viewModelScope.launch {
 

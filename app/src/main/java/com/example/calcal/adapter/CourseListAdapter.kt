@@ -29,9 +29,7 @@ class CourseListAdapter(private val courseList: MutableList<CourseListDTO>, priv
 
         fun bind(cList:CourseListDTO){
             courseName.text = cList.courseName
-            // placeList가 null인지 확인
-            val placeListSize = cList.placeList?.size ?: 0
-            courseSummary.text = "$placeListSize 개 루트"
+            courseSummary.text = "${cList.coordinateCount} 개 루트"
         }
     }
 
