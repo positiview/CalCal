@@ -8,7 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Chronometer
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -66,11 +69,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
     private val viewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+
         binding = FragmentMapBinding.inflate(inflater,container, false)
         val view = binding.root
         val options = NaverMapOptions()
@@ -81,7 +88,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 fm.beginTransaction().add(R.id.map, it).commit()
             }
 
-        mapFragment.getMapAsync(this)
+        binding.startbutton.setOnClickListener {
+            binding.singleLayout.visibility = View.GONE
+            binding.stopwatchChronometer.visibility = View.VISIBLE
+        }
 
 
         locationSource =

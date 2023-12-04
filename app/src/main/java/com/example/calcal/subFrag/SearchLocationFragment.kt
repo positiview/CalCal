@@ -72,7 +72,24 @@ class SearchLocationFragment:Fragment() {
 //        ViewModelProvider(this, courseViewModelFactory)[CourseViewModel::class.java]
 //    }
     private val viewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
+    private lateinit var directSearchMapFragment: DirectSearchMapFragment
 
+    // DirectSearchMapFragment 인스턴스를 설정합니다.
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        directSearchMapFragment = DirectSearchMapFragment()
+    }
+
+    // DirectSearchMapFragment의 인스턴스를 반환하는 메서드
+    fun getDirectSearchMapFragmentInstance(): DirectSearchMapFragment {
+        return directSearchMapFragment
+    }
+
+    // DirectSearchMapFragment에 값을 업데이트하는 메서드
+    fun updateDirectSearchMapFragment(coordinateDTO: CoordinateDTO?) {
+        directSearchMapFragment.setLocationAndAddress(coordinateDTO)
+        directSearchMapFragment.setCurrentLocation(LatLng(coordinateDTO?.latidute ?: 0.0, coordinateDTO?.longitude ?: 0.0))
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
