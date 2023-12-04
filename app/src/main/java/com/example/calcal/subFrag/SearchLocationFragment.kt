@@ -159,25 +159,28 @@ class SearchLocationFragment:Fragment() {
         val recyclerView = binding.courseList
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        // 코스 목록 관찰
-        viewModel.getCourse.observe(viewLifecycleOwner){
-            when(it){
-                is Resource.Loading->{
+        // 코스 데이터 불러오기
+        viewModel.getCourse()
 
+        // 코스 목록 관찰
+        viewModel.getCourse.observe(viewLifecycleOwner) {
+            when (it) {
+                is Resource.Loading -> {
+                    // 로딩 중 처리
                 }
-                is Resource.Success->{
-                    if(it.data != null){
-                        courseListAdapter = CourseListAdapter(it.data.toMutableList(),this)
+                is Resource.Success -> {
+                    // 데이터 로드 성공 처리
+                    if (it.data != null) {
+                        courseListAdapter = CourseListAdapter(it.data.toMutableList(), this)
                         recyclerView.adapter = courseListAdapter
                     }
                 }
-                else->{
-
+                is Resource.Error -> {
+                    // 에러 처리
                 }
-
-
             }
         }
+
 
         // 버튼들
         binding.apply{

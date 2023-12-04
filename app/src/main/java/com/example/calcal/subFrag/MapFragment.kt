@@ -94,13 +94,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
 
 
-        mNaverMap.setOnMapClickListener { _, _ ->
-            // 지도 터치시 현재 시간 업데이트
-            lastTouchTime = currentTimeMillis()
-
-            // 터치가 있으면 10초 뒤에 다시 확인하는 핸들러 콜백 제거
-            handler.removeCallbacksAndMessages(null)
-        }
+//        mNaverMap.setOnMapClickListener { _, _ ->
+//            // 지도 터치시 현재 시간 업데이트
+//            lastTouchTime = currentTimeMillis()
+//
+//            // 터치가 있으면 10초 뒤에 다시 확인하는 핸들러 콜백 제거
+//            handler.removeCallbacksAndMessages(null)
+//        }
 
         binding.apply {
             // 옵션 토글 버튼

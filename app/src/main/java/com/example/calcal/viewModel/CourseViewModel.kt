@@ -67,15 +67,21 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
         }
     }
 
-    fun getCourse(){
+    fun getCourse() {
         viewModelScope.launch {
-            _getCourse.value = Resource.Loading
-            try{
-                repository.getCourses(){
-                    _getCourse.value = it
+            _getCourse.value = Resource.Loading // 로딩 상태 설정
+
+            repository.getCourses() { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        _getCourse.value = result // 코스 데이터를 LiveData에 설정
+                    }
+                    is Resource.Error -> {
+                        _getCourse.value = result // 에러 처리
+                    }
+
+                    else -> {}
                 }
-            }catch (e:Exception){
-                _getCourse.value = Resource.Error(e.message.toString())
             }
         }
     }
