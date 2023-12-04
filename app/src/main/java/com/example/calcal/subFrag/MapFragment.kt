@@ -58,6 +58,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var mNaverMap: NaverMap
     private lateinit var uiSettings: UiSettings
     private lateinit var btn_back:ImageView
+    private val handler = Handler()
+    private val touchTimeout = 5000L // 5초
+    private var lastTouchTime = 0L
+
 
     private val courseRepository: CourseRepository = CourseRepositoryImpl()
     private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
@@ -87,20 +91,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         locationSource =
             FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         val myRoute: MutableList<LatLng> = mutableListOf()
-        val handler = Handler()
-        val touchTimeout = 5000L // 5초
-        var lastTouchTime = 0L
+
         var recordTime = 0L
         var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
 
 
-//        mNaverMap.setOnMapClickListener { _, _ ->
-//            // 지도 터치시 현재 시간 업데이트
-//            lastTouchTime = currentTimeMillis()
-//
-//            // 터치가 있으면 10초 뒤에 다시 확인하는 핸들러 콜백 제거
-//            handler.removeCallbacksAndMessages(null)
-//        }
 
         binding.apply {
             // 옵션 토글 버튼
@@ -197,7 +192,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
                 recordViewModel.saveRecord(routeAndTimeDTO)
-                Handler().postDelayed({
+                handler.postDelayed({
                     findNavController().navigate(R.id.action_mapFragment_to_historyFragment)
                 }, 5000)
                 stopwatchChronometer.visibility = View.GONE
@@ -322,7 +317,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mNaverMap.maxZoom = 18.0
         mNaverMap.minZoom = 5.0
 
+        mNaverMap.setOnMapClickListener { _, _ ->
+            // 지도 터치시 현재 시간 업데이트
+            lastTouchTime = currentTimeMillis()
 
+            // 터치가 있으면 10초 뒤에 다시 확인하는 핸들러 콜백 제거
+            handler.removeCallbacksAndMessages(null) // 버그 체크 필요
+        }
 
         courseViewModel.getPlaceList.observe(viewLifecycleOwner) { result ->
             binding.textCourse.text = result.courseName
