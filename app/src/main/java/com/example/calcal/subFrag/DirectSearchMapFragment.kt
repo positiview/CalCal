@@ -25,7 +25,9 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import java.util.Locale
-
+interface OnMapConfirmListener {
+    fun onConfirmButtonClicked(locations: LatLng) // 원하는 데이터 형식으로 수정 가능
+}
 class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
     private lateinit var itemDTO: ItemDTO // 전달받은 itemDTO 값
     private lateinit var binding: FragmentDirectSearchMapBinding
@@ -37,6 +39,11 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
     private var selectedAddress: String? = null
     private var selectedLocation: LatLng? = null
 
+    private var confirmListener: OnMapConfirmListener? = null
+
+    fun setOnMapConfirmListener(listener: OnMapConfirmListener) {
+        confirmListener = listener
+    }
 
     fun setItemDTO(item: ItemDTO) {
         this.itemDTO = item
