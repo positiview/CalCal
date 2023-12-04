@@ -12,7 +12,6 @@ data class DirectionResponseDTO(
 
 
 data class Route(
-    val traoptimal: List<Optiaml>,
     var traavoidcaronly: List<Optiaml>
 )
 
@@ -28,6 +27,7 @@ data class Optiaml(
 data class Summary(
    val start: Location,
     val goal: Goal,
+   val waypoints: ArrayList<Waypoints>,
     val distance: Int,
     val duration: Int,
     val bbox: List<List<Double>>,
@@ -38,13 +38,27 @@ data class Summary(
 
 
 data class Location(
-    val location: List<Double>
+    val location: List<Double>,
+
+
+
 )
 
 
 data class Goal(
     val location: List<Double>,
-    val dir: Int
+    val dir: Int,
+    val distance: Int,
+    val duration: Int,
+    val pointIndex:Int
+)
+
+data class Waypoints(
+    val location: List<Double>,
+    val dir: Int,
+    val distance: Int,
+    val duration: Int,
+    val pointIndex:Int
 )
 
 

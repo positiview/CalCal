@@ -28,12 +28,14 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
 
 
     fun saveCourse(courseName:String, placeList:List<CoordinateDTO>){
+        _getPlaceList.value = CourseListDTO(cid = 0,courseName,placeList)
         Log.d("$$","saveCourse 에 접근")
         viewModelScope.launch {
 
             try{
                 repository.saveCourse(courseName, placeList) {
-                    val currentResource: Resource<List<CourseListDTO>?> = _getCourse.value ?: Resource.Success(emptyList())
+
+                   /* val currentResource: Resource<List<CourseListDTO>?> = _getCourse.value ?: Resource.Success(emptyList())
                     val currentList: List<CourseListDTO>? =
                         when (currentResource) {
                         is Resource.Success -> currentResource.data
@@ -55,7 +57,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
                         }
                     }
 
-                    _getCourse.value = transformedResource
+                    _getCourse.value = transformedResource*/
                 }
             }catch (e:Exception){
                 _getCourse.value = Resource.Error(e.message.toString())
@@ -69,7 +71,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
         viewModelScope.launch {
             _getCourse.value = Resource.Loading
             try{
-                repository.getCourse(){
+                repository.getCourses(){
                     _getCourse.value = it
                 }
             }catch (e:Exception){
@@ -82,7 +84,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
         viewModelScope.launch {
             _getCourse.value = Resource.Loading
             try{
-                repository.getCourse(){
+                repository.getCourses(){
                     _getCourse.value = it
                 }
             }catch (e:Exception){

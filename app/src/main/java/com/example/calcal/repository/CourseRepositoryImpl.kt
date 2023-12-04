@@ -19,14 +19,14 @@ class CourseRepositoryImpl: CourseRepository {
     ) {
         // 코스를 데이터베이스에 저장
         val call : Call<String> = apiService.saveCourseList(courseName, placeList)
-        Log.d("$$", "repository에 접근")
+        Log.d("$$", "repository에 접근 placeList = $placeList")
         call.enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if(response.isSuccessful){
                     val responseBody: String? = response.body()
                     var cid:Long = 0
                     result.invoke(Resource.Success(CourseListDTO(cid,courseName, placeList)))
-                    Log.d("$$","성공!!")
+                    Log.d("$$","코스 저장 성공!!")
 
                 }else{
                     result.invoke(Resource.Error("course 저장 응답 실패"))
@@ -40,7 +40,7 @@ class CourseRepositoryImpl: CourseRepository {
         })
     }
 
-    override suspend fun getCourse(result: (Resource<List<CourseListDTO>?>) -> Unit) {
+    override suspend fun getCourses(result: (Resource<List<CourseListDTO>?>) -> Unit) {
         val call : Call<List<CourseListDTO>> = apiService.getCourseList()
 
         call.enqueue(object : Callback<List<CourseListDTO>>{

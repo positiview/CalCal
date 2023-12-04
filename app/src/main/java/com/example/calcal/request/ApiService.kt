@@ -3,13 +3,18 @@ package com.example.calcal.request
 import com.example.calcal.modelDTO.ChannelDTO
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.CourseListDTO
+import com.example.calcal.modelDTO.DataDTO
 import com.example.calcal.modelDTO.DirectionResponseDTO
+import com.example.calcal.modelDTO.FeatureCollection
+import com.example.calcal.modelDTO.Goal
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
+import com.example.calcal.modelDTO.TMapRouteRequest
 import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.signlogin.MemberDTO
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -54,12 +59,17 @@ interface ApiService {
         @Header("X-NCP-APIGW-API-KEY") apiKey: String
     ): Call<NaverGeocodingResponseDTO>
 
+
+
     @GET("map-direction/v1/driving")
     fun directions5(
-        @Query("start") start:String,
-        @Query("end") end:String,
-        @Query("waypoints") waypoints:String
-    ):Call<DirectionResponseDTO>
+        @Query("start") start: String,
+        @Query("goal") goal: String,
+        @Query("waypoints") waypoints: String,
+        @Query("option") option: String,
+        @Header("X-NCP-APIGW-API-KEY-ID") apiKeyId: String,
+        @Header("X-NCP-APIGW-API-KEY") apiKey: String
+    ): Call<DirectionResponseDTO>
 
     @GET("map-reversegeocode/v2/gc")
     fun reverseGeocode(
@@ -83,4 +93,19 @@ interface ApiService {
         @Body member: MemberDTO
     ): Call<String>
 
+    @POST("routes/pedestrian")
+    fun pedestrianRoute(
+        @Query("version") version: String,
+        @Query("format") format:String,
+        @Body data: DataDTO,
+        @Header("appKey") appKey:String
+    ): Call<FeatureCollection>
+
+    @POST("routes/pedestrian")
+    fun getPedestrianRoute(
+        @Header("appKey") appKey: String,
+        @Body request: TMapRouteRequest,
+        @Query("version") version: String
+    ): Call<FeatureCollection>
 }
+
