@@ -97,7 +97,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
 
-
         binding.apply {
             // 옵션 토글 버튼
             // 1. 모든 레이아웃 숨기기
