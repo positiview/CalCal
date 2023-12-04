@@ -1,7 +1,8 @@
 package com.example.calcal.modelDTO
 
 data class CourseListDTO(
-    var cid:Long,
-    var courseName:String,
-    var placeList: List<CoordinateDTO>
+    val cid: Long,
+    val courseName: String,
+    val placeList: List<CoordinateDTO>,
+    val coordinateCount: Int // 새로 추가된 필드
 )

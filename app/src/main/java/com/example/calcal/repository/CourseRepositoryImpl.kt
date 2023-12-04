@@ -25,7 +25,8 @@ class CourseRepositoryImpl: CourseRepository {
                 if(response.isSuccessful){
                     val responseBody: String? = response.body()
                     var cid:Long = 0
-                    result.invoke(Resource.Success(CourseListDTO(cid,courseName, placeList)))
+                    val coordinateCount = placeList.size // CoordinateDTO의 개수를 계산
+                    result.invoke(Resource.Success(CourseListDTO(cid,courseName, placeList, coordinateCount))) // coordinateCount를 설정
                     Log.d("$$","코스 저장 성공!!")
 
                 }else{
@@ -38,6 +39,7 @@ class CourseRepositoryImpl: CourseRepository {
             }
 
         })
+
     }
 
     override suspend fun getCourses(result: (Resource<List<CourseListDTO>?>) -> Unit) {

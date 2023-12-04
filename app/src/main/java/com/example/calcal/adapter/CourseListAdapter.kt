@@ -29,8 +29,7 @@ class CourseListAdapter(private val courseList: MutableList<CourseListDTO>, priv
 
         fun bind(cList:CourseListDTO){
             courseName.text = cList.courseName
-            courseSummary.text = cList.placeList.size.toString()+"개 루트"
-
+            courseSummary.text = "${cList.coordinateCount} 개 루트"
         }
     }
 
