@@ -37,7 +37,9 @@ class GraphFragment : Fragment() {
         list.add("디비값")
         list.add("요소 추가")
 
-        val adapter = GraphAdapter(list, this)
+        val navController = NavHostFragment.findNavController(this)
+
+        val adapter = GraphAdapter(list, this, navController)
         recyclerView.adapter = adapter
 
         btn_back = binding.btnBack

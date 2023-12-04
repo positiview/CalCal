@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
@@ -24,7 +23,6 @@ import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.signlogin.MemberDTO
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class MypageFragment : Fragment() {
@@ -41,15 +39,12 @@ class MypageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMypageBinding.inflate(inflater, container, false)
         val view = inflater.inflate(R.layout.fragment_mypage, container, false)
 // SharedPreferences 초기화
@@ -60,9 +55,8 @@ class MypageFragment : Fragment() {
 
         val list = ArrayList<String>()
         list.add("프로필 수정")
-        list.add("알림설정")
-        list.add("고객센터")
         list.add("환경설정")
+        list.add("고객센터")
         list.add("로그아웃")
         list.add("회원탈퇴")
 
@@ -84,20 +78,16 @@ class MypageFragment : Fragment() {
                 .navigate(R.id.action_mypageFragment_to_modifyFragment)
 
             1 -> NavHostFragment.findNavController(this)
-                .navigate(R.id.action_mypageFragment_to_notisetFragment)
+                .navigate(R.id.action_mypageFragment_to_settingFragment)
 
             2 -> NavHostFragment.findNavController(this)
                 .navigate(R.id.action_mypageFragment_to_centerFragment)
 
-            3 -> NavHostFragment.findNavController(this)
-                .navigate(R.id.action_mypageFragment_to_settingFragment)
-
-
-            4 -> {
+            3 -> {
                 // 로그아웃 확인 창 표시
                 showLogoutConfirmationDialog()
             }
-            5 -> {
+            4 -> {
                 // 회원탈퇴 확인 창 표시
                 showWithdrawConfirmationDialog()
             }
@@ -139,6 +129,12 @@ class MypageFragment : Fragment() {
         alertDialogBuilder.setPositiveButton("예") { _, _ ->
             // 사용자가 "예"를 선택한 경우, 회원탈퇴 처리
             performWithdraw()
+
+            val intent = Intent(context, LoginActivity::class.java)
+            startActivity(intent)
+            activity?.finish()
+            // 현재 액티비티 종료 (선택 사항)
+
         }
         alertDialogBuilder.setNegativeButton("취소", null)
         alertDialogBuilder.create().show()
@@ -154,7 +150,12 @@ class MypageFragment : Fragment() {
             email = email ?: "", // null인 경우 빈 문자열로 설정
             phone = "", // 필요 없는 값이므로 빈 문자열로 설정
             password = "", // 필요 없는 값이므로 빈 문자열로 설정
-            password2 = "" // 필요 없는 값이므로 빈 문자열로 설정
+            password2 = "", // 필요 없는 값이므로 빈 문자열로 설정
+            weight = null,
+            length = null,
+            age = null,
+            gender = ""
+
         )
 
         val call: Call<String> = apiService.withdraw(memberDTO)

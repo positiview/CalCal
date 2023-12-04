@@ -17,6 +17,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Query
 
 interface ApiService {
@@ -117,5 +118,8 @@ interface ApiService {
 
     @GET("record/get")
     fun getRouteRecord(): Call<List<RouteAndTimeDTO>>
+
+    @PUT("api/updateMemberData")
+    fun updateMemberData(@Body memberDTO: MemberDTO): Call<String>
 }
 

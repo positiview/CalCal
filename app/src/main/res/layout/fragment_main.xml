@@ -230,7 +230,7 @@
                 android:layout_marginTop="16dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/daycount"
+                    android:id="@+id/btn_daycount"
                     android:layout_width="160dp"
                     android:layout_height="160dp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -257,7 +257,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/kg"
+                    android:id="@+id/btn_kgcheck"
                     android:layout_width="160dp"
                     android:layout_height="160dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -294,7 +294,7 @@
 
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/exercise"
+                    android:id="@+id/btn_exerciseinfo"
                     android:layout_width="160dp"
                     android:layout_height="160dp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -318,7 +318,7 @@
                         app:layout_constraintBottom_toBottomOf="parent" />
 
                     <TextView
-                        android:id="@+id/exercisetext"
+                        android:id="@+id/btn_exercisestart"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_bold"

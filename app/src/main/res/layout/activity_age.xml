@@ -7,7 +7,18 @@
     android:background="@color/backgroundblack"
     tools:context=".MainActivity">
 
+    <NumberPicker
+        android:id="@+id/ageNumberPicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout"
+        app:layout_constraintTop_toTopOf="@+id/linearLayout"
+        android:theme="@style/NumberPickerStyle"/>
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="550dp"
@@ -36,12 +47,17 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
 
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="-113dp"
+        tools:layout_editor_absoluteY="-16dp">
+
 
         <TextView
             android:layout_width="wrap_content"
@@ -58,24 +74,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="30dp"
             android:fontFamily="@font/poppins_bold"
             android:text="나이는 몇살 이신가요?"
             android:textColor="@color/white"
-            android:layout_marginBottom="30dp"
             android:textSize="10sp" />
-
-        <ScrollView
-            android:id="@+id/btn_male"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="75dp"
-            android:background="@drawable/sign_age"
-            android:fontFamily="@font/notosanskr_bold"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="20dp"
-            app:cornerRadius="20dp" />
 
 
     </LinearLayout>
