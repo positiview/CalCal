@@ -39,6 +39,7 @@ interface ApiService {
 
     @POST("course/save")
     fun saveCourseList(
+        @Query("email") email: String,
         @Query("courseName") courseName: String,
         @Body courseList: List<CoordinateDTO>
     ): Call<String>
