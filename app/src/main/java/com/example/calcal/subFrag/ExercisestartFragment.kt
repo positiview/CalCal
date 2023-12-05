@@ -15,6 +15,7 @@ import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -24,15 +25,17 @@ import com.example.calcal.R
 import com.example.calcal.adapter.ExStartAdapter
 import com.example.calcal.adapter.GraphAdapter
 import com.example.calcal.databinding.FragmentExercisestartBinding
+import com.example.calcal.viewModel.ExerciseViewModel
 
 
 class ExercisestartFragment : Fragment() {
     private lateinit var binding: FragmentExercisestartBinding
     private lateinit var btn_back: Button
+    private lateinit var viewModel: ExerciseViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        viewModel = ViewModelProvider(this).get(ExerciseViewModel::class.java)
 
     }
 
@@ -42,7 +45,9 @@ class ExercisestartFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentExercisestartBinding.inflate(inflater, container, false)
+        viewModel.exerciseList.observe(viewLifecycleOwner) { exercises ->
 
+        }
         btn_back = binding.btnBack
         btn_back.setOnClickListener {
             NavHostFragment.findNavController(this).navigateUp()
