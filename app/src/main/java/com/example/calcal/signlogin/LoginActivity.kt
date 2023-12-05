@@ -78,9 +78,6 @@ class LoginActivity : AppCompatActivity() {
 
         // SharedPreferences 초기화
         sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        val repository = MemberRepository(sharedPreferences)
-        val viewModelFactory = MemberViewModelFactory(repository)
-        memberViewModel = ViewModelProvider(this, viewModelFactory).get(MemberViewModel::class.java)
 
         // 인터넷 연결 상태를 확인하기 위한 코드
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -118,7 +115,6 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            viewModel.updateEmail(email)
 
             val hashedPassword = hashPassword(password)
 
@@ -249,7 +245,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val PREF_NAME = "login_pref"
+        const val PREF_NAME = "login_pref"
         const val KEY_IS_LOGGED_IN = "is_logged_in"
         const val KEY_EMAIL = "email" // KEY_EMAIL 상수 정의
     }

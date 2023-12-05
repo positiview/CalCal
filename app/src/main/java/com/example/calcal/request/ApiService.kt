@@ -9,7 +9,6 @@ import com.example.calcal.modelDTO.FeatureCollection
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
-import com.example.calcal.modelDTO.TMapRouteRequest
 import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.signlogin.MemberDTO
 import retrofit2.Call
@@ -103,12 +102,7 @@ interface ApiService {
         @Header("Content-Type") contentType: String,
     ): Call<FeatureCollection>
 
-    @POST("routes/pedestrian")
-    fun getPedestrianRoute(
-        @Header("appKey") appKey: String,
-        @Body request: TMapRouteRequest,
-        @Query("version") version: String
-    ): Call<FeatureCollection>
+
 
     @POST("record/save")
     fun saveRouteRecord(

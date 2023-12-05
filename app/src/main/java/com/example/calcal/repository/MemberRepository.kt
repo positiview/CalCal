@@ -1,20 +1,12 @@
 package com.example.calcal.repository
 
-import android.content.SharedPreferences
-import android.util.Log
 
-class MemberRepository(private val sharedPreferences: SharedPreferences) {
-    fun getEmail(): String {
-        val email = sharedPreferences.getString("email", "") ?: ""
-        Log.d("MemberRepository", "getEmail: $email")
-        return email
-    }
+import com.example.calcal.signlogin.MemberDTO
+import com.example.calcal.util.Resource
 
 
-    fun saveEmail(email: String) {
-        with(sharedPreferences.edit()) {
-            putString("email", email)
-            apply()
-        }
-    }
+interface MemberRepository{
+    suspend fun saveMember(memberDTO: MemberDTO, result: (Resource<Boolean>)->Unit)
+
+    suspend fun getMember(result: (MemberDTO) -> Unit)
 }

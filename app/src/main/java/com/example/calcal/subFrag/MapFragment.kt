@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -32,6 +33,7 @@ import com.example.calcal.viewModelFactory.CourseViewModelFactory
 import com.example.calcal.viewModelFactory.RecordViewModelFactory
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -44,6 +46,7 @@ import com.naver.maps.map.overlay.PathOverlay
 import com.naver.maps.map.overlay.PolylineOverlay
 import com.naver.maps.map.util.FusedLocationSource
 import com.naver.maps.map.util.MarkerIcons
+import com.naver.maps.map.widget.CompassView
 import com.naver.maps.map.widget.LocationButtonView
 import retrofit2.Call
 import retrofit2.Callback
@@ -87,6 +90,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             ?: MapFragment.newInstance(options).also {
                 fm.beginTransaction().add(R.id.map, it).commit()
             }
+        mapFragment.getMapAsync(this)
 
         locationSource =
             FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
@@ -98,20 +102,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
         binding.apply {
-            // 옵션 토글 버튼
+            // 옵션 토글 버튼 수정 필요!!
             // 1. 모든 레이아웃 숨기기
             // 2. 예상 경로 숨기기
-            /*toggleCourse.textOff = null
-            toggleCourse.textOn = null
-            toggleCourse.setOnCheckedChangeListener { _, isChecked ->
+            btnOption.setOnCheckedChangeListener { _, isChecked ->
                 if(isChecked){
-                    toggleCourse.setBackgroundResource(R.drawable.ic_minus_shape)
                     courseRecode.visibility = View.VISIBLE
                 }else{
-                    toggleCourse.setBackgroundResource(R.drawable.ic_plus_shape)
-                    toggleCourse.visibility = View.GONE
+                    courseRecode.visibility = View.GONE
                 }
-            }*/
+            }
 
             selectCourse.setOnClickListener{
                 findNavController().navigateUp()
@@ -305,28 +305,34 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
-
+    @UiThread
     override fun onMapReady(naverMap: NaverMap) {
+        Log.d("$$","onMapReady 실행")
+
+
         mNaverMap = naverMap
         mNaverMap.locationSource = locationSource
         uiSettings = naverMap.uiSettings
         uiSettings.isLocationButtonEnabled = false
+        // 내위치 찾는 버튼
         val locationButtonView: LocationButtonView = binding.mylocationView
         locationButtonView.map = mNaverMap
+        // 나침반
+        val compassView: CompassView = binding.compass
+        compassView.map = mNaverMap
 
         mNaverMap.maxZoom = 18.0
         mNaverMap.minZoom = 5.0
 
-        mNaverMap.setOnMapClickListener { _, _ ->
+       /* mNaverMap.setOnMapClickListener { _, _ ->
             // 지도 터치시 현재 시간 업데이트
             lastTouchTime = currentTimeMillis()
 
             // 터치가 있으면 10초 뒤에 다시 확인하는 핸들러 콜백 제거
             handler.removeCallbacksAndMessages(null) // 버그 체크 필요
-        }
+        }*/
 
         courseViewModel.getPlaceList.observe(viewLifecycleOwner) { result ->
-            binding.textCourse.text = result.courseName
             Log.d("$$","getPlaceList LiveData 사용")
             lateinit var start : LatLng
             lateinit var end :LatLng
@@ -336,49 +342,56 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             var waypoint4 :LatLng? = null
             var waypoint5 :LatLng? = null
 
-            when (result.placeList.size) {
-                in 2..7 -> {
-                    start = LatLng(result.placeList[0].latidute, result.placeList[0].longitude)
-                        Log.d("$$","start = $start")
-                    end = LatLng(result.placeList.last().latidute, result.placeList.last().longitude)
 
-                    for (i in 1 until min(result.placeList.size - 1, 6)) {
-                        val waypoint = LatLng(result.placeList[i].latidute, result.placeList[i].longitude)
-                        when (i) {
-                            1 -> waypoint1 = waypoint
-                            2 -> waypoint2 = waypoint
-                            3 -> waypoint3 = waypoint
-                            4 -> waypoint4 = waypoint
-                            5 -> waypoint5 = waypoint
+
+            if (result != null) {
+                binding.textCourse.text = result.courseName
+                when (result.placeList.size) {
+                    in 2..7 -> {
+                        start = LatLng(result.placeList[0].latidute, result.placeList[0].longitude)
+                            Log.d("$$","start = $start")
+                        end = LatLng(result.placeList.last().latidute, result.placeList.last().longitude)
+
+                        for (i in 1 until min(result.placeList.size - 1, 6)) {
+                            val waypoint = LatLng(result.placeList[i].latidute, result.placeList[i].longitude)
+                            when (i) {
+                                1 -> waypoint1 = waypoint
+                                2 -> waypoint2 = waypoint
+                                3 -> waypoint3 = waypoint
+                                4 -> waypoint4 = waypoint
+                                5 -> waypoint5 = waypoint
+                            }
                         }
                     }
+                    else -> {
+                        // 예외 처리 또는 다른 조건에 따른 로직 추가
+                        // 예: throw IllegalArgumentException("Unsupported size: ${result.placeList.size}")
+                    }
                 }
-                else -> {
-                    // 예외 처리 또는 다른 조건에 따른 로직 추가
-                    // 예: throw IllegalArgumentException("Unsupported size: ${result.placeList.size}")
-                }
-            }
-            // waypoint가 없을 경우 빈리스트로 초기화
-            val waypointList = mutableListOf<LatLng>()
+                // waypoint가 없을 경우 빈리스트로 초기화
+                val waypointList = mutableListOf<LatLng>()
 
-            if (waypoint1!=null) {
-                waypointList.add(waypoint1)
+                if (waypoint1!=null) {
+                    waypointList.add(waypoint1)
+                }
+                if (waypoint2!=null) {
+                    waypointList.add(waypoint2)
+                }
+                if (waypoint3!=null) {
+                    waypointList.add(waypoint3)
+                }
+                if (waypoint4!=null) {
+                    waypointList.add(waypoint4)
+                }
+                if (waypoint5!=null) {
+                    waypointList.add(waypoint5)
+                }
+                getRoute(start,end ,waypointList)
+            }else{
+
             }
-            if (waypoint2!=null) {
-                waypointList.add(waypoint2)
-            }
-            if (waypoint3!=null) {
-                waypointList.add(waypoint3)
-            }
-            if (waypoint4!=null) {
-                waypointList.add(waypoint4)
-            }
-            if (waypoint5!=null) {
-                waypointList.add(waypoint5)
-            }
-            getRoute(start,end ,waypointList)
+
         }
-
 
     }
 

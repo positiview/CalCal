@@ -15,11 +15,13 @@ import java.util.Collections.addAll
 
 class CourseViewModel(private val repository: CourseRepository): ViewModel() {
 
-
+    // DB에서 사용자별 루트 검색 기록
     private val _getCourse : MutableLiveData<Resource<List<CourseListDTO>?>> = MutableLiveData()
 
     val getCourse : LiveData<Resource<List<CourseListDTO>?>> get() = _getCourse
 
+
+    // 경로 루트들 + 이름
     private val _getPlaceList : MutableLiveData<CourseListDTO> = MutableLiveData()
 
     val getPlaceList : LiveData<CourseListDTO> get() =_getPlaceList

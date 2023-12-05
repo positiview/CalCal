@@ -1,6 +1,7 @@
 package com.example.calcal.mainFrag
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +16,8 @@ import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.repository.MemberRepository
 import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.signlogin.LoginActivity
+import com.example.calcal.signlogin.LoginActivity.Companion.PREF_NAME
 import com.example.calcal.viewModel.MemberViewModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,7 +29,7 @@ class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private val apiService = RequestFactory.create()
     private lateinit var memberViewModel: MemberViewModel
-
+    private lateinit var sharedPreferences: SharedPreferences
     //    private lateinit var btn_alarm : Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +43,6 @@ class MainFragment : Fragment() {
     ): View {
         binding = FragmentMainBinding.inflate(inflater, container, false) // 뷰 바인딩 초기화
         val sharedPreferences = requireActivity().getSharedPreferences("login_pref", Context.MODE_PRIVATE)
-        val repository = MemberRepository(sharedPreferences)
-        val viewModelFactory = MemberViewModelFactory(repository)
-        memberViewModel = ViewModelProvider(this, viewModelFactory)[MemberViewModel::class.java]
 
         binding.mapMain.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_searchLocationFragment)
@@ -74,10 +74,10 @@ class MainFragment : Fragment() {
         binding.btnAlarm.setOnClickListener{
             findNavController().navigate(R.id.action_mainFragment_to_notiFragment)
         }
-        memberViewModel.email.observe(viewLifecycleOwner) { newEmail ->
+        sharedPreferences = requireActivity().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val newEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
 
-            binding.btnTest.text = newEmail
-        }
+        binding.btnTest.text = newEmail
         binding.btnTest.setOnClickListener {
             Log.d("$$","버튼 누름")
             val testDTO = TestDTO("이름인부분23","제목이고",123)

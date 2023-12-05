@@ -303,7 +303,7 @@ class SearchLocationFragment:Fragment() {
                 }
             }
 
-            // 코스 확인 및 저장 버튼
+            // 코스 확인 및 저장 버튼 !!
             courseConfirm.setOnClickListener {
                 updatePlaceList()
 
@@ -318,12 +318,13 @@ class SearchLocationFragment:Fragment() {
                 Log.d("$$","저장 버튼 누름 / 코스이름 $courseName placeList = $placeList")
                 selectedPlaceOrNot = true
                 viewModel.saveCourse(courseName,placeList)
-                findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment) // <-- 향후 수정 필요
+                findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment)
             }
         }
         return view
     }
 
+    // placeList 갱신
     private fun updatePlaceList() {
         val placeList = mutableListOf<CoordinateDTO>()
         if(location_departure != null){
@@ -363,6 +364,7 @@ class SearchLocationFragment:Fragment() {
 
     // 저장된 리스트 목록을 클릭하면 동작...
     fun onItemClick(courseList: CourseListDTO){
+        Log.d("$$","onItemClick 동작 courseList : $courseList")
         viewModel.getPlaceList(courseList)
         findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment) // 추후 추가 작업 및 수정 필요 할수도..?
 
@@ -547,6 +549,7 @@ class SearchLocationFragment:Fragment() {
             .addOnSuccessListener { location: Location? ->
                 location?.let {
                     getAddressName(it) { address ->
+
                         callback(address.firstOrNull())
 
                     }
@@ -585,7 +588,7 @@ class SearchLocationFragment:Fragment() {
 
                     if(respAddress != null && respAddress.results.isNotEmpty()){
                         val resultList: List<Result> = respAddress.results
-                        Log.d("$$","resultList >> $resultList")
+                        Log.d("$$","내 위치 주소 resultList >> $resultList")
 
                         callback(resultList)
 
