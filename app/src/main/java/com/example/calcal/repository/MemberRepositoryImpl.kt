@@ -1,10 +1,7 @@
 package com.example.calcal.repository
 
-import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import com.example.calcal.retrofit.RequestFactory
-import com.example.calcal.signlogin.GenderActivity
 import com.example.calcal.signlogin.MemberDTO
 import com.example.calcal.util.Resource
 import retrofit2.Call
@@ -44,21 +41,26 @@ class MemberRepositoryImpl: MemberRepository {
         })
     }
 
-    override suspend fun getMember(email:String, result: (MemberDTO?) -> Unit) {
 
-        val getMemberCall: Call<MemberDTO> = apiService.getMemberData(email)
+    override suspend fun getMember(email: String, result: (Resource<MemberDTO>) -> Unit) {
+        val call: Call<MemberDTO> = apiService.getMemberData(email) // 사용자 정보를 가져오는 API 호출
 
-        getMemberCall.enqueue(object : Callback<MemberDTO>{
+        call.enqueue(object : Callback<MemberDTO> {
             override fun onResponse(call: Call<MemberDTO>, response: Response<MemberDTO>) {
-                Log.d("$$","onResponse 응답 response : $response")
-                if(response.isSuccessful){
-                    val responseBody = response.body()
-                    result.invoke(responseBody)
+                if (response.isSuccessful) {
+                    val responseBody: MemberDTO? = response.body()
+                    if (responseBody != null) {
+                        result(Resource.Success(responseBody))
+                    } else {
+                        result(Resource.Error("No user data"))
+                    }
+                } else {
+                    result(Resource.Error("Failed to get user data"))
                 }
             }
 
             override fun onFailure(call: Call<MemberDTO>, t: Throwable) {
-                TODO("Not yet implemented")
+                result(Resource.Error("Failed to get user data: ${t.message}"))
             }
         })
     }

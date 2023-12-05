@@ -172,6 +172,7 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
 
                 // 위치 정보를 CoordinateDTO에 저장
                 val coordinateDTO = CoordinateDTO(
+                    cid = 0,
                     addressName = address,
                     latidute = marker.position.latitude,
                     longitude = marker.position.longitude

@@ -26,6 +26,7 @@ import com.example.calcal.adapter.ExStartAdapter
 import com.example.calcal.adapter.GraphAdapter
 import com.example.calcal.databinding.FragmentExercisestartBinding
 import com.example.calcal.repository.ExerciseRepository
+import com.example.calcal.repository.ExerciseRepositoryImpl
 import com.example.calcal.viewModel.ExerciseViewModel
 import com.example.calcal.viewModelFactory.ExerciseViewModelFactory
 
@@ -37,7 +38,7 @@ class ExercisestartFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val repository = ExerciseRepository()
+        val repository = ExerciseRepositoryImpl()
         viewModel = ViewModelProvider(this, ExerciseViewModelFactory(repository))[ExerciseViewModel::class.java]
     }
 

@@ -1,6 +1,8 @@
 package com.example.calcal.mainFrag
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -13,12 +15,14 @@ import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMainBinding
 import com.example.calcal.modelDTO.TestDTO
-import com.example.calcal.repository.MemberRepository
-import com.example.calcal.viewModelFactory.MemberViewModelFactory
+import com.example.calcal.repository.MemberRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.signlogin.GenderActivity
 import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.signlogin.LoginActivity.Companion.PREF_NAME
+import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.MemberViewModel
+import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,7 +37,13 @@ class MainFragment : Fragment() {
     //    private lateinit var btn_alarm : Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val repository = MemberRepositoryImpl()
+        memberViewModel = ViewModelProvider(this, MemberViewModelFactory(repository))[MemberViewModel::class.java]
+        sharedPreferences = requireActivity().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val userEmail =  sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
+        if (userEmail != null) {
+            memberViewModel.getMemberInfo(userEmail)
+        }
 
     }
 
@@ -43,6 +53,8 @@ class MainFragment : Fragment() {
     ): View {
         binding = FragmentMainBinding.inflate(inflater, container, false) // 뷰 바인딩 초기화
         val sharedPreferences = requireActivity().getSharedPreferences("login_pref", Context.MODE_PRIVATE)
+
+
 
         binding.mapMain.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_searchLocationFragment)
@@ -68,13 +80,39 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        memberViewModel.getMemberInfo.observe(viewLifecycleOwner) { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    val memberDTO = resource.data
+                    if (memberDTO.weight == 0 || memberDTO.length == 0 || memberDTO.age == 0 ) {
+                        AlertDialog.Builder(context).apply {
+                            setTitle("정보 누락")
+                            setMessage("정확한 계산을 위해 성별,몸무게, 키, 나이를 입력해주세요.")
+                            setPositiveButton("확인") { dialog, which ->
+                                val intent = Intent(context, GenderActivity::class.java)
+                                intent.putExtra("memberDTO", memberDTO)
+                                startActivity(intent)
+                            }
+                            show()
+                        }
+                    }
+                }
+                is Resource.Error -> {
+                    // 에러 메시지를 사용자에게 보여주거나, 데이터를 찾지 못했을 때의 처리
+                }
+                else -> {}
+            }
+
+        }
+
         binding.btnGraph.setOnClickListener{
             findNavController().navigate(R.id.navi_graph)
         }
         binding.btnAlarm.setOnClickListener{
             findNavController().navigate(R.id.action_mainFragment_to_notiFragment)
         }
-        sharedPreferences = requireActivity().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
         val newEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
 
         binding.btnTest.text = newEmail
