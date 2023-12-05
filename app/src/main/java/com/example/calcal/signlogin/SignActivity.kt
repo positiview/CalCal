@@ -14,11 +14,15 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.ActivitySignBinding
+import com.example.calcal.repository.MemberRepository
+import com.example.calcal.repository.MemberRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.util.Resource
+import com.example.calcal.viewModel.MemberViewModel
+import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -32,9 +36,10 @@ import java.security.MessageDigest
 class SignActivity : AppCompatActivity() {
     private val apiService = RequestFactory.create()
     private lateinit var binding: ActivitySignBinding
-
+    private val memberRepository:MemberRepository = MemberRepositoryImpl()
+    private val viewModelFactory = MemberViewModelFactory(memberRepository)
+    private val viewModel: MemberViewModel by viewModels() { viewModelFactory }
     //구글로그인
-    private val viewModel: SignViewModel by viewModels()
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result?.data)
@@ -64,6 +69,8 @@ class SignActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign)
+        val sharedPreferences = getSharedPreferences("login_pref", Context.MODE_PRIVATE)
+
 
 
         binding = ActivitySignBinding.inflate(layoutInflater)
@@ -120,41 +127,25 @@ class SignActivity : AppCompatActivity() {
             val hashedPassword2 = hashPassword(password2)
 
             //값 반영
-            val memberDTO = MemberDTO(email,phone,hashedPassword,hashedPassword2)
-            val call: Call<String> = apiService.memberData(memberDTO)
+            val memberDTO = MemberDTO(email,phone,hashedPassword,hashedPassword2, weight = null, length = null,age = null, gender = "" )
 
-            call.enqueue(object : Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    Log.d("$$","onResponse 응답 response : $response")
-                    if (response.isSuccessful) {
-                        // 서버 응답이 성공적으로 받아졌을 때
-                        val responseBody: String? = response.body()
-
-                        // 로그인페이지로 이동
-                        val intent = Intent(this@SignActivity, LoginActivity::class.java)
+            viewModel.saveMemberInfo(memberDTO)
+            viewModel.saveSuccess.observe(this){
+                when(it){
+                    is Resource.Loading ->{
+                        // progressBar 사용 추천, 혹은 생략.
+                    }
+                    is Resource.Success ->{
+                        // 젠더페이지로 이동
+                        val intent = Intent(this@SignActivity, GenderActivity::class.java)
+                        intent.putExtra("memberDTO", memberDTO)
                         startActivity(intent)
-
-
-                        Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
-
-                        // responseBody에서 "Success" 등의 값을 확인하거나 원하는 처리를 수행
-                        if (responseBody == "Success") {
-                            // 성공 처리
-                        } else {
-                            // 다른 응답 처리
-                        }
-                    } else {
-                        // 서버 응답이 실패했을 때
-                        Log.d("$$", "onResponse 실패 response : ${response.code()}")
-                        Toast.makeText(getApplicationContext(), "이미 가입되어있는 이메일 입니다.", Toast.LENGTH_SHORT).show();
-
+                    }else ->{
+                    Toast.makeText(getApplicationContext(), "이미 가입되어있는 이메일 입니다.", Toast.LENGTH_SHORT).show();
                     }
                 }
+            }
 
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    Log.d("$$","onFailure 발생")
-                }
-            })
 
 
         }
@@ -219,7 +210,7 @@ class SignActivity : AppCompatActivity() {
             // 추가로 필요한 사용자 정보도 가져올 수 있습니다.
 
             // 회원 정보를 데이터베이스에 저장하기 위한 API 요청
-            val memberDTO = MemberDTO(email, "", "", "") // memberDTO에 필요한 정보 추가
+            val memberDTO = MemberDTO(email, "", "", "",null,null,null,"") // memberDTO에 필요한 정보 추가
             val call: Call<String> = apiService.memberData(memberDTO)
 
             call.enqueue(object : Callback<String> {
@@ -253,8 +244,6 @@ class SignActivity : AppCompatActivity() {
     private fun isNetworkConnected(): Boolean {
         return networkInfo != null && networkInfo.isConnected
     }
-    class SignViewModel : ViewModel() {
-        // 필요한 뷰모델 기능 구현
-    }
+
 }
 

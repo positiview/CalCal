@@ -12,12 +12,14 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.ActivityLoginBinding
-import com.example.calcal.databinding.ActivitySignBinding
+import com.example.calcal.repository.MemberRepository
+import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.viewModel.MemberViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -32,7 +34,7 @@ class LoginActivity : AppCompatActivity() {
     // Retrofit을 이용해 서버와 통신하기 위한 인스턴스 생성
     private val apiService = RequestFactory.create()
     private lateinit var binding: ActivityLoginBinding // View 바인딩을 위한 변수
-
+    private lateinit var memberViewModel: MemberViewModel
     // SharedPreferences를 사용하여 로그인 상태를 유지하기 위한 변수
     private lateinit var sharedPreferences: SharedPreferences
     private var isLoggedIn: Boolean
@@ -43,7 +45,7 @@ class LoginActivity : AppCompatActivity() {
 
 
     // 구글 로그인을 위한 클라이언트 초기화
-    private val viewModel: LoginActivity.LoginViewModel by viewModels()
+    private val viewModel: MemberViewModel by viewModels()
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
     private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result?.data)
@@ -71,9 +73,11 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign)
 
-
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // SharedPreferences 초기화
+        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
 
         // 인터넷 연결 상태를 확인하기 위한 코드
@@ -82,12 +86,10 @@ class LoginActivity : AppCompatActivity() {
 
         addListener()
 
-        // SharedPreferences 초기화
-        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-
         // 이미 로그인된 상태라면 MainActivity로 이동
         if (isLoggedIn) {
             moveMainActivity()
+
             finish() // LoginActivity 종료
         }
 
@@ -114,17 +116,19 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+
+
             val hashedPassword = hashPassword(password)
 
             // Retrofit을 통한 로그인 요청
-            val call: Call<String> = apiService.login(MemberDTO(email = email, phone = "", password = hashedPassword, password2 = ""))
+            val call: Call<String> = apiService.login(MemberDTO(email = email, phone = "", password = hashedPassword, password2 = "", weight = null, length = null,age = null, gender = "" ))
             call.enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.isSuccessful) {
                         val responseBody: String? = response.body()
                         if (responseBody == "Success") {
                             isLoggedIn = true // 로그인 상태를 저장
-                            sharedPreferences.edit().putString(KEY_EMAIL, email).apply() // 이메일 값을 저장
+                            sharedPreferences.edit().putString(KEY_EMAIL, email).apply()
                             // 로그인 성공 시 MainActivity로 이동
                             val welcomeMessage = " ${email} 님, 반갑습니다!" // 이메일을 활용한 환영 메시지 생성
 
@@ -206,7 +210,7 @@ class LoginActivity : AppCompatActivity() {
             // 추가로 필요한 사용자 정보도 가져올 수 있습니다.
 
             // 회원 정보를 데이터베이스에 저장하기 위한 API 요청
-            val memberDTO = MemberDTO(email, "", "", "") // memberDTO에 필요한 정보 추가
+            val memberDTO = MemberDTO(email, "", "", "",null,null,null,"") // memberDTO에 필요한 정보 추가
             val call: Call<String> = apiService.memberData(memberDTO)
 
             call.enqueue(object : Callback<String> {
@@ -241,11 +245,9 @@ class LoginActivity : AppCompatActivity() {
     private fun isNetworkConnected(): Boolean {
         return networkInfo != null && networkInfo.isConnected
     }
-    class LoginViewModel : ViewModel() {
-        // 필요한 뷰모델 기능 구현
-    }
+
     companion object {
-        private const val PREF_NAME = "login_pref"
+        const val PREF_NAME = "login_pref"
         const val KEY_IS_LOGGED_IN = "is_logged_in"
         const val KEY_EMAIL = "email" // KEY_EMAIL 상수 정의
     }

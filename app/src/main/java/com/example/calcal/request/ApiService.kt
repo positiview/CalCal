@@ -9,7 +9,6 @@ import com.example.calcal.modelDTO.FeatureCollection
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
-import com.example.calcal.modelDTO.TMapRouteRequest
 import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.signlogin.MemberDTO
 import retrofit2.Call
@@ -17,6 +16,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Query
 
 interface ApiService {
@@ -102,12 +102,7 @@ interface ApiService {
         @Header("Content-Type") contentType: String,
     ): Call<FeatureCollection>
 
-    @POST("routes/pedestrian")
-    fun getPedestrianRoute(
-        @Header("appKey") appKey: String,
-        @Body request: TMapRouteRequest,
-        @Query("version") version: String
-    ): Call<FeatureCollection>
+
 
     @POST("record/save")
     fun saveRouteRecord(
@@ -117,5 +112,8 @@ interface ApiService {
 
     @GET("record/get")
     fun getRouteRecord(): Call<List<RouteAndTimeDTO>>
+
+    @PUT("api/updateMemberData")
+    fun updateMemberData(@Body memberDTO: MemberDTO): Call<String>
 }
 
