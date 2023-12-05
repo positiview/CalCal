@@ -11,9 +11,9 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     private val _exerciseList = MutableLiveData<List<ExerciseDTO>>()
     val exerciseList: LiveData<List<ExerciseDTO>> get() = _exerciseList
 
-    init {
-        _exerciseList.value = repository.getExercise()
-    }
+//    init {
+//        _exerciseList.value = repository.getExercise()
+//    }
 
     fun setExerciseList(exercises: List<ExerciseDTO>) {
         _exerciseList.value = exercises

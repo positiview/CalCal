@@ -61,16 +61,14 @@ class MemberViewModel(private val repository: MemberRepository) : ViewModel() {
         }
     }
 
-    // 유저 정보 업데이트시 사용 권장. 괄호 안에 필요한 정보를 추가해야함
-    fun updateMemberInfo(){
+    fun updateMemberInfo(memberDTO: MemberDTO) {
         _getMemberInfo.value = Resource.Loading
         viewModelScope.launch {
-            try{
-//                repository.updateMember(){  //repository 추가 해야함. 반환 값으로 MemberDTO를 가져와야함
-//                    _getMemberInfo.value = it
-//                }
-            }catch (e:Exception){
-                Resource.Error(e.message.toString())
+            try {
+                val updatedMember = repository.updateMember(memberDTO)
+                _getMemberInfo.value = Resource.Success(updatedMember)
+            } catch (e: Exception) {
+                _getMemberInfo.value = Resource.Error(e.message.toString())
             }
         }
     }

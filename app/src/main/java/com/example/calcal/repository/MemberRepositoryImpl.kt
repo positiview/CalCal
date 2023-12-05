@@ -48,4 +48,27 @@ class MemberRepositoryImpl: MemberRepository {
 
         TODO("Not yet implemented")
     }
+
+    override fun updateMember(memberDTO: MemberDTO): MemberDTO {
+        val call: Call<String> = apiService.updateMemberData(memberDTO)
+
+        call.enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    val responseBody: String? = response.body()
+                    // responseBody에서 "Success" 등의 값을 확인하거나 원하는 처리를 수행
+                } else {
+                    // 서버 응답이 실패했을 때의 처리
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                // 서버 전송 실패 시의 처리
+            }
+        })
+
+        return memberDTO
+    }
+
+
 }

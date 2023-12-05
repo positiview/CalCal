@@ -25,7 +25,9 @@ import com.example.calcal.R
 import com.example.calcal.adapter.ExStartAdapter
 import com.example.calcal.adapter.GraphAdapter
 import com.example.calcal.databinding.FragmentExercisestartBinding
+import com.example.calcal.repository.ExerciseRepository
 import com.example.calcal.viewModel.ExerciseViewModel
+import com.example.calcal.viewModelFactory.ExerciseViewModelFactory
 
 
 class ExercisestartFragment : Fragment() {
@@ -35,8 +37,8 @@ class ExercisestartFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ExerciseViewModel::class.java)
-
+        val repository = ExerciseRepository()
+        viewModel = ViewModelProvider(this, ExerciseViewModelFactory(repository))[ExerciseViewModel::class.java]
     }
 
     @SuppressLint("ResourceType")
