@@ -314,7 +314,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
     @UiThread
     override fun onMapReady(naverMap: NaverMap) {
-        Log.d("$$","onMapReady 실행")
+        Log.d("$$", "onMapReady 실행")
 
 
         mNaverMap = naverMap
@@ -331,7 +331,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mNaverMap.maxZoom = 18.0
         mNaverMap.minZoom = 5.0
 
-       /* mNaverMap.setOnMapClickListener { _, _ ->
+        /* mNaverMap.setOnMapClickListener { _, _ ->
             // 지도 터치시 현재 시간 업데이트
             lastTouchTime = currentTimeMillis()
 
@@ -340,27 +340,29 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }*/
 
         courseViewModel.getPlaceList.observe(viewLifecycleOwner) { result ->
-            Log.d("$$","getPlaceList LiveData 사용")
-            lateinit var start : LatLng
-            lateinit var end :LatLng
-            var waypoint1 :LatLng? = null
-            var waypoint2 :LatLng? = null
-            var waypoint3 :LatLng? = null
-            var waypoint4 :LatLng? = null
-            var waypoint5 :LatLng? = null
+            Log.d("$$", "getPlaceList LiveData 사용")
+            lateinit var start: LatLng
+            lateinit var end: LatLng
+            var waypoint1: LatLng? = null
+            var waypoint2: LatLng? = null
+            var waypoint3: LatLng? = null
+            var waypoint4: LatLng? = null
+            var waypoint5: LatLng? = null
 
-
-
-            if (result != null) {
+            if (result != null && result.placeList != null) {
                 binding.textCourse.text = result.courseName
                 when (result.placeList.size) {
                     in 2..7 -> {
                         start = LatLng(result.placeList[0].latidute, result.placeList[0].longitude)
-                            Log.d("$$","start = $start")
-                        end = LatLng(result.placeList.last().latidute, result.placeList.last().longitude)
+                        Log.d("$$", "start = $start")
+                        end = LatLng(
+                            result.placeList.last().latidute,
+                            result.placeList.last().longitude
+                        )
 
                         for (i in 1 until min(result.placeList.size - 1, 6)) {
-                            val waypoint = LatLng(result.placeList[i].latidute, result.placeList[i].longitude)
+                            val waypoint =
+                                LatLng(result.placeList[i].latidute, result.placeList[i].longitude)
                             when (i) {
                                 1 -> waypoint1 = waypoint
                                 2 -> waypoint2 = waypoint
@@ -370,39 +372,39 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             }
                         }
                     }
+
                     else -> {
                         // 예외 처리 또는 다른 조건에 따른 로직 추가
+                        Log.d("$$", "Unsupported size: ${result.placeList.size}")
                         // 예: throw IllegalArgumentException("Unsupported size: ${result.placeList.size}")
                     }
                 }
                 // waypoint가 없을 경우 빈리스트로 초기화
                 val waypointList = mutableListOf<LatLng>()
 
-                if (waypoint1!=null) {
+                if (waypoint1 != null) {
                     waypointList.add(waypoint1)
                 }
-                if (waypoint2!=null) {
+                if (waypoint2 != null) {
                     waypointList.add(waypoint2)
                 }
-                if (waypoint3!=null) {
+                if (waypoint3 != null) {
                     waypointList.add(waypoint3)
                 }
-                if (waypoint4!=null) {
+                if (waypoint4 != null) {
                     waypointList.add(waypoint4)
                 }
-                if (waypoint5!=null) {
+                if (waypoint5 != null) {
                     waypointList.add(waypoint5)
                 }
-                getRoute(start,end ,waypointList)
-            }else{
-
+                getRoute(start, end, waypointList)
+            } else {
+                Log.d("$$", "result 또는 result.placeList가 null입니다.")
             }
-
         }
-
     }
 
-    private fun getMapInfo(start: LatLng, end: LatLng, waypointList: List<LatLng>, result: (DirectionResponseDTO)->Unit) {
+        private fun getMapInfo(start: LatLng, end: LatLng, waypointList: List<LatLng>, result: (DirectionResponseDTO)->Unit) {
         Log.d("$$","start  :  $start  end  :  $end")
         val service = RequestFactory.create2()
 //        val appKey = "f7ToVSBulf2Aj1yZM7FiS8lTT8xjKkyFJ5HEpmi1"

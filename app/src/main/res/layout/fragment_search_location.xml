@@ -268,7 +268,7 @@
         app:layout_constraintTop_toBottomOf="@id/location_finder"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/course_list"
+        android:id="@+id/courseList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/course_confirm"

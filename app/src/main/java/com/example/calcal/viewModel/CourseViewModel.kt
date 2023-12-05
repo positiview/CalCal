@@ -31,36 +31,12 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
 
 
     fun saveCourse(email: String,courseName:String, placeList:List<CoordinateDTO>){
-        _getPlaceList.value = CourseListDTO(email, cid = 0,courseName,placeList,coordinateCount=0)
+        _getPlaceList.value = CourseListDTO(email, courseNo = 0,courseName,placeList,coordinateCount=0)
         Log.d("$$","saveCourse 에 접근")
         viewModelScope.launch {
 
             try{
                 repository.saveCourse(email, courseName, placeList) {
-
-                   /* val currentResource: Resource<List<CourseListDTO>?> = _getCourse.value ?: Resource.Success(emptyList())
-                    val currentList: List<CourseListDTO>? =
-                        when (currentResource) {
-                        is Resource.Success -> currentResource.data
-                        else -> emptyList()
-                    }
-
-                    val transformedResource: Resource<List<CourseListDTO>> = when (it) {
-                        is Resource.Success -> {
-                            // Success인 경우, 데이터를 리스트에 감싸서 새로운 Success를 생성
-
-                            Resource.Success( (currentList ?: emptyList()) + it.data)
-                        }
-                        is Resource.Error -> {
-                            // Error인 경우, 그대로 전달
-                            Resource.Error(it.string)
-                        }
-                        is Resource.Loading -> {
-                            Resource.Loading
-                        }
-                    }
-
-                    _getCourse.value = transformedResource*/
                 }
             }catch (e:Exception){
                 _getCourse.value = Resource.Error(e.message.toString())
@@ -73,6 +49,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
     fun getCourse() {
         viewModelScope.launch {
             _getCourse.value = Resource.Loading // 로딩 상태 설정
+
 
             repository.getCourses() { result ->
                 when (result) {
@@ -89,7 +66,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
         }
     }
 
-    fun delete(cid:Long){
+    fun delete(courseNo:Long){
         viewModelScope.launch {
             _getCourse.value = Resource.Loading
             try{

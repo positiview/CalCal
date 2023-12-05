@@ -171,15 +171,18 @@ class SearchLocationFragment:Fragment() {
         viewModel.getCourse()
 
         // 코스 목록 관찰
-        viewModel.getCourse.observe(viewLifecycleOwner) {
-            when (it) {
+        viewModel.getCourse.observe(viewLifecycleOwner) { result ->
+            Log.d("SearchLocationFragment", "Course observe result: $result")
+            when (result) {
                 is Resource.Loading -> {
+                    Log.d("SearchLocationFragment", "Course loading...")
                     // 로딩 중 처리
                 }
                 is Resource.Success -> {
+                    Log.d("SearchLocationFragment", "Course data: ${result.data}")
                     // 데이터 로드 성공 처리
-                    if (it.data != null) {
-                        courseListAdapter = CourseListAdapter(it.data.toMutableList(), this)
+                    if (result.data != null) {
+                        courseListAdapter = CourseListAdapter(result.data.toMutableList(), this)
                         recyclerView.adapter = courseListAdapter
                     }
                 }
@@ -188,6 +191,7 @@ class SearchLocationFragment:Fragment() {
                 }
             }
         }
+
 
 
         // 버튼들

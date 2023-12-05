@@ -1,5 +1,6 @@
 package com.example.calcal.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +28,8 @@ class CourseListAdapter(private val courseList: MutableList<CourseListDTO>, priv
             }
         }
 
-        fun bind(cList:CourseListDTO){
+        fun bind(cList: CourseListDTO) {
+            Log.d("CourseListAdapter", "bind - 코스 이름: ${cList.courseName}, 루트 개수: ${cList.coordinateCount}")
             courseName.text = cList.courseName
             courseSummary.text = "${cList.coordinateCount} 개 루트"
         }
