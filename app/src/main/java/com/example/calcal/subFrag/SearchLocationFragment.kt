@@ -117,13 +117,13 @@ class SearchLocationFragment:Fragment() {
                     in 2 .. 7 ->{
                         binding.courseEdit.setText(it.courseName)
                         binding.departure.text = it.placeList[0].addressName
-                        location_departure = CoordinateDTO(it.placeList[0].addressName,it.placeList[0].longitude,it.placeList[0].latidute)
+                        location_departure = CoordinateDTO(0,it.placeList[0].addressName,it.placeList[0].longitude,it.placeList[0].latidute)
                         binding.arrival.text = it.placeList.last().addressName
-                        location_arrival = CoordinateDTO(it.placeList.last().addressName,it.placeList.last().longitude,it.placeList.last().latidute)
+                        location_arrival = CoordinateDTO(0,it.placeList.last().addressName,it.placeList.last().longitude,it.placeList.last().latidute)
 
                         for(i in 1 until it.placeList.size-1){
                             val addressName = it.placeList[i].addressName
-                            val coordinate = CoordinateDTO(it.placeList[i].addressName,it.placeList[i].longitude,it.placeList[i].latidute)
+                            val coordinate = CoordinateDTO(0,it.placeList[i].addressName,it.placeList[i].longitude,it.placeList[i].latidute)
                             when(i){
                                 1 -> {
                                     binding.waypoint1Text.text = addressName
@@ -391,7 +391,7 @@ class SearchLocationFragment:Fragment() {
             override fun onItemClicked(itemDTO: ItemDTO) {
                 Log.d("$$","onItemClicked 설정 textView = $textView , itemDTO = $itemDTO")
                 textView.text = itemDTO.title
-                val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000, addressName = itemDTO.roadAddress)
+                val coords = CoordinateDTO(0,longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000, addressName = itemDTO.roadAddress)
                 coordinateData(index,coords)
                 courseConfirmBtnEnableCheck()
                 updatePlaceList()
@@ -405,7 +405,7 @@ class SearchLocationFragment:Fragment() {
                     if(it!=null){
 
                         textView.text = "[내 위치] ${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
-                        val coords = CoordinateDTO(longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y, addressName = textView.text.toString())
+                        val coords = CoordinateDTO(0,longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y, addressName = textView.text.toString())
                         coordinateData(index,coords)
                         courseConfirmBtnEnableCheck()
                         updatePlaceList()
@@ -501,7 +501,7 @@ class SearchLocationFragment:Fragment() {
                         val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
 
                         binding.departure.text = "[내 위치] $actualAddress"
-                        location_departure = CoordinateDTO(longitude = it.region.area1.coords.center.x, latidute = it.region.area1.coords.center.y, addressName = actualAddress)
+                        location_departure = CoordinateDTO(0,longitude = it.region.area1.coords.center.x, latidute = it.region.area1.coords.center.y, addressName = actualAddress)
                         Log.d("$$","00 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
 
                     }else{
@@ -539,7 +539,7 @@ class SearchLocationFragment:Fragment() {
                     val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
 
                     binding.departure.text = "[내 위치] $actualAddress"
-                    location_departure = CoordinateDTO(longitude = it.region.area1.coords.center.x, latidute = it.region.area1.coords.center.y, addressName = actualAddress)
+                    location_departure = CoordinateDTO(0,longitude = it.region.area1.coords.center.x, latidute = it.region.area1.coords.center.y, addressName = actualAddress)
                     Log.d("$$","00 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
 
                 }else{
