@@ -20,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMapBinding
+import com.example.calcal.service.ChronometerService
 import com.example.calcal.modelDTO.DirectionResponseDTO
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.repository.CourseRepository
@@ -33,7 +34,6 @@ import com.example.calcal.viewModelFactory.CourseViewModelFactory
 import com.example.calcal.viewModelFactory.RecordViewModelFactory
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
-import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -64,7 +64,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val handler = Handler()
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
-
+    private var chronometerService: ChronometerService? = null
 
     private val courseRepository: CourseRepository = CourseRepositoryImpl()
     private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
@@ -97,12 +97,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val myRoute: MutableList<LatLng> = mutableListOf()
 
         var recordTime = 0L
-        var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
+
 
 
 
         binding.apply {
-            // 옵션 토글 버튼 수정 필요!!
+            // 옵션 토글 버튼 수정 필요!! (사용자 편의)
             // 1. 모든 레이아웃 숨기기
             // 2. 예상 경로 숨기기
             btnOption.setOnCheckedChangeListener { _, isChecked ->
@@ -118,7 +118,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
 
 
-
+            var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
             val onLocationChangeListener = object : NaverMap.OnLocationChangeListener {
                 override fun onLocationChange(location: Location) {
 
@@ -139,6 +139,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         latitude = location.latitude ,
                         recordTime = chronometerTime
                     ))
+
+
+                    calculateCalories()
                 }
             }
             btnStart.setOnClickListener {
@@ -149,7 +152,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 // 위치추적모드가 활성화 될때 이벤트 처리
                 mNaverMap.addOnLocationChangeListener(onLocationChangeListener)
 
-                calculateCalories()
+
 
 
                 handler.postDelayed({
@@ -160,10 +163,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
                 chronometer.start()
+
+
                 textViewMap.text = textCourse.text
                 stopwatchChronometer.visibility = View.VISIBLE
                 singleLayout.visibility = View.GONE
 
+                /*val serviceIntent = Intent(requireContext(), ChronometerService::class.java)
+                startForegroundService(requireContext(),serviceIntent)*/
 
 
             }
@@ -206,9 +213,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         btn_back.setOnClickListener {
             NavHostFragment.findNavController(this).navigateUp()
         }
-
-
-
 
 
         return view
@@ -344,7 +348,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
 
-            if (result != null) {
+            if (result.placeList != null) {
                 binding.textCourse.text = result.courseName
                 when (result.placeList.size) {
                     in 2..7 -> {
@@ -388,7 +392,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
                 getRoute(start,end ,waypointList)
             }else{
-
+                Toast.makeText(requireContext(),"리스트를 불러오는데 실패했습니다.",Toast.LENGTH_SHORT).show()
             }
 
         }
