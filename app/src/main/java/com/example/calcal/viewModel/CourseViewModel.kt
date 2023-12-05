@@ -1,5 +1,6 @@
 package com.example.calcal.viewModel
 
+import android.provider.ContactsContract.CommonDataKinds.Email
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,13 +30,13 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
 
 
 
-    fun saveCourse(courseName:String, placeList:List<CoordinateDTO>){
-        _getPlaceList.value = CourseListDTO(cid = 0,courseName,placeList,coordinateCount=0)
+    fun saveCourse(email: String,courseName:String, placeList:List<CoordinateDTO>){
+        _getPlaceList.value = CourseListDTO(email, cid = 0,courseName,placeList,coordinateCount=0)
         Log.d("$$","saveCourse 에 접근")
         viewModelScope.launch {
 
             try{
-                repository.saveCourse(courseName, placeList) {
+                repository.saveCourse(email, courseName, placeList) {
 
                    /* val currentResource: Resource<List<CourseListDTO>?> = _getCourse.value ?: Resource.Success(emptyList())
                     val currentList: List<CourseListDTO>? =

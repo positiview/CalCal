@@ -241,7 +241,7 @@ class LoginActivity : AppCompatActivity() {
     }
     // 인터넷 연결 상태를 확인하는 함수
     private fun isNetworkConnected(): Boolean {
-        return networkInfo != null && networkInfo.isConnected
+        return networkInfo.isConnected
     }
 
     companion object {

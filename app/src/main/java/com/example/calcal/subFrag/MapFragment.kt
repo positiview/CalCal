@@ -66,14 +66,21 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var lastTouchTime = 0L
     private var chronometerService: ChronometerService? = null
 
-    private val courseRepository: CourseRepository = CourseRepositoryImpl()
-    private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
+    private lateinit var courseRepository: CourseRepositoryImpl
+    private lateinit var courseViewModelFactory: CourseViewModelFactory
+
+
     private val courseViewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
 
     private val recordRepository: RecordRepository = RecordRepositoryImpl()
     private val recordViewModelFactory = RecordViewModelFactory(recordRepository)
     private val recordViewModel: RecordViewModel by viewModels() { recordViewModelFactory }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        courseRepository = CourseRepositoryImpl(requireContext())
+        courseViewModelFactory = CourseViewModelFactory(courseRepository)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
