@@ -85,7 +85,7 @@ class MainFragment : Fragment() {
             when (resource) {
                 is Resource.Success -> {
                     val memberDTO = resource.data
-                    if (memberDTO.weight == 0 || memberDTO.length == 0 || memberDTO.age == 0 ) {
+                    if (memberDTO?.weight == 0 || memberDTO?.length == 0 || memberDTO?.age == 0 ) {
                         AlertDialog.Builder(context).apply {
                             setTitle("정보 누락")
                             setMessage("정확한 계산을 위해 성별,몸무게, 키, 나이를 입력해주세요.")

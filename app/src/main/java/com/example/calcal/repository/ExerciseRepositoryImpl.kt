@@ -84,4 +84,17 @@ class ExerciseRepositoryImpl : ExerciseRepository {
             exerciseDTO
         }
     }
+
+    override suspend fun deleteMember(exname: String, result: (Resource<Boolean>) -> Unit) {
+        try {
+            val response = apiService.deleteExerciseData(exname)
+            if (response.isSuccessful) {
+                result(Resource.Success(true))
+            } else {
+                result(Resource.Error("회원 탈퇴에 실패하였습니다."))
+            }
+        } catch (e: Exception) {
+            result(Resource.Error(e.message ?: "오류가 발생하였습니다."))
+        }
+    }
 }
