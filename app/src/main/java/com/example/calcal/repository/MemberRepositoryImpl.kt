@@ -1,10 +1,7 @@
 package com.example.calcal.repository
 
-import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import com.example.calcal.retrofit.RequestFactory
-import com.example.calcal.signlogin.GenderActivity
 import com.example.calcal.signlogin.MemberDTO
 import com.example.calcal.util.Resource
 import retrofit2.Call

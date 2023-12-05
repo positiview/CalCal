@@ -5,6 +5,7 @@ import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.modelDTO.DataDTO
 import com.example.calcal.modelDTO.DirectionResponseDTO
+import com.example.calcal.modelDTO.ExerciseDTO
 import com.example.calcal.modelDTO.FeatureCollection
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
@@ -28,6 +29,11 @@ interface ApiService {
     @POST("api/members")
     fun memberData(
         @Body member: MemberDTO,
+    ): Call<String>
+
+    @POST("api/exercises")
+    fun exerciseData(
+        @Body exercise: ExerciseDTO,
     ): Call<String>
 
 
@@ -118,6 +124,12 @@ interface ApiService {
 
     @GET("api/getMemberData")
     fun getMemberData(@Query("email") email: String): Call<MemberDTO>
+
+    @PUT("api/updateExerciseData")
+    fun updateExerciseData(@Body exerciseDTO: ExerciseDTO): Call<String>
+
+    @GET("api/getExerciseData")
+    fun getExerciseData(@Query("exname") exname: String): Call<ExerciseDTO>
 
 
 }
