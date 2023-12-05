@@ -79,7 +79,6 @@ class LoginActivity : AppCompatActivity() {
         // SharedPreferences 초기화
         sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-
         // 인터넷 연결 상태를 확인하기 위한 코드
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         networkInfo = connectivityManager.activeNetworkInfo!!
@@ -115,7 +114,6 @@ class LoginActivity : AppCompatActivity() {
                 passwordEditText.error = "비밀번호를 입력해주세요."
                 return@setOnClickListener
             }
-
 
 
             val hashedPassword = hashPassword(password)

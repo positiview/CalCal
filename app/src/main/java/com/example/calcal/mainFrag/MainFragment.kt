@@ -44,7 +44,6 @@ class MainFragment : Fragment() {
         binding = FragmentMainBinding.inflate(inflater, container, false) // 뷰 바인딩 초기화
         val sharedPreferences = requireActivity().getSharedPreferences("login_pref", Context.MODE_PRIVATE)
 
-
         binding.mapMain.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_searchLocationFragment)
         }

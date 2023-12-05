@@ -42,8 +42,21 @@
 
         <activity
             android:name=".signlogin.SignActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
+        <activity
+            android:name=".signlogin.GenderActivity"
+            android:exported="false" />
+        <activity
+            android:name=".signlogin.AgeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".signlogin.LengthActivity"
+            android:exported="false" />
+        <activity
+            android:name=".signlogin.WeightActivity"
+            android:exported="false"
+            />
+
 
 
     </application>

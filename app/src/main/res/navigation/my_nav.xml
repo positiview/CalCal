@@ -5,190 +5,261 @@
     android:id="@+id/my_nav"
     app:startDestination="@id/mainFragment">
 
-   <fragment
-       android:id="@+id/mainFragment"
-       android:name="com.example.calcal.mainFrag.MainFragment"
-       android:label="fragment_main"
-       tools:layout="@layout/fragment_main">
-    <action
-        android:id="@+id/navi_graph"
-        app:destination="@id/graphFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/mainFragment"
-        app:popUpToInclusive="false"/>
-    <action
-        android:id="@+id/navi_calendar"
-        app:destination="@id/calendarFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/mainFragment"
-        app:popUpToInclusive="false"/>
-    <action
-        android:id="@+id/navi_mypage"
-        app:destination="@id/mypageFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/mainFragment"
-        app:popUpToInclusive="false"/>
-    <action
-        android:id="@+id/action_mainFragment_to_notiFragment"
-        app:destination="@id/notiFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/mainFragment"
-        app:popUpToInclusive="false"/>
-    <action
-        android:id="@+id/action_mainFragment_to_searchLocationFragment"
-        app:destination="@id/searchLocationFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/mainFragment"
-        app:popUpToInclusive="false"/>
-    <action
-        android:id="@+id/action_mainFragment_to_calcheckFragment"
-        app:destination="@id/calcheckFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/mainFragment"
-        app:popUpToInclusive="false"/>
-    <action
-        android:id="@+id/action_mainFragment_to_exerciseInfoFragment"
-        app:destination="@id/exerciseInfoFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/mainFragment"
-        app:popUpToInclusive="false"/>
-    <action
-        android:id="@+id/action_mainFragment_to_exercisestartFragment"
-        app:destination="@id/exercisestartFragment"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/mainFragment"
-        app:popUpToInclusive="false"/>
-   </fragment>
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.calcal.mainFrag.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/navi_graph"
+            app:destination="@id/graphFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/navi_calendar"
+            app:destination="@id/calendarFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/navi_mypage"
+            app:destination="@id/mypageFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_mainFragment_to_notiFragment"
+            app:destination="@id/notiFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_mainFragment_to_mapFragment"
+            app:destination="@id/mapFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_mainFragment_to_calcheckFragment"
+            app:destination="@id/calcheckFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_mainFragment_to_exerciseInfoFragment"
+            app:destination="@id/exerciseInfoFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_mainFragment_to_exercisestartFragment"
+            app:destination="@id/exercisestartFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/mainFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_mainFragment_to_modifyFragment"
+            app:destination="@id/modifyFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_searchLocationFragment"
+            app:destination="@id/searchLocationFragment" />
+
+    </fragment>
     <fragment
         android:id="@+id/graphFragment"
         android:name="com.example.calcal.mainFrag.GraphFragment"
         android:label="fragment_graph"
         tools:layout="@layout/fragment_graph" >
-     <action
-         android:id="@+id/navi_calendar"
-         app:destination="@id/calendarFragment"
-         app:launchSingleTop="true"
-         app:popUpTo="@id/graphFragment"
-         app:popUpToInclusive="false"/>
-     <action
-         android:id="@+id/navi_mypage"
-         app:destination="@id/mypageFragment"
-         app:launchSingleTop="true"
-         app:popUpTo="@id/graphFragment"
-         app:popUpToInclusive="false"/>
-     <action
-         android:id="@+id/navi_home"
-         app:destination="@id/mainFragment"
-         app:launchSingleTop="true"
-         app:popUpTo="@id/graphFragment"
-         app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/navi_calendar"
+            app:destination="@id/calendarFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/graphFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/navi_mypage"
+            app:destination="@id/mypageFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/graphFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/navi_home"
+            app:destination="@id/mainFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/graphFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_graphFragment_to_exercisestartFragment"
+            app:destination="@id/exercisestartFragment" />
+        <action
+            android:id="@+id/action_graphFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_graphFragment_to_mapFragment2"
+            app:destination="@id/mapFragment" />
     </fragment>
- <fragment
-     android:id="@+id/mypageFragment"
-     android:name="com.example.calcal.mainFrag.MypageFragment"
-     android:label="fragment_mypage"
-     tools:layout="@layout/fragment_mypage" >
-  <action
-      android:id="@+id/navi_mypage"
-      app:destination="@id/mypageFragment"
-      app:launchSingleTop="true"/>
-  <action
-      android:id="@+id/navi_home"
-      app:destination="@id/mainFragment"
-      app:launchSingleTop="true"/>
-  <action
-      android:id="@+id/navi_calendar"
-      app:destination="@id/calendarFragment"
-      app:launchSingleTop="true"/>
-  <action
-      android:id="@+id/navi_graph"
-      app:destination="@id/graphFragment"
-      app:launchSingleTop="true"/>
-  <action
-      android:id="@+id/action_mypageFragment_to_centerFragment"
-      app:destination="@id/centerFragment"
-      app:launchSingleTop="true"
-      app:popUpToInclusive="false"/>
-  <action
-      android:id="@+id/action_mypageFragment_to_modifyFragment"
-      app:destination="@id/modifyFragment"
-      app:launchSingleTop="true"
-      app:popUpToInclusive="false"/>
-  <action
-      android:id="@+id/action_mypageFragment_to_notisetFragment"
-      app:destination="@id/notisetFragment"
-      app:launchSingleTop="true"
-      app:popUpToInclusive="false"/>
-  <action
-      android:id="@+id/action_mypageFragment_to_settingFragment"
-      app:destination="@id/settingFragment"
-      app:launchSingleTop="true"
-      app:popUpToInclusive="false"/>
-     <action
-         android:id="@+id/action_mypageFragment_to_homeFragment"
-         app:destination="@id/mainFragment"
-         app:launchSingleTop="true"
-         app:popUpToInclusive="false"/>
- </fragment>
+    <fragment
+        android:id="@+id/mypageFragment"
+        android:name="com.example.calcal.mainFrag.MypageFragment"
+        android:label="fragment_mypage"
+        tools:layout="@layout/fragment_mypage" >
+        <action
+            android:id="@+id/navi_mypage"
+            app:destination="@id/mypageFragment"
+            app:launchSingleTop="true"/>
+        <action
+            android:id="@+id/navi_home"
+            app:destination="@id/mainFragment"
+            app:launchSingleTop="true"/>
+        <action
+            android:id="@+id/navi_calendar"
+            app:destination="@id/calendarFragment"
+            app:launchSingleTop="true"/>
+        <action
+            android:id="@+id/navi_graph"
+            app:destination="@id/graphFragment"
+            app:launchSingleTop="true"/>
+        <action
+            android:id="@+id/action_mypageFragment_to_centerFragment"
+            app:destination="@id/centerFragment"
+            app:launchSingleTop="true"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_mypageFragment_to_modifyFragment"
+            app:destination="@id/modifyFragment"
+            app:launchSingleTop="true"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_mypageFragment_to_settingFragment"
+            app:destination="@id/settingFragment"
+            app:launchSingleTop="true"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/action_mypageFragment_to_homeFragment"
+            app:destination="@id/mainFragment"
+            app:launchSingleTop="true"
+            app:popUpToInclusive="false"/>
+    </fragment>
     <fragment
         android:id="@+id/calendarFragment"
         android:name="com.example.calcal.mainFrag.CalendarFragment"
         android:label="fragment_calendar"
         tools:layout="@layout/fragment_calendar" >
-     <action
-         android:id="@+id/navi_home"
-         app:destination="@id/mainFragment"
-         app:launchSingleTop="true"
-         app:popUpTo="@id/calendarFragment"
-         app:popUpToInclusive="false"/>
-     <action
-         android:id="@+id/navi_graph"
-         app:destination="@id/graphFragment"
-         app:launchSingleTop="true"
-         app:popUpTo="@id/calendarFragment"
-         app:popUpToInclusive="false"/>
-     <action
-         android:id="@+id/navi_mypage"
-         app:destination="@id/mypageFragment"
-         app:launchSingleTop="true"
-         app:popUpTo="@id/calendarFragment"
-         app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/navi_home"
+            app:destination="@id/mainFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/calendarFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/navi_graph"
+            app:destination="@id/graphFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/calendarFragment"
+            app:popUpToInclusive="false"/>
+        <action
+            android:id="@+id/navi_mypage"
+            app:destination="@id/mypageFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/calendarFragment"
+            app:popUpToInclusive="false"/>
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.calcal.subFrag.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" >
-     <action
-         android:id="@+id/action_mapFragment_to_historyFragment"
-         app:destination="@+id/historyFragment"
-         />
+        <action
+            android:id="@+id/action_mapFragment_to_searchLocationFragment"
+            app:destination="@+id/searchLocationFragment"
+            />
+        <action
+            android:id="@+id/action_mapFragment_to_historyFragment"
+            app:destination="@+id/historyFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/searchLocationFragment"
         android:name="com.example.calcal.subFrag.SearchLocationFragment"
         >
 
-      <action
-          android:id="@+id/action_searchlocationFragment_to_mapFragment"
-          app:destination="@+id/mapFragment"
-       />
+        <action
+            android:id="@+id/action_searchlocationFragment_to_mapFragment"
+            app:destination="@+id/mapFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/searchAddressFragment"
         android:name="com.example.calcal.subFrag.SearchAddressDialog"
         >
+
+        <action
+            android:id="@+id/action_searchAddressFragment_to_searchLocationFragment"
+            app:destination="@+id/searchLocationFragment"
+            />
+        <action
+            android:id="@+id/action_searchAddressFragment_self"
+            app:destination="@id/searchAddressFragment" />
+        <action
+            android:id="@+id/action_searchAddressFragment_to_exercisestartFragment"
+            app:destination="@id/exercisestartFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/exercisestartFragment"
         android:name="com.example.calcal.subFrag.ExercisestartFragment"
         android:label="fragment_exercisestart"
-        tools:layout="@layout/fragment_exercisestart" />
+        tools:layout="@layout/fragment_exercisestart" >
+        <action
+            android:id="@+id/action_exercisestartFragment_to_exerciseInfoFragment"
+            app:destination="@id/exerciseInfoFragment" />
+        <action
+            android:id="@+id/navi_mypage"
+            app:destination="@id/mypageFragment" />
+        <action
+            android:id="@+id/navi_graph"
+            app:destination="@id/graphFragment" />
+        <action
+            android:id="@+id/navi_home"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/navi_calendar"
+            app:destination="@id/calendarFragment" />
+        <action
+            android:id="@+id/action_exercisestartFragment_to_fragment_search_location"
+            app:destination="@id/searchLocationFragment" />
+
+        <action
+            android:id="@+id/action_exercisestartFragment_to_etcExerciseFragment"
+            app:destination="@id/etcExerciseFragment" />
+
+    </fragment>
     <fragment
         android:id="@+id/exerciseInfoFragment"
         android:name="com.example.calcal.subFrag.ExerciseInfoFragment"
         android:label="fragment_exercise_info"
-        tools:layout="@layout/fragment_exercise_info" />
+        tools:layout="@layout/fragment_exercise_info">
+        <action
+            android:id="@+id/navi_mypage"
+            app:destination="@id/mypageFragment" />
+        <action
+            android:id="@+id/navi_graph"
+            app:destination="@id/graphFragment" />
+        <action
+            android:id="@+id/navi_home"
+            app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/navi_calendar"
+            app:destination="@id/calendarFragment" />
+        <action
+            android:id="@+id/action_exerciseInfoFragment_to_exercisestartFragment"
+            app:destination="@id/exercisestartFragment" />
+        <action
+            android:id="@+id/action_exerciseInfoFragment_to_etcExerciseFragment"
+            app:destination="@id/etcExerciseFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/notiFragment"
         android:name="com.example.calcal.mainFrag.NotiFragment"
@@ -199,44 +270,35 @@
         android:name="com.example.calcal.subFrag.CalcheckFragment"
         android:label="fragment_calcheck"
         tools:layout="@layout/fragment_calcheck" />
-    <fragment
-     android:id="@+id/centerFragment"
-     android:name="com.example.calcal.mypagefrag.CenterFragment"
-     android:label="fragment_center"
-     tools:layout="@layout/fragment_center" />
-    <fragment
-     android:id="@+id/modifyFragment"
-     android:name="com.example.calcal.mypagefrag.ModifyFragment"
-     android:label="fragment_modify"
-     tools:layout="@layout/fragment_modify" />
-    <fragment
-     android:id="@+id/notisetFragment"
-     android:name="com.example.calcal.mypagefrag.NotisetFragment"
-     android:label="fragment_notiset"
-     tools:layout="@layout/fragment_notiset" />
-    <fragment
-     android:id="@+id/settingFragment"
-     android:name="com.example.calcal.mypagefrag.SettingFragment"
-     android:label="fragment_setting"
-     tools:layout="@layout/fragment_setting" />
-    <fragment
-        android:id="@+id/searchMapFragment"
-        android:name="com.example.calcal.subFrag.DirectSearchMapFragment"
-        android:label="fragment_direct_search_map"
-        tools:layout="@layout/fragment_direct_search_map" >
 
+    <fragment
+        android:id="@+id/centerFragment"
+        android:name="com.example.calcal.mypagefrag.CenterFragment"
+        android:label="fragment_center"
+        tools:layout="@layout/fragment_center" >
+
+    </fragment>
+    <fragment
+        android:id="@+id/modifyFragment"
+        android:name="com.example.calcal.mypagefrag.ModifyFragment"
+        android:label="fragment_modify"
+        tools:layout="@layout/fragment_modify" />
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.calcal.mypagefrag.SettingFragment"
+        android:label="fragment_setting"
+        tools:layout="@layout/fragment_setting">
+
+    </fragment>
+    <fragment
+        android:id="@+id/etcExerciseFragment"
+        android:name="com.example.calcal.subFrag.EtcExerciseFragment"
+        android:label="fragment_etc_exercise"
+        tools:layout="@layout/fragment_etc_exercise" >
         <action
-            android:id="@+id/action_searchMapFragment_to_searchLocationFragment"
-            app:destination="@id/searchLocationFragment"
-            app:launchSingleTop="true"
-            app:popUpToInclusive="false"/>
-
+            android:id="@+id/action_etcExerciseFragment_to_exerciseInfoFragment"
+            app:destination="@id/exerciseInfoFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/historyFragment"
-        android:name="com.example.calcal.subFrag.HistoryFragment"
-        android:label="fragment_history"
-        >
 
-    </fragment>
+
 </navigation>
