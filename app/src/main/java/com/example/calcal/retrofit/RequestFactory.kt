@@ -9,8 +9,8 @@ object RequestFactory {
 
 
 //    private const val baseUrl = "http://10.100.203.32:8080" //해명 주소
-    //private const val baseUrl = "http://10.100.203.52:8080" //연주 주소
-   private const val baseUrl = "http://10.100.203.53:8080" //용성 주소
+    private const val baseUrl = "http://10.100.203.52:8080" //연주 주소
+//   private const val baseUrl = "http://10.100.203.53:8080" //용성 주소
 
     private const val naverMapUrl = "https://naveropenapi.apigw.ntruss.com/"
 

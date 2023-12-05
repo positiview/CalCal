@@ -3,6 +3,7 @@ package com.example.calcal.subFrag
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -31,6 +32,7 @@ import com.example.calcal.modelDTO.ItemDTO
 import com.example.calcal.repository.CourseRepository
 import com.example.calcal.repository.CourseRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.CourseViewModel
 import com.example.calcal.viewModelFactory.CourseViewModelFactory
@@ -61,13 +63,14 @@ class SearchLocationFragment:Fragment() {
     private var waypointCount = 0
     private var placeList = listOf<CoordinateDTO>()
 
-
     private var location_arrival: CoordinateDTO? = null
     private var myArea:String = ""
     private var selectedPlaceOrNot: Boolean = false
-    
-    private val courseRepository: CourseRepository = CourseRepositoryImpl()
-    private val courseViewModelFactory = CourseViewModelFactory(courseRepository)
+
+    private lateinit var courseRepository: CourseRepositoryImpl
+    private lateinit var courseViewModelFactory: CourseViewModelFactory
+
+
 //    private val viewModel: CourseViewModel by lazy {
 //        ViewModelProvider(this, courseViewModelFactory)[CourseViewModel::class.java]
 //    }
@@ -78,6 +81,11 @@ class SearchLocationFragment:Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         directSearchMapFragment = DirectSearchMapFragment()
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        courseRepository = CourseRepositoryImpl(requireContext())
+        courseViewModelFactory = CourseViewModelFactory(courseRepository)
     }
 
     // DirectSearchMapFragment의 인스턴스를 반환하는 메서드
@@ -317,7 +325,12 @@ class SearchLocationFragment:Fragment() {
                 val courseName = binding.courseEdit.text.toString().takeIf { it.isNotBlank() } ?: "코스 $current"
                 Log.d("$$","저장 버튼 누름 / 코스이름 $courseName placeList = $placeList")
                 selectedPlaceOrNot = true
-                viewModel.saveCourse(courseName,placeList)
+                val sharedPreferences =
+                    context?.getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
+                val email = sharedPreferences?.getString(LoginActivity.KEY_EMAIL, "")
+                if (email != null) {
+                    viewModel.saveCourse(email,courseName,placeList)
+                }
                 findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment)
             }
         }

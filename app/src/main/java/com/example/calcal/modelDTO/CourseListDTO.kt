@@ -1,6 +1,7 @@
 package com.example.calcal.modelDTO
 
 data class CourseListDTO(
+    val email: String,
     val cid: Long,
     val courseName: String,
     val placeList: List<CoordinateDTO>,
