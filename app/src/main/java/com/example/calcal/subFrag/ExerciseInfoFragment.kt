@@ -7,20 +7,26 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ExpandableListView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
 import com.example.calcal.adapter.ExInfoExpandableListAdapter
 import com.example.calcal.databinding.FragmentExerciseInfoBinding
+import com.example.calcal.repository.ExerciseRepository
+import com.example.calcal.viewModel.ExerciseViewModel
+import com.example.calcal.viewModelFactory.ExerciseViewModelFactory
 
 
 class ExerciseInfoFragment : Fragment() {
     private lateinit var binding:FragmentExerciseInfoBinding
     private lateinit var btn_back : Button
+    private lateinit var viewModel: ExerciseViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val repository = ExerciseRepository()
+        viewModel = ViewModelProvider(this, ExerciseViewModelFactory(repository))[ExerciseViewModel::class.java]
 
     }
 

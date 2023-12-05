@@ -7,11 +7,19 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.NumberPicker
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.ActivityAgeBinding
 import com.example.calcal.databinding.ActivityWeightBinding
+import com.example.calcal.repository.ExerciseRepository
+import com.example.calcal.repository.MemberRepository
+import com.example.calcal.repository.MemberRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.viewModel.ExerciseViewModel
+import com.example.calcal.viewModel.MemberViewModel
+import com.example.calcal.viewModelFactory.ExerciseViewModelFactory
+import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,6 +30,7 @@ class WeightActivity : AppCompatActivity() {
     private lateinit var binding:ActivityWeightBinding
     private val apiService = RequestFactory.create()
     private lateinit var memberDTO: MemberDTO
+    private lateinit var viewModel: MemberViewModel
     @SuppressLint("WrongViewCast", "SoonBlockedPrivateApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +38,10 @@ class WeightActivity : AppCompatActivity() {
         setContentView(binding.root)
         memberDTO = intent.getSerializableExtra("memberDTO") as MemberDTO
         numberPicker = findViewById<NumberPicker>(R.id.WeightNumberPicker)
+        val repository = MemberRepositoryImpl()
+        val viewModelFactory = MemberViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MemberViewModel::class.java)
+
 
 
         numberPicker.minValue = 20  // 최소 키 값
@@ -46,6 +59,7 @@ class WeightActivity : AppCompatActivity() {
 
         binding.btnNext.setOnClickListener {
             memberDTO.weight = numberPicker.value
+            viewModel.updateMemberInfo(memberDTO)
             val call: Call<String> = apiService.updateMemberData(memberDTO)
 
             call.enqueue(object : Callback<String> {

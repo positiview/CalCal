@@ -98,7 +98,6 @@ class SignActivity : AppCompatActivity() {
             val phone = phoneEditText.text.toString()
             val password = passwordEditText.text.toString()
             val password2 = password2EditText.text.toString()
-//            viewModel.updateMemberInfo(email) // 이부분 수정 필요
 
             // EditText 값이 비어있는지 확인하고 메시지 표시
             if (email.isEmpty()) {
