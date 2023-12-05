@@ -4,6 +4,7 @@ package com.example.calcal.subFrag
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -49,7 +50,7 @@ import java.util.Locale
 
 class SearchLocationFragment:Fragment() {
     private lateinit var binding : FragmentSearchLocationBinding
-
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var courseListAdapter: CourseListAdapter // DB에서 저장한 코스 리스트를 가져온다
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient //자동으로 gps값을 받아온다.
     private lateinit var locationCallback: LocationCallback //gps응답 값을 가져온다.
@@ -111,6 +112,7 @@ class SearchLocationFragment:Fragment() {
 
 
         Log.d("$$", "viewmodel.getPlaceList : ${viewModel.getPlaceList}")
+        // selectedPlaceOrNot 은 처음SearchLocationFragment에 왔을때 제외하고 mapFragment 갔다오면 선택했던 PlaceList들의 내용을 미리 표시
         if(selectedPlaceOrNot){
             viewModel.getPlaceList.observe(viewLifecycleOwner){
                 when(it.placeList.size){
@@ -158,6 +160,7 @@ class SearchLocationFragment:Fragment() {
             }
         }else{
             checkGrantAndGetMyLocation()
+            // 출발지를 내위치로
 
         }
         courseConfirmBtnEnableCheck()
@@ -167,8 +170,13 @@ class SearchLocationFragment:Fragment() {
         val recyclerView = binding.courseList
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        // 코스 데이터 불러오기
-        viewModel.getCourse()
+        sharedPreferences = requireActivity().getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val userEmail =  sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
+        if (userEmail != null) {
+            // 코스 데이터 불러오기
+
+            viewModel.getCourse(userEmail)
+        }
 
         // 코스 목록 관찰
         viewModel.getCourse.observe(viewLifecycleOwner) {
@@ -178,8 +186,9 @@ class SearchLocationFragment:Fragment() {
                 }
                 is Resource.Success -> {
                     // 데이터 로드 성공 처리
+                    Log.d("$$","getCourse값 : ${it.data}")
                     if (it.data != null) {
-                        courseListAdapter = CourseListAdapter(it.data.toMutableList(), this)
+                        courseListAdapter = CourseListAdapter(it.data, this)
                         recyclerView.adapter = courseListAdapter
                     }
                 }
@@ -501,8 +510,6 @@ class SearchLocationFragment:Fragment() {
                         val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
 
                         binding.departure.text = "[내 위치] $actualAddress"
-                        location_departure = CoordinateDTO(0,longitude = it.region.area1.coords.center.x, latidute = it.region.area1.coords.center.y, addressName = actualAddress)
-                        Log.d("$$","00 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
 
                     }else{
                         Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
@@ -537,9 +544,7 @@ class SearchLocationFragment:Fragment() {
                     myArea = it.region.area2.name // 내 지역 데이터 저장
 
                     val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
-
                     binding.departure.text = "[내 위치] $actualAddress"
-                    location_departure = CoordinateDTO(0,longitude = it.region.area1.coords.center.x, latidute = it.region.area1.coords.center.y, addressName = actualAddress)
                     Log.d("$$","00 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
 
                 }else{
@@ -562,7 +567,13 @@ class SearchLocationFragment:Fragment() {
             .addOnSuccessListener { location: Location? ->
                 location?.let {
                     getAddressName(it) { address ->
-
+                        val ad = address.firstOrNull()
+                        if(ad !=null){
+                            val actualAddress = "${ad.region.area1.name} ${ad.region.area2.name} ${ad.region.area3.name} ${ad.region.area4.name}".trim()
+                            location_departure = CoordinateDTO(0, longitude = location.longitude, latidute = location.latitude,
+                                addressName = actualAddress
+                            )
+                        }
                         callback(address.firstOrNull())
 
                     }

@@ -20,16 +20,15 @@ import androidx.navigation.fragment.findNavController
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMapBinding
-import com.example.calcal.service.ChronometerService
 import com.example.calcal.modelDTO.DirectionResponseDTO
 import com.example.calcal.modelDTO.RouteAndTimeDTO
-import com.example.calcal.repository.CourseRepository
 import com.example.calcal.repository.CourseRepositoryImpl
 import com.example.calcal.repository.MemberRepository
 import com.example.calcal.repository.MemberRepositoryImpl
 import com.example.calcal.repository.RecordRepository
 import com.example.calcal.repository.RecordRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.service.ChronometerService
 import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.CourseViewModel
 import com.example.calcal.viewModel.MemberViewModel
@@ -76,7 +75,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var memberGender :String?= null
     private lateinit var courseRepository: CourseRepositoryImpl
     private lateinit var courseViewModelFactory: CourseViewModelFactory
-
+    private var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
 
     private val courseViewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
 
@@ -137,7 +136,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
 
 
-            var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
+
             val onLocationChangeListener = object : NaverMap.OnLocationChangeListener {
                 override fun onLocationChange(location: Location) {
 
@@ -145,9 +144,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val polyline = PolylineOverlay()
                     polyline.color = Color.BLUE
                     polyline.width = 10
-                    polyline.map = mNaverMap
-                    polyline.coords = myRoute
-
+                    if (myRoute.size >= 2) {
+                        polyline.coords = myRoute
+                        polyline.map = mNaverMap
+                    } else {
+                        // 적어도 2개 이상의 좌표가 필요합니다. 예외 처리 또는 다른 로직을 추가하세요.
+                        // 예: Toast.makeText(requireContext(), "적어도 2개 이상의 좌표가 필요합니다.", Toast.LENGTH_SHORT).show()
+                    }
 
 
                     val chronometerTime = chronometer.base
@@ -158,9 +161,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         latitude = location.latitude ,
                         recordTime = chronometerTime
                     ))
+                    val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
 
+                    val cal = calculateCalories(elapsedMillis.toDouble())
 
-                    calculateCalories()
+                    binding.calorieTv.text = cal.toInt().toString()
                 }
             }
             btnStart.setOnClickListener {
@@ -236,10 +241,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         return view
     }
+    private fun calculateCalories(elapsedMillis : Double): Double {
+        val cal = (memberWeight?.toDouble() ?: return 0.0 )*elapsedMillis*3.5
 
-    private fun calculateCalories() {
         // BMR 계산법 일일 기초대사량
-        var bmr : Double
+       /* var bmr : Double
         if(memberGender == "male"){
             bmr = 66.5 + (13.75 * (memberWeight?.toDouble() ?: return)) + (5.003 * (memberLength?.toDouble()
                 ?: return)) - (6.75 * (memberAge?.toDouble() ?: return))
@@ -249,7 +255,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }else{
             Toast.makeText(requireContext(),"성별 정보를 입력해주세요", Toast.LENGTH_SHORT).show()
         }
+        val calToday = (bmr + ((memberWeight?.toDouble() ?: return)*elapsedMillis*3.5))/24*/
 
+        return cal
     }
 
     // 좌표 리스트로부터 경계를 계산하는 함수
@@ -425,21 +433,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 Toast.makeText(requireContext(),"리스트를 불러오는데 실패했습니다.",Toast.LENGTH_SHORT).show()
             }
             memberViewModel.getMemberInfo.observe(viewLifecycleOwner){
-                when(it){
-                    is Resource.Loading ->{
-
-                    }
-                    is Resource.Success ->{
-                        memberWeight = it.data.weight
-                        memberLength = it.data.length
-                        memberAge = it.data.age
-                        memberGender = it.data.gender
-
-                    }
-                    else ->{
-
-                    }
+                if(it is Resource.Success){
+                    memberWeight = it.data.weight
                 }
+            }
+            val cal = memberWeight?.let { calculateCalories(it.toDouble()) }
+            if (cal != null) {
+                binding.calorieView.text = cal.toInt().toString()
             }
         }
 

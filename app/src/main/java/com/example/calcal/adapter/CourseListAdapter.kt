@@ -9,7 +9,7 @@ import com.example.calcal.R
 import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.subFrag.SearchLocationFragment
 
-class CourseListAdapter(private val courseList: MutableList<CourseListDTO>, private val listener: SearchLocationFragment): RecyclerView.Adapter<CourseListAdapter.ViewHolder>() {
+class CourseListAdapter(private val courseList: List<CourseListDTO>, private val listener: SearchLocationFragment): RecyclerView.Adapter<CourseListAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View): RecyclerView.ViewHolder(view), View.OnClickListener{
 
@@ -29,7 +29,7 @@ class CourseListAdapter(private val courseList: MutableList<CourseListDTO>, priv
 
         fun bind(cList:CourseListDTO){
             courseName.text = cList.courseName
-            courseSummary.text = "${cList.coordinateCount} 개 루트"
+            courseSummary.text = "${cList.placeList.size} 개 루트"
         }
     }
 

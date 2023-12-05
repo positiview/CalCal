@@ -46,7 +46,9 @@ interface ApiService {
     ): Call<String>
 
     @GET("course/getList")
-    fun getCourseList():Call<List<CourseListDTO>>
+    fun getCourseList(
+        @Query("email") email: String
+    ):Call<List<CourseListDTO>>
 
     @GET("v1/search/local.json")
     fun searchLocation(
