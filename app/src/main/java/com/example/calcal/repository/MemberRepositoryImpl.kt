@@ -44,9 +44,28 @@ class MemberRepositoryImpl: MemberRepository {
         })
     }
 
-    override suspend fun getMember(result: (MemberDTO) -> Unit) {
 
-        TODO("Not yet implemented")
+    override suspend fun getMember(email: String, result: (Resource<MemberDTO>) -> Unit) {
+        val call: Call<MemberDTO> = apiService.getMemberData(email) // 사용자 정보를 가져오는 API 호출
+
+        call.enqueue(object : Callback<MemberDTO> {
+            override fun onResponse(call: Call<MemberDTO>, response: Response<MemberDTO>) {
+                if (response.isSuccessful) {
+                    val responseBody: MemberDTO? = response.body()
+                    if (responseBody != null) {
+                        result(Resource.Success(responseBody))
+                    } else {
+                        result(Resource.Error("No user data"))
+                    }
+                } else {
+                    result(Resource.Error("Failed to get user data"))
+                }
+            }
+
+            override fun onFailure(call: Call<MemberDTO>, t: Throwable) {
+                result(Resource.Error("Failed to get user data: ${t.message}"))
+            }
+        })
     }
 
     override fun updateMember(memberDTO: MemberDTO): MemberDTO {

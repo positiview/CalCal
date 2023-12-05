@@ -47,16 +47,15 @@ class MemberViewModel(private val repository: MemberRepository) : ViewModel() {
         }
     }
 
-    fun getMemberInfo(){
+    fun getMemberInfo(email: String){
         _getMemberInfo.value = Resource.Loading
         viewModelScope.launch {
             try{
-                repository.getMember(){
-                    _getMemberInfo.value = Resource.Success(it)
+                repository.getMember(email){
+                    _getMemberInfo.value = it
                 }
             }catch (e:Exception){
-                Resource.Error(e.message.toString())
-
+                _getMemberInfo.value = Resource.Error(e.message.toString())
             }
         }
     }

@@ -115,5 +115,10 @@ interface ApiService {
 
     @PUT("api/updateMemberData")
     fun updateMemberData(@Body memberDTO: MemberDTO): Call<String>
+
+    @GET("api/getMemberData")
+    fun getMemberData(@Query("email") email: String): Call<MemberDTO>
+
+
 }
 
