@@ -22,18 +22,22 @@ import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMapBinding
 import com.example.calcal.modelDTO.DirectionResponseDTO
 import com.example.calcal.modelDTO.RouteAndTimeDTO
-import com.example.calcal.repository.CourseRepository
 import com.example.calcal.repository.CourseRepositoryImpl
+import com.example.calcal.repository.MemberRepository
+import com.example.calcal.repository.MemberRepositoryImpl
 import com.example.calcal.repository.RecordRepository
 import com.example.calcal.repository.RecordRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.service.ChronometerService
+import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.CourseViewModel
+import com.example.calcal.viewModel.MemberViewModel
 import com.example.calcal.viewModel.RecordViewModel
 import com.example.calcal.viewModelFactory.CourseViewModelFactory
+import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import com.example.calcal.viewModelFactory.RecordViewModelFactory
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
-import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -64,17 +68,24 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val handler = Handler()
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
-
-
+    private var chronometerService: ChronometerService? = null
+    private var memberWeight : Int? = null
+    private var memberLength : Int? = null
+    private var memberAge : Int? = null
+    private var memberGender :String?= null
     private lateinit var courseRepository: CourseRepositoryImpl
     private lateinit var courseViewModelFactory: CourseViewModelFactory
-
+    private var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
 
     private val courseViewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
 
     private val recordRepository: RecordRepository = RecordRepositoryImpl()
     private val recordViewModelFactory = RecordViewModelFactory(recordRepository)
     private val recordViewModel: RecordViewModel by viewModels() { recordViewModelFactory }
+
+    private val memberRepository: MemberRepository = MemberRepositoryImpl()
+    private val memberViewModelFactory = MemberViewModelFactory(memberRepository)
+    private val memberViewModel: MemberViewModel by viewModels(){memberViewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,12 +115,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val myRoute: MutableList<LatLng> = mutableListOf()
 
         var recordTime = 0L
-        var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
+
 
 
 
         binding.apply {
-            // 옵션 토글 버튼 수정 필요!!
+            // 옵션 토글 버튼 수정 필요!! (사용자 편의)
             // 1. 모든 레이아웃 숨기기
             // 2. 예상 경로 숨기기
             btnOption.setOnCheckedChangeListener { _, isChecked ->
@@ -133,9 +144,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val polyline = PolylineOverlay()
                     polyline.color = Color.BLUE
                     polyline.width = 10
-                    polyline.map = mNaverMap
-                    polyline.coords = myRoute
-
+                    if (myRoute.size >= 2) {
+                        polyline.coords = myRoute
+                        polyline.map = mNaverMap
+                    } else {
+                        // 적어도 2개 이상의 좌표가 필요합니다. 예외 처리 또는 다른 로직을 추가하세요.
+                        // 예: Toast.makeText(requireContext(), "적어도 2개 이상의 좌표가 필요합니다.", Toast.LENGTH_SHORT).show()
+                    }
 
 
                     val chronometerTime = chronometer.base
@@ -146,6 +161,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                         latitude = location.latitude ,
                         recordTime = chronometerTime
                     ))
+                    val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
+
+                    val cal = calculateCalories(elapsedMillis.toDouble())
+
+                    binding.calorieTv.text = cal.toInt().toString()
                 }
             }
             btnStart.setOnClickListener {
@@ -156,7 +176,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 // 위치추적모드가 활성화 될때 이벤트 처리
                 mNaverMap.addOnLocationChangeListener(onLocationChangeListener)
 
-                calculateCalories()
+
 
 
                 handler.postDelayed({
@@ -167,10 +187,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
                 chronometer.start()
+
+
                 textViewMap.text = textCourse.text
                 stopwatchChronometer.visibility = View.VISIBLE
                 singleLayout.visibility = View.GONE
 
+                /*val serviceIntent = Intent(requireContext(), ChronometerService::class.java)
+                startForegroundService(requireContext(),serviceIntent)*/
 
 
             }
@@ -215,14 +239,25 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
 
-
-
-
         return view
     }
+    private fun calculateCalories(elapsedMillis : Double): Double {
+        val cal = (memberWeight?.toDouble() ?: return 0.0 )*elapsedMillis*3.5
 
-    private fun calculateCalories() {
+        // BMR 계산법 일일 기초대사량
+       /* var bmr : Double
+        if(memberGender == "male"){
+            bmr = 66.5 + (13.75 * (memberWeight?.toDouble() ?: return)) + (5.003 * (memberLength?.toDouble()
+                ?: return)) - (6.75 * (memberAge?.toDouble() ?: return))
+        }else if(memberGender == "female"){
+            bmr = 655.1 +(9.563 * (memberWeight?.toDouble() ?: return)) + (1.850 * (memberLength?.toDouble()
+                ?: return)) - (4.676 * (memberAge?.toDouble() ?: return))
+        }else{
+            Toast.makeText(requireContext(),"성별 정보를 입력해주세요", Toast.LENGTH_SHORT).show()
+        }
+        val calToday = (bmr + ((memberWeight?.toDouble() ?: return)*elapsedMillis*3.5))/24*/
 
+        return cal
     }
 
     // 좌표 리스트로부터 경계를 계산하는 함수
@@ -349,7 +384,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             var waypoint4: LatLng? = null
             var waypoint5: LatLng? = null
 
-            if (result != null && result.placeList != null) {
+
+
+            if (result.placeList != null) {
                 binding.textCourse.text = result.courseName
                 when (result.placeList.size) {
                     in 2..7 -> {
@@ -397,9 +434,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 if (waypoint5 != null) {
                     waypointList.add(waypoint5)
                 }
-                getRoute(start, end, waypointList)
-            } else {
-                Log.d("$$", "result 또는 result.placeList가 null입니다.")
+                getRoute(start,end ,waypointList)
+            }else{
+                Toast.makeText(requireContext(),"리스트를 불러오는데 실패했습니다.",Toast.LENGTH_SHORT).show()
+            }
+            memberViewModel.getMemberInfo.observe(viewLifecycleOwner){
+                if(it is Resource.Success){
+                    memberWeight = it.data.weight
+                }
+            }
+            val cal = memberWeight?.let { calculateCalories(it.toDouble()) }
+            if (cal != null) {
+                binding.calorieView.text = cal.toInt().toString()
             }
         }
     }

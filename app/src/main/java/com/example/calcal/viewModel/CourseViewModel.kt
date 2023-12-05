@@ -46,12 +46,11 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
         }
     }
 
-    fun getCourse() {
+    fun getCourse(userEmail : String) {
         viewModelScope.launch {
             _getCourse.value = Resource.Loading // 로딩 상태 설정
 
-
-            repository.getCourses() { result ->
+            repository.getCourses(userEmail) { result ->
                 when (result) {
                     is Resource.Success -> {
                         _getCourse.value = result // 코스 데이터를 LiveData에 설정
@@ -66,12 +65,12 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
         }
     }
 
-    fun delete(courseNo:Long){
+    fun delete(cid:Double){
         viewModelScope.launch {
             _getCourse.value = Resource.Loading
             try{
-                repository.getCourses(){
-                    _getCourse.value = it
+                repository.deleteCourse(cid){
+
                 }
             }catch (e:Exception){
                 _getCourse.value = Resource.Error(e.message.toString())

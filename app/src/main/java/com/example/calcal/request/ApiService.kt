@@ -5,6 +5,7 @@ import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.modelDTO.DataDTO
 import com.example.calcal.modelDTO.DirectionResponseDTO
+import com.example.calcal.modelDTO.ExerciseDTO
 import com.example.calcal.modelDTO.FeatureCollection
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
@@ -12,11 +13,14 @@ import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.signlogin.MemberDTO
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -31,6 +35,12 @@ interface ApiService {
     ): Call<String>
 
 
+    @POST("api/exercises")
+    fun exerciseData(
+        @Body exercise: ExerciseDTO,
+    ): Call<String>
+
+
     @POST("course/save")
     fun saveCourseList(
         @Query("email") email: String,
@@ -39,7 +49,9 @@ interface ApiService {
     ): Call<String>
 
     @GET("course/getList")
-    fun getCourseList():Call<List<CourseListDTO>>
+    fun getCourseList(
+        @Query("email") email: String
+    ):Call<List<CourseListDTO>>
 
     @GET("v1/search/local.json")
     fun searchLocation(
@@ -116,5 +128,22 @@ interface ApiService {
 
     @PUT("api/updateMemberData")
     fun updateMemberData(@Body memberDTO: MemberDTO): Call<String>
-}
 
+    @GET("api/getMemberData")
+    fun getMemberData(@Query("email") email: String): Call<MemberDTO>
+
+    @DELETE("api/deleteMember/{email}")
+    suspend fun deleteMemberData(@Path("email") email: String): Response<Unit>
+
+    @PUT("api/updateExerciseData")
+    fun updateExerciseData(@Body exerciseDTO: ExerciseDTO): Call<String>
+
+    @GET("api/getExerciseData")
+    fun getExerciseData(@Query("exname") exname: String): Call<ExerciseDTO>
+
+    @DELETE("api/deleteExercise/{exname}")
+    suspend fun deleteExerciseData(@Path("exname") exname: String): Response<Unit>
+
+
+
+}

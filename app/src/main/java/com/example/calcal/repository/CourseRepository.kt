@@ -8,7 +8,7 @@ interface CourseRepository {
 
     suspend fun saveCourse(email:String,courseName:String, courseList: List<CoordinateDTO>, result: (Resource<CourseListDTO>) -> Unit)
 
-    suspend fun getCourses(result: (Resource<List<CourseListDTO>?>)->Unit)
+    suspend fun getCourses(email: String,result: (Resource<List<CourseListDTO>?>)->Unit)
 
-    suspend fun deleteCourse(num: Int)
+    suspend fun deleteCourse(num: Double, result: (String) -> Unit)
 }

@@ -55,8 +55,8 @@ class CourseRepositoryImpl(private val context: Context): CourseRepository {
         })
     }
 
-    override suspend fun getCourses(result: (Resource<List<CourseListDTO>?>) -> Unit) {
-        val call : Call<List<CourseListDTO>> = apiService.getCourseList()
+    override suspend fun getCourses(email: String, result: (Resource<List<CourseListDTO>?>) -> Unit) {
+        val call : Call<List<CourseListDTO>> = apiService.getCourseList(email)
 
         call.enqueue(object : Callback<List<CourseListDTO>>{
             override fun onResponse(
@@ -80,7 +80,7 @@ class CourseRepositoryImpl(private val context: Context): CourseRepository {
         })
     }
 
-    override suspend fun deleteCourse(num: Int) {
+    override suspend fun deleteCourse(num: Double, result: (String) ->Unit) {
         TODO("Not yet implemented")
     }
 }

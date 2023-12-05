@@ -15,6 +15,7 @@ import com.example.calcal.R
 import com.example.calcal.adapter.ExInfoExpandableListAdapter
 import com.example.calcal.databinding.FragmentExerciseInfoBinding
 import com.example.calcal.repository.ExerciseRepository
+import com.example.calcal.repository.ExerciseRepositoryImpl
 import com.example.calcal.viewModel.ExerciseViewModel
 import com.example.calcal.viewModelFactory.ExerciseViewModelFactory
 
@@ -25,7 +26,7 @@ class ExerciseInfoFragment : Fragment() {
     private lateinit var viewModel: ExerciseViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val repository = ExerciseRepository()
+        val repository = ExerciseRepositoryImpl()
         viewModel = ViewModelProvider(this, ExerciseViewModelFactory(repository))[ExerciseViewModel::class.java]
 
     }

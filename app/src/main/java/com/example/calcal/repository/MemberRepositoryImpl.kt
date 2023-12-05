@@ -1,10 +1,7 @@
 package com.example.calcal.repository
 
-import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import com.example.calcal.retrofit.RequestFactory
-import com.example.calcal.signlogin.GenderActivity
 import com.example.calcal.signlogin.MemberDTO
 import com.example.calcal.util.Resource
 import retrofit2.Call
@@ -44,12 +41,31 @@ class MemberRepositoryImpl: MemberRepository {
         })
     }
 
-    override suspend fun getMember(result: (MemberDTO) -> Unit) {
 
-        TODO("Not yet implemented")
+    override suspend fun getMember(email: String, result: (Resource<MemberDTO>) -> Unit) {
+        val call: Call<MemberDTO> = apiService.getMemberData(email) // 사용자 정보를 가져오는 API 호출
+
+        call.enqueue(object : Callback<MemberDTO> {
+            override fun onResponse(call: Call<MemberDTO>, response: Response<MemberDTO>) {
+                if (response.isSuccessful) {
+                    val responseBody: MemberDTO? = response.body()
+                    if (responseBody != null) {
+                        result(Resource.Success(responseBody))
+                    } else {
+                        result(Resource.Error("No user data"))
+                    }
+                } else {
+                    result(Resource.Error("Failed to get user data"))
+                }
+            }
+
+            override fun onFailure(call: Call<MemberDTO>, t: Throwable) {
+                result(Resource.Error("Failed to get user data: ${t.message}"))
+            }
+        })
     }
 
-    override fun updateMember(memberDTO: MemberDTO): MemberDTO {
+    override suspend fun updateMember(memberDTO: MemberDTO): MemberDTO {
         val call: Call<String> = apiService.updateMemberData(memberDTO)
 
         call.enqueue(object : Callback<String> {
@@ -70,5 +86,17 @@ class MemberRepositoryImpl: MemberRepository {
         return memberDTO
     }
 
+    override suspend fun deleteMember(email: String, result: (Resource<Boolean>) -> Unit) {
+        try {
+            val response = apiService.deleteMemberData(email)
+            if (response.isSuccessful) {
+                result(Resource.Success(true))
+            } else {
+                result(Resource.Error("회원 탈퇴에 실패하였습니다."))
+            }
+        } catch (e: Exception) {
+            result(Resource.Error(e.message ?: "오류가 발생하였습니다."))
+        }
+    }
 
 }

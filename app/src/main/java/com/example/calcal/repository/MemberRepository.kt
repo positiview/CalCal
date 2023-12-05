@@ -8,7 +8,8 @@ import com.example.calcal.util.Resource
 interface MemberRepository{
     suspend fun saveMember(memberDTO: MemberDTO, result: (Resource<Boolean>)->Unit)
 
-    suspend fun getMember(result: (MemberDTO) -> Unit)
-    abstract fun updateMember(memberDTO: MemberDTO): MemberDTO
+    suspend fun getMember(email: String, result: (Resource<MemberDTO>) -> Unit)
+    suspend fun updateMember(memberDTO: MemberDTO): MemberDTO
+    suspend fun deleteMember(email: String, result: (Resource<Boolean>) -> Unit)
 
 }

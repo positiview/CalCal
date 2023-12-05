@@ -33,6 +33,7 @@ class EtcExerciseFragment : Fragment() {
         list.add("운동이름")
         list.add("시간당 칼로리 소모량 설정")
         list.add("권장 시간 설정")
+        list.add("운동에 대한 설명")
         list.add("이동 여부")
 
         val adapter = EtcAdapter(list, this)
