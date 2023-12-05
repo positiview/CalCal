@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import retrofit2.Call
 
@@ -21,6 +22,7 @@ import com.example.calcal.databinding.FragmentMypageBinding
 import com.example.calcal.retrofit.RequestFactory
 import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.signlogin.MemberDTO
+import kotlinx.coroutines.launch
 import retrofit2.Callback
 import retrofit2.Response
 
@@ -128,11 +130,11 @@ class MypageFragment : Fragment() {
         alertDialogBuilder.setMessage("정말 회원탈퇴 하시겠습니까?")
         alertDialogBuilder.setPositiveButton("예") { _, _ ->
             // 사용자가 "예"를 선택한 경우, 회원탈퇴 처리
-            performWithdraw()
+            deleteMember()
 
-            val intent = Intent(context, LoginActivity::class.java)
-            startActivity(intent)
-            activity?.finish()
+//            val intent = Intent(context, LoginActivity::class.java)
+//            startActivity(intent)
+//            activity?.finish()
             // 현재 액티비티 종료 (선택 사항)
 
         }
@@ -140,50 +142,25 @@ class MypageFragment : Fragment() {
         alertDialogBuilder.create().show()
     }
     private val apiService = RequestFactory.create()
-    private fun performWithdraw() {
-
+    private fun deleteMember() {
         val email = sharedPreferences.getString(KEY_EMAIL, "")
-        // 로그인된 사용자의 이메일을 가져옴
         Log.d("Email", "Current user email: $email")
 
-        val memberDTO = MemberDTO(
-            email = email ?: "", // null인 경우 빈 문자열로 설정
-            phone = "", // 필요 없는 값이므로 빈 문자열로 설정
-            password = "", // 필요 없는 값이므로 빈 문자열로 설정
-            password2 = "", // 필요 없는 값이므로 빈 문자열로 설정
-            weight = null,
-            length = null,
-            age = null,
-            gender = ""
-
-        )
-
-        val call: Call<String> = apiService.withdraw(memberDTO)
-
-        call.enqueue(object : Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>) {
+        lifecycleScope.launch {
+            try {
+                val response = apiService.deleteMemberData(email ?: "")
                 if (response.isSuccessful) {
-                    val responseBody: String? = response.body()
-                    if (responseBody == "Success") {
-                        Log.d("$$", "회원 탈퇴 성공")
-                        isLoggedIn = false // 로그인 상태를 false로 변경
-                        val intent = Intent(requireContext(), LoginActivity::class.java)
-                        startActivity(intent)
-
-                    } else {
-                        Log.d("$$", "회원 탈퇴 실패")
-                    }
+                    Log.d("$$", "회원 탈퇴 성공")
+                    isLoggedIn = false // 로그인 상태를 false로 변경
+                    val intent = Intent(requireContext(), LoginActivity::class.java)
+                    startActivity(intent)
                 } else {
-                    Log.d("$$", "onResponse 실패 response : ${response.code()}")
-                    val errorBody: String? = response.errorBody()?.string()
-                    Log.d("$$", "onResponse 실패 errorBody : $errorBody")
+                    Log.d("$$", "회원 탈퇴 실패")
                 }
+            } catch (e: Exception) {
+                Log.d("$$", "onFailure 발생", e)
             }
-
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                Log.d("$$", "onFailure 발생", t)
-            }
-        })
+        }
     }
 
 

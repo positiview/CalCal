@@ -13,5 +13,7 @@ data class ExerciseDTO(
 
     var extime: Int?,
 
+    var exmove: Boolean,
+
     var email: String?
 ): Serializable

@@ -86,5 +86,17 @@ class MemberRepositoryImpl: MemberRepository {
         return memberDTO
     }
 
+    override suspend fun deleteMember(email: String, result: (Resource<Boolean>) -> Unit) {
+        try {
+            val response = apiService.deleteMemberData(email)
+            if (response.isSuccessful) {
+                result(Resource.Success(true))
+            } else {
+                result(Resource.Error("회원 탈퇴에 실패하였습니다."))
+            }
+        } catch (e: Exception) {
+            result(Resource.Error(e.message ?: "오류가 발생하였습니다."))
+        }
+    }
 
 }

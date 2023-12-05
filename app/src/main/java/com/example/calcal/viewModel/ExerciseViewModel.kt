@@ -15,6 +15,8 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
 //        _exerciseList.value = repository.getExercise()
 //    }
 
+
+    
     fun setExerciseList(exercises: List<ExerciseDTO>) {
         _exerciseList.value = exercises
     }
