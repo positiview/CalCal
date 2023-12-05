@@ -9,6 +9,6 @@ interface MemberRepository{
     suspend fun saveMember(memberDTO: MemberDTO, result: (Resource<Boolean>)->Unit)
 
     suspend fun getMember(email: String, result: (Resource<MemberDTO>) -> Unit)
-    abstract fun updateMember(memberDTO: MemberDTO): MemberDTO
+    suspend fun updateMember(memberDTO: MemberDTO): MemberDTO
 
 }
