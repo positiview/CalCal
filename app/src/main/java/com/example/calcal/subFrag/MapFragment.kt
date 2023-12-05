@@ -25,12 +25,17 @@ import com.example.calcal.modelDTO.DirectionResponseDTO
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.repository.CourseRepository
 import com.example.calcal.repository.CourseRepositoryImpl
+import com.example.calcal.repository.MemberRepository
+import com.example.calcal.repository.MemberRepositoryImpl
 import com.example.calcal.repository.RecordRepository
 import com.example.calcal.repository.RecordRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
+import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.CourseViewModel
+import com.example.calcal.viewModel.MemberViewModel
 import com.example.calcal.viewModel.RecordViewModel
 import com.example.calcal.viewModelFactory.CourseViewModelFactory
+import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import com.example.calcal.viewModelFactory.RecordViewModelFactory
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
@@ -65,7 +70,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
     private var chronometerService: ChronometerService? = null
-
+    private var memberWeight : Int? = null
+    private var memberLength : Int? = null
+    private var memberAge : Int? = null
+    private var memberGender :String?= null
     private lateinit var courseRepository: CourseRepositoryImpl
     private lateinit var courseViewModelFactory: CourseViewModelFactory
 
@@ -75,6 +83,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val recordRepository: RecordRepository = RecordRepositoryImpl()
     private val recordViewModelFactory = RecordViewModelFactory(recordRepository)
     private val recordViewModel: RecordViewModel by viewModels() { recordViewModelFactory }
+
+    private val memberRepository: MemberRepository = MemberRepositoryImpl()
+    private val memberViewModelFactory = MemberViewModelFactory(memberRepository)
+    private val memberViewModel: MemberViewModel by viewModels(){memberViewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -226,6 +238,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun calculateCalories() {
+        // BMR 계산법 일일 기초대사량
+        var bmr : Double
+        if(memberGender == "male"){
+            bmr = 66.5 + (13.75 * (memberWeight?.toDouble() ?: return)) + (5.003 * (memberLength?.toDouble()
+                ?: return)) - (6.75 * (memberAge?.toDouble() ?: return))
+        }else if(memberGender == "female"){
+            bmr = 655.1 +(9.563 * (memberWeight?.toDouble() ?: return)) + (1.850 * (memberLength?.toDouble()
+                ?: return)) - (4.676 * (memberAge?.toDouble() ?: return))
+        }else{
+            Toast.makeText(requireContext(),"성별 정보를 입력해주세요", Toast.LENGTH_SHORT).show()
+        }
 
     }
 
@@ -401,7 +424,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }else{
                 Toast.makeText(requireContext(),"리스트를 불러오는데 실패했습니다.",Toast.LENGTH_SHORT).show()
             }
+            memberViewModel.getMemberInfo.observe(viewLifecycleOwner){
+                when(it){
+                    is Resource.Loading ->{
 
+                    }
+                    is Resource.Success ->{
+                        memberWeight = it.data.weight
+                        memberLength = it.data.length
+                        memberAge = it.data.age
+                        memberGender = it.data.gender
+
+                    }
+                    else ->{
+
+                    }
+                }
+            }
         }
 
     }

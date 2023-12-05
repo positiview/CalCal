@@ -31,10 +31,7 @@ interface ApiService {
         @Body member: MemberDTO,
     ): Call<String>
 
-    @GET("api/getMemberInfo")
-    fun getMemberData(
-        @Query("email") email: String
-    ): Call<MemberDTO>
+
     @POST("api/exercises")
     fun exerciseData(
         @Body exercise: ExerciseDTO,

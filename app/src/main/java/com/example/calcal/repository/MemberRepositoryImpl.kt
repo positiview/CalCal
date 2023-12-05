@@ -65,7 +65,7 @@ class MemberRepositoryImpl: MemberRepository {
         })
     }
 
-    override fun updateMember(memberDTO: MemberDTO): MemberDTO {
+    override suspend fun updateMember(memberDTO: MemberDTO): MemberDTO {
         val call: Call<String> = apiService.updateMemberData(memberDTO)
 
         call.enqueue(object : Callback<String> {

@@ -22,9 +22,9 @@ class MemberViewModel(private val repository: MemberRepository) : ViewModel() {
     }*/
 
     // 유저 정보(MemberDTO)에 관한 모든정보의 업데이트및 로딩은 여기 liveData를 사용할것을 권장
-    private val _getMemberInfo : MutableLiveData<Resource<MemberDTO?>> = MutableLiveData()
+    private val _getMemberInfo : MutableLiveData<Resource<MemberDTO>> = MutableLiveData()
 
-    val getMemberInfo : LiveData<Resource<MemberDTO?>> get() = _getMemberInfo
+    val getMemberInfo : LiveData<Resource<MemberDTO>> get() = _getMemberInfo
 
     // 회원 가입 성공 여부를 Boolean으로 알려줌
     private val _saveSuccess : MutableLiveData<Resource<Boolean>> = MutableLiveData()
