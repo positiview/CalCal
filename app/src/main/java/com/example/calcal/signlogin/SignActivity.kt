@@ -70,13 +70,8 @@ class SignActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign)
         val sharedPreferences = getSharedPreferences("login_pref", Context.MODE_PRIVATE)
-<<<<<<< HEAD
 
-=======
-        val repository = MemberRepository(sharedPreferences)
-        val viewModelFactory = MemberViewModelFactory(repository)
-        val viewModel: MemberViewModel by viewModels { viewModelFactory }
->>>>>>> c98c3edc6b7c1b0cce6b503f291e1080ac65e6ba
+
 
 
         binding = ActivitySignBinding.inflate(layoutInflater)
@@ -103,7 +98,7 @@ class SignActivity : AppCompatActivity() {
             val phone = phoneEditText.text.toString()
             val password = passwordEditText.text.toString()
             val password2 = password2EditText.text.toString()
-            viewModel.updateEmail(email)
+//            viewModel.updateMemberInfo(email) // 이부분 수정 필요
 
             // EditText 값이 비어있는지 확인하고 메시지 표시
             if (email.isEmpty()) {
@@ -134,7 +129,7 @@ class SignActivity : AppCompatActivity() {
 
             //값 반영
             val memberDTO = MemberDTO(email,phone,hashedPassword,hashedPassword2, weight = null, length = null,age = null, gender = "" )
-<<<<<<< HEAD
+
 
             viewModel.saveMemberInfo(memberDTO)
             viewModel.saveSuccess.observe(this){
@@ -143,41 +138,15 @@ class SignActivity : AppCompatActivity() {
                         // progressBar 사용 추천, 혹은 생략.
                     }
                     is Resource.Success ->{
-=======
-            val call: Call<String> = apiService.memberData(memberDTO)
 
-            call.enqueue(object : Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    Log.d("$$","onResponse 응답 response : $response")
-                    if (response.isSuccessful) {
-                        // 서버 응답이 성공적으로 받아졌을 때
-                        val responseBody: String? = response.body()
-
->>>>>>> c98c3edc6b7c1b0cce6b503f291e1080ac65e6ba
                         // 젠더페이지로 이동
                         val intent = Intent(this@SignActivity, GenderActivity::class.java)
                         intent.putExtra("memberDTO", memberDTO)
                         startActivity(intent)
-<<<<<<< HEAD
+
                     }else ->{
                     Toast.makeText(getApplicationContext(), "이미 가입되어있는 이메일 입니다.", Toast.LENGTH_SHORT).show();
-=======
 
-
-
-
-                        // responseBody에서 "Success" 등의 값을 확인하거나 원하는 처리를 수행
-                        if (responseBody == "Success") {
-                            // 성공 처리
-                        } else {
-                            // 다른 응답 처리
-                        }
-                    } else {
-                        // 서버 응답이 실패했을 때
-                        Log.d("$$", "onResponse 실패 response : ${response.code()}")
-                        Toast.makeText(getApplicationContext(), "이미 가입되어있는 이메일 입니다.", Toast.LENGTH_SHORT).show();
-
->>>>>>> c98c3edc6b7c1b0cce6b503f291e1080ac65e6ba
                     }
                 }
             }
