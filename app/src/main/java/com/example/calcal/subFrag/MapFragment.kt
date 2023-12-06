@@ -222,7 +222,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
 
-                recordViewModel.saveRecord(routeAndTimeDTO)
+                recordViewModel.saveRecord(routeAndTimeDTO,binding.textCourse.text.toString())
                 handler.postDelayed({
                     findNavController().navigate(R.id.action_mapFragment_to_historyFragment)
                 }, 5000)
