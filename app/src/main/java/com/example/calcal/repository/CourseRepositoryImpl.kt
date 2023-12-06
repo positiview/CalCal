@@ -35,7 +35,6 @@ class CourseRepositoryImpl(private val context: Context): CourseRepository {
                         Resource.Success(
                             CourseListDTO(
                                 email,
-                                courseNo,
                                 courseName,
                                 placeList
                             )
