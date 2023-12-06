@@ -69,7 +69,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
     private var chronometerService: ChronometerService? = null
-    private var memberWeight : Int? = null
+    private var memberWeight : Int? = 70
     private var memberLength : Int? = null
     private var memberAge : Int? = null
     private var memberGender :String?= null
@@ -198,16 +198,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
             }
+            var elapsedTime: Long = 0
             // 중지/재개 버튼 (토글 버튼 추천)
             btnStop.setOnCheckedChangeListener{ _, isChecked ->
                 if(isChecked){
+                    elapsedTime = SystemClock.elapsedRealtime() - chronometer.base
                     chronometer.stop()
                     mNaverMap.removeOnLocationChangeListener(onLocationChangeListener)
                 }else{
+                    chronometer.base = SystemClock.elapsedRealtime() - elapsedTime
                     chronometer.start()
                     mNaverMap.addOnLocationChangeListener(onLocationChangeListener)
                 }
-
             }
 
             // 완료버튼 + 저장
@@ -242,8 +244,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         return view
     }
     private fun calculateCalories(elapsedMillis : Double): Double {
-        val cal = (memberWeight?.toDouble() ?: return 0.0 )*elapsedMillis*3.5
+        val cal1 = (memberWeight?.toDouble() ?: return 0.0 )*elapsedMillis*3.5
 
+        val minute = elapsedMillis/60000
+        //ex)(강도*3.5*0.001*체중)*5*운동시간(min)
+        val cal = (3*3.5*0.001* memberWeight!!)*5*minute
+        Log.d("$$","elapsedMilliselapsedMillis : ${minute}")
         // BMR 계산법 일일 기초대사량
        /* var bmr : Double
         if(memberGender == "male"){
@@ -283,6 +289,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val startLocation =  LatLng(startInfo[1],startInfo[0])
             val goalInfo = it.route.traavoidcaronly[0].summary.goal.location
             val goalLocation = LatLng(goalInfo[1],goalInfo[0])
+            Log.d("$$","ititititit:$it")
 
 
             binding.expectedTimeView.text = it.route.traavoidcaronly[0].summary.duration.toString()
@@ -349,7 +356,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
     @UiThread
     override fun onMapReady(naverMap: NaverMap) {
-        Log.d("$$","onMapReady 실행")
+        Log.d("$$", "onMapReady 실행")
 
 
         mNaverMap = naverMap
@@ -366,7 +373,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mNaverMap.maxZoom = 18.0
         mNaverMap.minZoom = 5.0
 
-       /* mNaverMap.setOnMapClickListener { _, _ ->
+        /* mNaverMap.setOnMapClickListener { _, _ ->
             // 지도 터치시 현재 시간 업데이트
             lastTouchTime = currentTimeMillis()
 
@@ -375,14 +382,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }*/
 
         courseViewModel.getPlaceList.observe(viewLifecycleOwner) { result ->
-            Log.d("$$","getPlaceList LiveData 사용")
-            lateinit var start : LatLng
-            lateinit var end :LatLng
-            var waypoint1 :LatLng? = null
-            var waypoint2 :LatLng? = null
-            var waypoint3 :LatLng? = null
-            var waypoint4 :LatLng? = null
-            var waypoint5 :LatLng? = null
+            Log.d("$$", "getPlaceList LiveData 사용")
+            lateinit var start: LatLng
+            lateinit var end: LatLng
+            var waypoint1: LatLng? = null
+            var waypoint2: LatLng? = null
+            var waypoint3: LatLng? = null
+            var waypoint4: LatLng? = null
+            var waypoint5: LatLng? = null
 
 
 
@@ -391,11 +398,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 when (result.placeList.size) {
                     in 2..7 -> {
                         start = LatLng(result.placeList[0].latidute, result.placeList[0].longitude)
-                            Log.d("$$","start = $start")
-                        end = LatLng(result.placeList.last().latidute, result.placeList.last().longitude)
+                        Log.d("$$", "start = $start")
+                        end = LatLng(
+                            result.placeList.last().latidute,
+                            result.placeList.last().longitude
+                        )
 
                         for (i in 1 until min(result.placeList.size - 1, 6)) {
-                            val waypoint = LatLng(result.placeList[i].latidute, result.placeList[i].longitude)
+                            val waypoint =
+                                LatLng(result.placeList[i].latidute, result.placeList[i].longitude)
                             when (i) {
                                 1 -> waypoint1 = waypoint
                                 2 -> waypoint2 = waypoint
@@ -405,27 +416,29 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             }
                         }
                     }
+
                     else -> {
                         // 예외 처리 또는 다른 조건에 따른 로직 추가
+                        Log.d("$$", "Unsupported size: ${result.placeList.size}")
                         // 예: throw IllegalArgumentException("Unsupported size: ${result.placeList.size}")
                     }
                 }
                 // waypoint가 없을 경우 빈리스트로 초기화
                 val waypointList = mutableListOf<LatLng>()
 
-                if (waypoint1!=null) {
+                if (waypoint1 != null) {
                     waypointList.add(waypoint1)
                 }
-                if (waypoint2!=null) {
+                if (waypoint2 != null) {
                     waypointList.add(waypoint2)
                 }
-                if (waypoint3!=null) {
+                if (waypoint3 != null) {
                     waypointList.add(waypoint3)
                 }
-                if (waypoint4!=null) {
+                if (waypoint4 != null) {
                     waypointList.add(waypoint4)
                 }
-                if (waypoint5!=null) {
+                if (waypoint5 != null) {
                     waypointList.add(waypoint5)
                 }
                 getRoute(start,end ,waypointList)
@@ -442,10 +455,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 binding.calorieView.text = cal.toInt().toString()
             }
         }
-
     }
 
-    private fun getMapInfo(start: LatLng, end: LatLng, waypointList: List<LatLng>, result: (DirectionResponseDTO)->Unit) {
+        private fun getMapInfo(start: LatLng, end: LatLng, waypointList: List<LatLng>, result: (DirectionResponseDTO)->Unit) {
         Log.d("$$","start  :  $start  end  :  $end")
         val service = RequestFactory.create2()
 //        val appKey = "f7ToVSBulf2Aj1yZM7FiS8lTT8xjKkyFJ5HEpmi1"

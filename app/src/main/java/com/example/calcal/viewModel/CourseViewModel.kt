@@ -37,30 +37,6 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
 
             try{
                 repository.saveCourse(email, courseName, placeList) {
-
-                   /* val currentResource: Resource<List<CourseListDTO>?> = _getCourse.value ?: Resource.Success(emptyList())
-                    val currentList: List<CourseListDTO>? =
-                        when (currentResource) {
-                        is Resource.Success -> currentResource.data
-                        else -> emptyList()
-                    }
-
-                    val transformedResource: Resource<List<CourseListDTO>> = when (it) {
-                        is Resource.Success -> {
-                            // Success인 경우, 데이터를 리스트에 감싸서 새로운 Success를 생성
-
-                            Resource.Success( (currentList ?: emptyList()) + it.data)
-                        }
-                        is Resource.Error -> {
-                            // Error인 경우, 그대로 전달
-                            Resource.Error(it.string)
-                        }
-                        is Resource.Loading -> {
-                            Resource.Loading
-                        }
-                    }
-
-                    _getCourse.value = transformedResource*/
                 }
             }catch (e:Exception){
                 _getCourse.value = Resource.Error(e.message.toString())

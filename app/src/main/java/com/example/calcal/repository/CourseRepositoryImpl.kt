@@ -29,13 +29,13 @@ class CourseRepositoryImpl(private val context: Context): CourseRepository {
                     val responseBody: String? = response.body()
                     val sharedPreferences = context.getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
                     val email = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "") ?: ""
-                    var cid: Long = 0
+                    var courseNo: Long = 0
                     val coordinateCount = placeList.size // CoordinateDTO의 개수를 계산
                     result.invoke(
                         Resource.Success(
                             CourseListDTO(
                                 email,
-                                cid,
+                                courseNo,
                                 courseName,
                                 placeList
                             )
@@ -62,16 +62,18 @@ class CourseRepositoryImpl(private val context: Context): CourseRepository {
                 call: Call<List<CourseListDTO>>,
                 response: Response<List<CourseListDTO>>
             ) {
-                if(response.isSuccessful){
+                if (response.isSuccessful) {
                     val responseBody: List<CourseListDTO>? = response.body()
-                    Log.d("$$","ResponseBody => $responseBody")
+                    Log.d("CourseViewModel", "API 응답 성공: $responseBody")
                     result.invoke(Resource.Success(responseBody))
-                }else{
+                } else {
+                    Log.e("CourseViewModel", "API 응답 실패: ${response.code()}")
                     result.invoke(Resource.Error("courseList 응답 실패"))
                 }
             }
 
             override fun onFailure(call: Call<List<CourseListDTO>>, t: Throwable) {
+                Log.e("CourseViewModel", "API 요청 실패: ${t.message}")
                 result.invoke(Resource.Error("courseList 요청 실패"))
             }
         })
