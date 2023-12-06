@@ -120,7 +120,8 @@ interface ApiService {
     @POST("record/save")
     fun saveRouteRecord(
         @Body routeRecord: List<RouteAndTimeDTO>,
-        @Query("userEmail") userEmail: String
+        @Query("userEmail") userEmail: String,
+        @Query("courseName") courseName: String
     ): Call<String>
 
     @GET("record/get")

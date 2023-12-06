@@ -16,10 +16,11 @@ class RecordRepositoryImpl:RecordRepository {
     private lateinit var sharedPreferences: SharedPreferences
     override suspend fun saveRecord(
         myRouteRecords: List<RouteAndTimeDTO>,
+        courseName:String,
         result: (Resource<List<RouteAndTimeDTO>>) -> Unit
     ) {
         val storedEmail = sharedPreferences.getString(KEY_EMAIL, "")
-        val call : Call<String> = apiService.saveRouteRecord(myRouteRecords,storedEmail?:"")
+        val call : Call<String> = apiService.saveRouteRecord(myRouteRecords,storedEmail?:"",courseName)
 
         call.enqueue(object : Callback<String>{
             override fun onResponse(call: Call<String>, response: Response<String>) {

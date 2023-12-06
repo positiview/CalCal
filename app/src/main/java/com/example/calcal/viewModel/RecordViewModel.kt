@@ -15,12 +15,12 @@ class RecordViewModel(private val repository: RecordRepository):ViewModel() {
 
     val getRecord : LiveData<Resource<List<RouteAndTimeDTO>>> get() = _getRecord
 
-    fun saveRecord(listRecord : List<RouteAndTimeDTO>){
+    fun saveRecord(listRecord : List<RouteAndTimeDTO>, courseName: String){
 
         viewModelScope.launch {
             _getRecord.value = Resource.Loading
             try{
-                repository.saveRecord(listRecord){
+                repository.saveRecord(listRecord,courseName){
                     _getRecord.value = it
                 }
             }catch (e:Exception){
