@@ -83,6 +83,20 @@ class LoginActivity : AppCompatActivity() {
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         networkInfo = connectivityManager.activeNetworkInfo!!
 
+        if (networkInfo != null && networkInfo.isConnected) {
+            Log.d("$$","네트워크 연결됨")
+            // 네트워크 연결됨
+            if (networkInfo.type == ConnectivityManager.TYPE_MOBILE) {
+                Log.d("$$","모바일 데이터임")
+                // 모바일 데이터
+            } else if (networkInfo.type == ConnectivityManager.TYPE_WIFI) {
+                Log.d("$$","Wi-Fi 데이터임")
+                // Wi-Fi
+            }
+        } else {
+            // 네트워크 연결 안됨
+        }
+
         addListener()
 
         // 이미 로그인된 상태라면 MainActivity로 이동
@@ -93,7 +107,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         // 각 버튼별 리스너 설정
-        addListener()
+//        addListener()
     }
 
     // 버튼 클릭에 대한 리스너 설정

@@ -335,7 +335,7 @@
                     android:layout_height="48dp"
                     android:layout_margin="5dp"
                     android:layout_gravity="center"
-                    android:text="초기화"
+                    android:text="완료/저장"
                     android:gravity="center"
                     android:fontFamily="@font/notosanskr_bold"
                     android:textColor="@color/white"

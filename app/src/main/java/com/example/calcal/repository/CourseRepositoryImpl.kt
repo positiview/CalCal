@@ -37,8 +37,7 @@ class CourseRepositoryImpl(private val context: Context): CourseRepository {
                                 email,
                                 cid,
                                 courseName,
-                                placeList,
-                                coordinateCount
+                                placeList
                             )
                         )
                     ) // coordinateCount를 설정

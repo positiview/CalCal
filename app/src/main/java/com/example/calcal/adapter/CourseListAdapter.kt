@@ -31,7 +31,7 @@ class CourseListAdapter(private val courseList: List<CourseListDTO>, private val
         fun bind(cList: CourseListDTO) {
             Log.d("CourseListAdapter", "bind - 코스 이름: ${cList.courseName}, 루트 개수: ${cList.placeList.size}")
             courseName.text = cList.courseName
-            courseSummary.text = "${cList.coordinateCount} 개 루트"
+            courseSummary.text = "${cList.placeList.size} 개 루트"
         }
     }
 
