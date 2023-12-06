@@ -69,7 +69,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
     private var chronometerService: ChronometerService? = null
-    private var memberWeight : Int? = null
+    private var memberWeight : Int? = 70
     private var memberLength : Int? = null
     private var memberAge : Int? = null
     private var memberGender :String?= null
@@ -198,16 +198,18 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
             }
+            var elapsedTime: Long = 0
             // 중지/재개 버튼 (토글 버튼 추천)
             btnStop.setOnCheckedChangeListener{ _, isChecked ->
                 if(isChecked){
+                    elapsedTime = SystemClock.elapsedRealtime() - chronometer.base
                     chronometer.stop()
                     mNaverMap.removeOnLocationChangeListener(onLocationChangeListener)
                 }else{
+                    chronometer.base = SystemClock.elapsedRealtime() - elapsedTime
                     chronometer.start()
                     mNaverMap.addOnLocationChangeListener(onLocationChangeListener)
                 }
-
             }
 
             // 완료버튼 + 저장
@@ -242,8 +244,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         return view
     }
     private fun calculateCalories(elapsedMillis : Double): Double {
-        val cal = (memberWeight?.toDouble() ?: return 0.0 )*elapsedMillis*3.5
+        val cal1 = (memberWeight?.toDouble() ?: return 0.0 )*elapsedMillis*3.5
 
+        val minute = elapsedMillis/60000
+        //ex)(강도*3.5*0.001*체중)*5*운동시간(min)
+        val cal = (3*3.5*0.001* memberWeight!!)*5*minute
+        Log.d("$$","elapsedMilliselapsedMillis : ${minute}")
         // BMR 계산법 일일 기초대사량
        /* var bmr : Double
         if(memberGender == "male"){
@@ -283,6 +289,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val startLocation =  LatLng(startInfo[1],startInfo[0])
             val goalInfo = it.route.traavoidcaronly[0].summary.goal.location
             val goalLocation = LatLng(goalInfo[1],goalInfo[0])
+            Log.d("$$","ititititit:$it")
 
 
             binding.expectedTimeView.text = it.route.traavoidcaronly[0].summary.duration.toString()
