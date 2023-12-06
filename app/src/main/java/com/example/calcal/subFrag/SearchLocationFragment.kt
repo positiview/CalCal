@@ -189,9 +189,9 @@ class SearchLocationFragment:Fragment() {
                 is Resource.Success -> {
                     Log.d("SearchLocationFragment", "Course data: ${result.data}")
                     // 데이터 로드 성공 처리
-                    Log.d("$$","getCourse값 : ${it.data}")
-                    if (it.data != null) {
-                        courseListAdapter = CourseListAdapter(it.data, this)
+                    Log.d("$$","getCourse값 : ${result.data}")
+                    if (result.data != null) {
+                        courseListAdapter = CourseListAdapter(result.data, this)
                         recyclerView.adapter = courseListAdapter
                     }
                 }
