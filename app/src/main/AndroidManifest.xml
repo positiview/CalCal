@@ -8,6 +8,8 @@
         android:description="@string/location_permission_description"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
 
 
     <application
