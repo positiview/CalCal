@@ -69,6 +69,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
             try{
                 repository.deleteCourse(course_no){
                     getCourse(course_no, userEmail)
+
                 }
             }catch (e:Exception){
                 _getCourse.value = Resource.Error(e.message.toString())

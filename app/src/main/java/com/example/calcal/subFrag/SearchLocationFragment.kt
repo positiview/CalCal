@@ -405,6 +405,7 @@ class SearchLocationFragment:Fragment() {
                 when (result) {
                     is Resource.Success<*> -> {
                         // 삭제 성공 처리
+                        Toast.makeText(requireContext(),"코스가 삭제 되었습니다.",Toast.LENGTH_SHORT).show()
                     }
                     is Resource.Error -> {
                         // 삭제 실패 처리

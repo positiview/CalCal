@@ -69,7 +69,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
     private var chronometerService: ChronometerService? = null
-    private var memberWeight : Int? = 42
+    //임시몸무게
+    private var memberWeight : Int? = 70
     private var memberLength : Int? = null
     private var memberAge : Int? = null
     private var memberGender :String?= null
