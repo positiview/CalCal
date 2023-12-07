@@ -32,7 +32,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
 
     fun saveCourse(email: String,courseName:String, placeList:List<CoordinateDTO>){
         _getPlaceList.value = CourseListDTO(email,courseName,placeList)
-        Log.d("$$","saveCourse 에 접근")
+
         viewModelScope.launch {
 
             try{
@@ -49,7 +49,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
     fun getCourse(userEmail : String) {
         viewModelScope.launch {
             _getCourse.value = Resource.Loading // 로딩 상태 설정
-
+            Log.d("$$","getCourse 에 접근")
             repository.getCourses(userEmail) { result ->
                 when (result) {
                     is Resource.Success -> {
