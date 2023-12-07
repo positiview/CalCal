@@ -12,11 +12,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -176,7 +174,8 @@ class SearchLocationFragment:Fragment() {
         if (userEmail != null) {
             // 코스 데이터 불러오기
 
-            viewModel.getCourse(userEmail)
+            val course_no = 0.toLong()
+            viewModel.getCourse(course_no,userEmail)
         }
 
         // 코스 목록 관찰
@@ -335,7 +334,7 @@ class SearchLocationFragment:Fragment() {
                 }
 
                 val current = getCurrentDateTimeAsString()
-
+                val course_no: Long = 0.toLong()
                 val courseName = binding.courseEdit.text.toString().takeIf { it.isNotBlank() } ?: "코스 $current"
                 Log.d("$$","저장 버튼 누름 / 코스이름 $courseName placeList = $placeList")
                 selectedPlaceOrNot = true
@@ -343,7 +342,7 @@ class SearchLocationFragment:Fragment() {
                     context?.getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
                 val email = sharedPreferences?.getString(LoginActivity.KEY_EMAIL, "")
                 if (email != null) {
-                    viewModel.saveCourse(email,courseName,placeList)
+                    viewModel.saveCourse(course_no,email,courseName,placeList)
                 }
                 findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment)
             }
@@ -398,8 +397,17 @@ class SearchLocationFragment:Fragment() {
     }
 
     //코스 삭제
-    fun onDeleteClick(courseList: CourseListDTO) {
-
+    fun deleteCourse(courseNo: Long) {
+        viewModel.deleteCourse(courseNo) { result ->
+            when (result) {
+                is Resource.Success<*> -> {
+                    // 삭제 성공 처리
+                }
+                is Resource.Error -> {
+                    // 삭제 실패 처리
+                }
+            }
+        }
     }
 
     // 지역 검색을 위한 다이아로그 활성화

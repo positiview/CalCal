@@ -53,6 +53,11 @@ interface ApiService {
         @Query("email") email: String
     ):Call<List<CourseListDTO>>
 
+    @DELETE("course/delete/{course_no}")
+    fun deleteCourse(
+        @Path("course_no") course_no: Long
+    ): Call<String>
+
     @GET("v1/search/local.json")
     fun searchLocation(
         @Query("query") query: String,

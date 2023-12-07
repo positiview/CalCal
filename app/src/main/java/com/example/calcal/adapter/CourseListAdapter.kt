@@ -35,7 +35,7 @@ class CourseListAdapter(private val courseList: List<CourseListDTO>, private val
         }
 
         fun bind(cList: CourseListDTO) {
-            Log.d("CourseListAdapter", "bind - 코스 이름: ${cList.courseName}, 루트 개수: ${cList.placeList.size}")
+            Log.d("CourseListAdapter", "bind - 코스 이름: ${cList.courseName}, 루트 개수: ${cList.placeList.size}, courseNo courseNo: ${cList.course_no}")
             courseName.text = cList.courseName
             courseSummary.text = "${cList.placeList.size} 개 루트"
         }
@@ -62,10 +62,15 @@ class CourseListAdapter(private val courseList: List<CourseListDTO>, private val
         alertDialogBuilder.setTitle("삭제")
         alertDialogBuilder.setMessage("정말로 '${course.courseName}'을(를) 삭제하시겠습니까?")
         alertDialogBuilder.setPositiveButton("예") { _, _ ->
-            // 해당 position에 대한 삭제 처리 로직 작성
-            // ...
+            val courseNo = course.course_no // 삭제할 course_no 가져오기
+            Log.d("DeleteCourseLog", "삭제 시작: courseNo = $courseNo")
+            // listener를 통해 삭제 작업을 프래그먼트로 전달
+            listener.deleteCourse(courseNo)
         }
         alertDialogBuilder.setNegativeButton("취소", null)
         alertDialogBuilder.create().show()
+    }
+    private fun deleteCourse(courseNo: Long) {
+        listener.deleteCourse(courseNo)
     }
 }
