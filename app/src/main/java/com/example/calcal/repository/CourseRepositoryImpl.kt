@@ -29,13 +29,11 @@ class CourseRepositoryImpl(private val context: Context): CourseRepository {
                     val responseBody: String? = response.body()
                     val sharedPreferences = context.getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
                     val email = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "") ?: ""
-                    var courseNo: Long = 0
                     val coordinateCount = placeList.size // CoordinateDTO의 개수를 계산
                     result.invoke(
                         Resource.Success(
                             CourseListDTO(
                                 email,
-                                courseNo,
                                 courseName,
                                 placeList
                             )

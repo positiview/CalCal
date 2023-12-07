@@ -31,7 +31,7 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
 
 
     fun saveCourse(email: String,courseName:String, placeList:List<CoordinateDTO>){
-        _getPlaceList.value = CourseListDTO(email, cid = 0,courseName,placeList)
+        _getPlaceList.value = CourseListDTO(email, courseName,placeList)
         Log.d("$$","saveCourse 에 접근")
         viewModelScope.launch {
 
@@ -66,6 +66,8 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
     }
 
     fun delete(cid:Double){
+
+
         viewModelScope.launch {
             _getCourse.value = Resource.Loading
             try{

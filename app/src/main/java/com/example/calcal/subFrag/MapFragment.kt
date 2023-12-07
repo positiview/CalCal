@@ -300,6 +300,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val durationInSeconds = it.route.traavoidcaronly[0].summary.duration // 예상 시간 (s)
             Log.d("$$","durationInSeconds:$durationInSeconds")
             val minute = (durationInSeconds / 60)*0.001 // 분
+            Log.d("$$","minute:$minute")
             val roundedValue = Math.round(minute).toInt()
             val hours = roundedValue / 60 // 시간
             val minutes = roundedValue % 60 // 분
