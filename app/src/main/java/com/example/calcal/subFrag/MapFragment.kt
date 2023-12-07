@@ -81,6 +81,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
     private var chronometerService: ChronometerService? = null
+    //임시몸무게
     private var memberWeight : Int? = 70
     private var memberLength : Int? = null
     private var memberAge : Int? = null
@@ -343,8 +344,42 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val goalLocation = LatLng(goalInfo[1],goalInfo[0])
             Log.d("$$","ititititit:$it")
 
+            val expectedDistanceTextView = binding.expectedDistance
+            val expectedTimeTextView = binding.expectedTimeView
+            val calorieTextView = binding.calorieView
+            val walkCountTextView = binding.walkCountView
 
-            binding.expectedTimeView.text = it.route.traavoidcaronly[0].summary.duration.toString()
+            val distance = it.route.traavoidcaronly[0].summary.distance // 예상 거리 (m)
+            val durationInSeconds = it.route.traavoidcaronly[0].summary.duration // 예상 시간 (s)
+            Log.d("$$","durationInSeconds:$durationInSeconds")
+            val minute = (durationInSeconds / 60)*0.001 // 분
+            Log.d("$$","minute:$minute")
+            val roundedValue = Math.round(minute).toInt()
+            val hours = roundedValue / 60 // 시간
+            val minutes = roundedValue % 60 // 분
+            val stepsPerDistance = 0.8 // 걸음당 거리 (미터 단위)
+            val expectedSteps = (distance / stepsPerDistance).toInt()
+
+            //ex)(강도*3.5*0.001*체중)*5*운동시간(min)
+//            val cal = (3*3.5*0.001* memberWeight!!)*5*minute
+
+            val calorie = (3*3.5*0.001* memberWeight!!)*5*roundedValue // 예상 칼로리
+            val calories = Math.round(calorie).toInt()
+//            val walkCount = it.route.traavoidcaronly[0].summary.walkCount // 예상 걸음수
+
+            val formattedTime = if (hours > 0) {
+                String.format("%d시간 %d분", hours, minutes)
+            } else {
+                String.format("%d분", minutes)
+            }
+
+            expectedTimeTextView.text = formattedTime // 예상 시간 설정
+            expectedDistanceTextView.text = distance.toString()+"m" // 예상 거리 설정
+            calorieTextView.text = calories.toString()+"Kcal" // 예상 칼로리 설정
+            walkCountTextView.text = expectedSteps.toString()+"걸음" // 예상 걸음수 설정
+
+
+//            binding.expectedTimeView.text = it.route.traavoidcaronly[0].summary.duration.toString()//예상거리
 //            mNaverMap.moveCamera(CameraUpdate.scrollTo(startLocation))
             Marker().apply {
                 position = startLocation
@@ -557,7 +592,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
     override fun onResume() {
         super.onResume()
+
         (activity as? MainActivity)?.hideBottomNavigation()
+
     }
 
     override fun onPause() {

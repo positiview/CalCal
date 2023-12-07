@@ -28,6 +28,7 @@
             android:ems="10"
             android:textColor="@color/white"
             android:inputType="text"
+            android:textColorHint="@color/white"
             android:hint="코스 이름을 적어주세요" />
     </LinearLayout>
 
@@ -112,6 +113,7 @@
                     android:id="@+id/waypoint1_cancel"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:background="@color/white"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_x"
                     app:shapeAppearanceOverlay="@style/RoundedButton" />
@@ -141,6 +143,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_x"
+                    android:background="@color/white"
                     app:shapeAppearanceOverlay="@style/RoundedButton" />
             </LinearLayout>
 
@@ -168,6 +171,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_x"
+                    android:background="@color/white"
                     app:shapeAppearanceOverlay="@style/RoundedButton" />
             </LinearLayout>
 
@@ -195,6 +199,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_x"
+                    android:background="@color/white"
                     app:shapeAppearanceOverlay="@style/RoundedButton" />
             </LinearLayout>
 
@@ -220,6 +225,7 @@
                     android:id="@+id/waypoint5_cancel"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:background="@color/white"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_x"
                     app:shapeAppearanceOverlay="@style/RoundedButton" />
@@ -245,6 +251,7 @@
                     android:id="@+id/add_waypoint"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:background="@color/white"
                     android:layout_gravity="center_vertical"
                     android:src="@drawable/ic_plus_circle"
                     app:shapeAppearanceOverlay="@style/RoundedButton" />

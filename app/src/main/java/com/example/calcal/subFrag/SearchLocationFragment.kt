@@ -30,7 +30,6 @@ import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.modelDTO.ItemDTO
-import com.example.calcal.repository.CourseRepository
 import com.example.calcal.repository.CourseRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
 import com.example.calcal.signlogin.LoginActivity
@@ -118,13 +117,13 @@ class SearchLocationFragment:Fragment() {
                     in 2 .. 7 ->{
                         binding.courseEdit.setText(it.courseName)
                         binding.departure.text = it.placeList[0].addressName
-                        location_departure = CoordinateDTO(0,it.placeList[0].addressName,it.placeList[0].longitude,it.placeList[0].latidute)
+                        location_departure = CoordinateDTO(it.placeList[0].addressName,it.placeList[0].longitude,it.placeList[0].latidute)
                         binding.arrival.text = it.placeList.last().addressName
-                        location_arrival = CoordinateDTO(0,it.placeList.last().addressName,it.placeList.last().longitude,it.placeList.last().latidute)
+                        location_arrival = CoordinateDTO(it.placeList.last().addressName,it.placeList.last().longitude,it.placeList.last().latidute)
 
                         for(i in 1 until it.placeList.size-1){
                             val addressName = it.placeList[i].addressName
-                            val coordinate = CoordinateDTO(0,it.placeList[i].addressName,it.placeList[i].longitude,it.placeList[i].latidute)
+                            val coordinate = CoordinateDTO(it.placeList[i].addressName,it.placeList[i].longitude,it.placeList[i].latidute)
                             when(i){
                                 1 -> {
                                     binding.waypoint1Text.text = addressName
@@ -174,8 +173,8 @@ class SearchLocationFragment:Fragment() {
         if (userEmail != null) {
             // 코스 데이터 불러오기
 
-            viewModel.getCourse(userEmail)
-            Log.d("$$","getCurse($userEmail) !@#$%")
+            val course_no = 0.toLong()
+            viewModel.getCourse(course_no,userEmail)
         }
 
         // 코스 목록 불러오기
@@ -334,7 +333,7 @@ class SearchLocationFragment:Fragment() {
                 }
 
                 val current = getCurrentDateTimeAsString()
-
+                val course_no: Long = 0.toLong()
                 val courseName = binding.courseEdit.text.toString().takeIf { it.isNotBlank() } ?: "코스 $current"
                 Log.d("$$","저장 버튼 누름 / 코스이름 $courseName placeList = $placeList")
                 selectedPlaceOrNot = true
@@ -342,7 +341,7 @@ class SearchLocationFragment:Fragment() {
                     context?.getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
                 val email = sharedPreferences?.getString(LoginActivity.KEY_EMAIL, "")
                 if (email != null) {
-                    viewModel.saveCourse(email,courseName,placeList)
+                    viewModel.saveCourse(course_no,email,courseName,placeList)
                 }
                 findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment)
             }
@@ -396,6 +395,26 @@ class SearchLocationFragment:Fragment() {
 
     }
 
+    // 코스 삭제
+    fun deleteCourse(courseNo: Long) {
+        val sharedPreferences = context?.getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val userEmail = sharedPreferences?.getString(LoginActivity.KEY_EMAIL, "")
+        if (userEmail != null) {
+            viewModel.deleteCourse(courseNo, userEmail) { result ->
+                when (result) {
+                    is Resource.Success<*> -> {
+                        // 삭제 성공 처리
+                        Toast.makeText(requireContext(),"코스가 삭제 되었습니다.",Toast.LENGTH_SHORT).show()
+                    }
+                    is Resource.Error -> {
+                        // 삭제 실패 처리
+                    }
+                }
+            }
+        }
+    }
+
+
     // 지역 검색을 위한 다이아로그 활성화
     private fun openSearchAddressDialog(textView: TextView, index: Int) {
         val searchAddressDialog = SearchAddressDialog(myArea)
@@ -404,8 +423,13 @@ class SearchLocationFragment:Fragment() {
             override fun onItemClicked(itemDTO: ItemDTO) {
                 Log.d("$$","onItemClicked 설정 textView = $textView , itemDTO = $itemDTO")
                 textView.text = itemDTO.title
+<<<<<<< HEAD
                 val coords = CoordinateDTO(0,longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000, addressName = itemDTO.roadAddress)
                 coordinateData(index,coords) // 해당 인덱스로 열린 다이얼로그에서 좌표를 fragment에 저장
+=======
+                val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000, addressName = itemDTO.roadAddress)
+                coordinateData(index,coords)
+>>>>>>> 2378f5fcbc1c1db27fb03329e151241c6d27d5b0
                 courseConfirmBtnEnableCheck()
                 updatePlaceList()
                 Log.d("$$","33 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
@@ -418,7 +442,7 @@ class SearchLocationFragment:Fragment() {
                     if(it!=null){
 
                         textView.text = "[내 위치] ${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
-                        val coords = CoordinateDTO(0,longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y, addressName = textView.text.toString())
+                        val coords = CoordinateDTO(longitude = it.region.area4.coords.center.x, latidute = it.region.area4.coords.center.y, addressName = textView.text.toString())
                         coordinateData(index,coords)
                         courseConfirmBtnEnableCheck()
                         updatePlaceList()
@@ -574,7 +598,7 @@ class SearchLocationFragment:Fragment() {
                         val ad = address.firstOrNull()
                         if(ad !=null){
                             val actualAddress = "${ad.region.area1.name} ${ad.region.area2.name} ${ad.region.area3.name} ${ad.region.area4.name}".trim()
-                            location_departure = CoordinateDTO(0, longitude = location.longitude, latidute = location.latitude,
+                            location_departure = CoordinateDTO( longitude = location.longitude, latidute = location.latitude,
                                 addressName = actualAddress
                             )
                         }

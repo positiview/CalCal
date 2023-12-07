@@ -230,12 +230,19 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
 
         callAddressList.enqueue(object : Callback<ChannelDTO>{
             override fun onResponse(call: Call<ChannelDTO>, response: Response<ChannelDTO>) {
-                Log.d("$$","주소 검색 결과 읍답 : $response")
+                Log.d("$$","주소 검색 결과 응답 : $response")
                 if(response.isSuccessful){
                     val respAddress: ChannelDTO? = response.body()
                     Log.d("$$","responseAddress = $respAddress")
                     if(respAddress != null && respAddress.items != null&& respAddress.items.isNotEmpty()){
                         val addressList: MutableList<ItemDTO> = respAddress.items.toMutableList()
+
+                        // 태그 제거 코드 추가
+                        addressList.forEach { item ->
+                            val cleanTitle = item.title.replace("<b>", "").replace("</b>", "")
+                            item.title = cleanTitle
+                        }
+
                         callback(addressList)
                         for (address in addressList) {
                             val roadAddress = address.roadAddress
@@ -247,10 +254,9 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
                             Log.d("$$","roadAddress: $roadAddress")
                             Log.d("$$","jibunAddress: $jibunAddress")
                             Log.d("$$","x: $x, y: $y")
-
-
+                            Log.d("$$","cleanTitle: ${address.title}")
                         }
-                    }else {
+                    } else {
                         Log.d("$$","에러: ${response.code()} - ${response.message()}")
                     }
                 }else{

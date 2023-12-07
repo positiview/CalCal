@@ -14,7 +14,7 @@ data class ChannelDTO(
 )
 
 data class ItemDTO(
-    val title: String,
+    var title: String,
     val link: String?,
     val category: String,
     val description: String,
