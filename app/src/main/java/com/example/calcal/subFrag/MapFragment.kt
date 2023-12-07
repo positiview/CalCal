@@ -75,7 +75,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var memberGender :String?= null
     private lateinit var courseRepository: CourseRepositoryImpl
     private lateinit var courseViewModelFactory: CourseViewModelFactory
-    private var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
+
 
     private val courseViewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
 
@@ -113,7 +113,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         locationSource =
             FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
         val myRoute: MutableList<LatLng> = mutableListOf()
-
+        var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
         var recordTime = 0L
 
 
@@ -185,7 +185,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
                 }, touchTimeout) // -> 오류 확인 필요
 
-
+                chronometer.base = SystemClock.elapsedRealtime()
                 chronometer.start()
 
 
@@ -216,7 +216,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             btnComplete.setOnClickListener {
                 Toast.makeText(requireContext(),"기록을 종료합니다",Toast.LENGTH_SHORT).show()
                 chronometer.stop()
-                chronometer.base = SystemClock.elapsedRealtime()
+
                 textViewMap.text = "MAP"
                 mNaverMap.removeOnLocationChangeListener(onLocationChangeListener)
 

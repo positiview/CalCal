@@ -20,6 +20,7 @@ class RecordRepositoryImpl:RecordRepository {
         result: (Resource<List<RouteAndTimeDTO>>) -> Unit
     ) {
         val storedEmail = sharedPreferences.getString(KEY_EMAIL, "")
+        Log.d("$$","saveRecord 저장 : myRouteRecords = $myRouteRecords // courseName = $courseName // storedEmail = $storedEmail")
         val call : Call<String> = apiService.saveRouteRecord(myRouteRecords,storedEmail?:"",courseName)
 
         call.enqueue(object : Callback<String>{

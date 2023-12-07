@@ -1,5 +1,6 @@
 package com.example.calcal.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,8 +17,8 @@ class RecordViewModel(private val repository: RecordRepository):ViewModel() {
     val getRecord : LiveData<Resource<List<RouteAndTimeDTO>>> get() = _getRecord
 
     fun saveRecord(listRecord : List<RouteAndTimeDTO>, courseName: String){
-
         viewModelScope.launch {
+            Log.d("$$","saveRecord ViewModel")
             _getRecord.value = Resource.Loading
             try{
                 repository.saveRecord(listRecord,courseName){

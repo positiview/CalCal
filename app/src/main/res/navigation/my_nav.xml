@@ -299,6 +299,14 @@
             android:id="@+id/action_etcExerciseFragment_to_exerciseInfoFragment"
             app:destination="@id/exerciseInfoFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.calcal.subFrag.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history"
+        >
+
+    </fragment>
 
 
 </navigation>
