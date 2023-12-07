@@ -423,13 +423,10 @@ class SearchLocationFragment:Fragment() {
             override fun onItemClicked(itemDTO: ItemDTO) {
                 Log.d("$$","onItemClicked 설정 textView = $textView , itemDTO = $itemDTO")
                 textView.text = itemDTO.title
-<<<<<<< HEAD
-                val coords = CoordinateDTO(0,longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000, addressName = itemDTO.roadAddress)
-                coordinateData(index,coords) // 해당 인덱스로 열린 다이얼로그에서 좌표를 fragment에 저장
-=======
+
                 val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000, addressName = itemDTO.roadAddress)
                 coordinateData(index,coords)
->>>>>>> 2378f5fcbc1c1db27fb03329e151241c6d27d5b0
+
                 courseConfirmBtnEnableCheck()
                 updatePlaceList()
                 Log.d("$$","33 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
