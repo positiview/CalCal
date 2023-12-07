@@ -63,14 +63,12 @@ class CourseViewModel(private val repository: CourseRepository): ViewModel() {
         }
     }
 
-    fun deleteCourse(course_no: Long, param: (Any) -> Unit){
-
-
+    fun deleteCourse(course_no: Long, userEmail: String, param: (Any) -> Unit){
         viewModelScope.launch {
             _getCourse.value = Resource.Loading
             try{
                 repository.deleteCourse(course_no){
-
+                    getCourse(course_no, userEmail)
                 }
             }catch (e:Exception){
                 _getCourse.value = Resource.Error(e.message.toString())

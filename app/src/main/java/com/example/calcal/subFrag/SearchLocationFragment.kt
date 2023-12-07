@@ -396,19 +396,24 @@ class SearchLocationFragment:Fragment() {
 
     }
 
-    //코스 삭제
+    // 코스 삭제
     fun deleteCourse(courseNo: Long) {
-        viewModel.deleteCourse(courseNo) { result ->
-            when (result) {
-                is Resource.Success<*> -> {
-                    // 삭제 성공 처리
-                }
-                is Resource.Error -> {
-                    // 삭제 실패 처리
+        val sharedPreferences = context?.getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val userEmail = sharedPreferences?.getString(LoginActivity.KEY_EMAIL, "")
+        if (userEmail != null) {
+            viewModel.deleteCourse(courseNo, userEmail) { result ->
+                when (result) {
+                    is Resource.Success<*> -> {
+                        // 삭제 성공 처리
+                    }
+                    is Resource.Error -> {
+                        // 삭제 실패 처리
+                    }
                 }
             }
         }
     }
+
 
     // 지역 검색을 위한 다이아로그 활성화
     private fun openSearchAddressDialog(textView: TextView, index: Int) {
