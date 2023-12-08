@@ -3,17 +3,11 @@ package com.example.calcal.modelDTO
 import java.io.Serializable
 
 data class ExerciseDTO(
-    var exname: String,
-
-    var exicon: String?,
-
-    var excontent: String?,
-
-    var excal: Int?,
-
-    var extime: Int?,
-
-    var exmove: Boolean,
-
-    var email: String?
-): Serializable
+    var email: String = "",
+    var excal: Int? = null,
+    var excontent: String = "",
+    val exicon: String = "",
+    var exmove: Boolean = false,
+    var exname: String = "",
+    var extime: Int? = null
+) : Serializable
