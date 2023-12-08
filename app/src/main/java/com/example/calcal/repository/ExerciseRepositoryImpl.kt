@@ -41,8 +41,8 @@ class ExerciseRepositoryImpl : ExerciseRepository {
         })
     }
 
-    override suspend fun getExercise(exname: String, result: (Resource<ExerciseDTO>) -> Unit) {
-        val call: Call<ExerciseDTO> = apiService.getExerciseData(exname)
+    override suspend fun getExercise(email: String, result: (Resource<ExerciseDTO>) -> Unit) {
+        val call: Call<ExerciseDTO> = apiService.getExerciseData(email)
 
         call.enqueue(object : Callback<ExerciseDTO> {
             override fun onResponse(call: Call<ExerciseDTO>, response: Response<ExerciseDTO>) {
