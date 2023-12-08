@@ -10,6 +10,7 @@ import com.example.calcal.modelDTO.FeatureCollection
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
+import com.example.calcal.modelDTO.RouteRecordDTO
 import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.signlogin.MemberDTO
 import retrofit2.Call
@@ -126,11 +127,14 @@ interface ApiService {
     fun saveRouteRecord(
         @Body routeRecord: List<RouteAndTimeDTO>,
         @Query("userEmail") userEmail: String,
-        @Query("courseName") courseName: String
+        @Query("courseName") courseName: String,
+        @Query("calorie") calorie:Double
     ): Call<String>
 
-    @GET("record/get")
-    fun getRouteRecord(): Call<List<RouteAndTimeDTO>>
+    @GET("record/history")
+    fun getRouteRecord(
+        @Query("userEmail") userEmail: String
+    ): Call<List<RouteRecordDTO>>
 
     @PUT("api/updateMemberData")
     fun updateMemberData(@Body memberDTO: MemberDTO): Call<String>

@@ -55,9 +55,12 @@ class MainFragment : Fragment() {
         val sharedPreferences = requireActivity().getSharedPreferences("login_pref", Context.MODE_PRIVATE)
 
 
+        binding.btnWalking.setOnClickListener{
+            findNavController().navigate(R.id.action_mainFragment_to_searchLocationFragment)
+        }
 
         binding.mapMain.setOnClickListener {
-            findNavController().navigate(R.id.action_mainFragment_to_searchLocationFragment)
+            findNavController().navigate(R.id.action_mainFragment_to_historyFragment)
         }
         binding.btnDaycount.setOnClickListener{
             findNavController().navigate(R.id.navi_calendar)

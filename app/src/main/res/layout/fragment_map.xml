@@ -75,7 +75,7 @@
         android:id="@+id/course_recode"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="wrap_content"
         android:layout_margin="20dp"
 
         android:background="@drawable/rectangle_map"
@@ -280,11 +280,11 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
 
-                    android:text="TextView"
+                    android:text="0"
                     android:textAppearance="@style/red_text" />
 
                 <TextView
-                    android:id="@+id/distance_tv"
+                    android:id="@+id/distance_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -293,12 +293,12 @@
                     android:text="이동 거리" />
 
                 <TextView
-                    android:id="@+id/time_tv"
+                    android:id="@+id/distance_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textAppearance="@style/red_text"
-                    android:text="TextView" />
+                    android:text="0" />
             </LinearLayout>
 
             <LinearLayout

@@ -1,7 +1,6 @@
 package com.example.calcal.subFrag
 
 import android.content.Context
-import android.content.Context.LOCATION_SERVICE
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.location.Location
@@ -16,7 +15,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.UiThread
-import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.os.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -36,6 +35,7 @@ import com.example.calcal.retrofit.RequestFactory
 import com.example.calcal.service.ChronometerService
 import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.signlogin.LoginActivity.Companion.PREF_NAME
+import com.example.calcal.util.CustomLoading
 import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.CourseViewModel
 import com.example.calcal.viewModel.MemberViewModel
@@ -46,7 +46,6 @@ import com.example.calcal.viewModelFactory.RecordViewModelFactory
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraAnimation
-import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -66,6 +65,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.lang.Integer.min
 import java.lang.System.currentTimeMillis
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -80,6 +83,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val handler = Handler()
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
+    private var cal :Double = 0.0
     private var chronometerService: ChronometerService? = null
     //임시몸무게
     private var memberWeight : Int? = 70
@@ -164,15 +168,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     polyline.width = 10
                     if (myRoute.size >= 2) {
                         if (!isCameraMoveExecuted) {
-                            lastLocation = LatLng(location.latitude, location.longitude)
-
-                            val locationUpdate = CameraUpdate.scrollTo(lastLocation)
-                                .animate(CameraAnimation.Easing, 700)
-                            mNaverMap.moveCamera(locationUpdate)
-
+                            Log.d("$$","zoom활성화?")
                             val zoomUpdate = CameraUpdate.zoomTo(17.0).animate(CameraAnimation.Easing, 500)
                             mNaverMap.moveCamera(zoomUpdate)
-                            mNaverMap.locationTrackingMode = LocationTrackingMode.Follow
+
+                            mNaverMap.addOnCameraIdleListener {
+                                mNaverMap.locationTrackingMode = LocationTrackingMode.Follow
+                            }
                             isCameraMoveExecuted = true
                         }
                         polyline.coords = myRoute
@@ -183,19 +185,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
 
 
-                    val chronometerTime = chronometer.base
-                    Log.d("$$","ChronometerTime : $chronometerTime")
+
+
 //                    // 기록 저장
+                    val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
+                    Log.d("$$","ChronometerTime : $elapsedMillis")
                     routeAndTimeDTO.add(RouteAndTimeDTO(
                         longitude = location.longitude,
                         latitude = location.latitude ,
-                        recordTime = chronometerTime
+                        recordTime = elapsedMillis.toDouble()
                     ))
-                    val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
 
-                    val cal = calculateCalories(elapsedMillis.toDouble())
+                    cal = calculateCalories(elapsedMillis.toDouble())
+
+                    val distance = calculateTotalDistance(myRoute)
 
                     binding.calorieTv.text = cal.toInt().toString()
+                    binding.distanceTv.text = distance
                 }
             }
 
@@ -267,7 +273,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 textViewMap.text = "MAP"
                 mNaverMap.removeOnLocationChangeListener(onLocationChangeListener)
 
-                Toast.makeText(requireContext(),"잠시후 내 기록실로 이동합니다.",Toast.LENGTH_SHORT).show()
 
                 val txt = binding.textCourse.text.toString()
                 Log.d("$$","rat = $routeAndTimeDTO , courseName = $txt")
@@ -275,14 +280,29 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 sharedPreferences = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 val storedEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
                 if (storedEmail != null) {
-                    recordViewModel.saveRecord(routeAndTimeDTO,txt,storedEmail)
-                }
-                handler.postDelayed({
-                    stopwatchChronometer.visibility = View.GONE
-                    singleLayout.visibility = View.VISIBLE
-                    findNavController().navigate(R.id.action_mapFragment_to_historyFragment)
-                }, 4000)
+                    recordViewModel.saveRecord(routeAndTimeDTO,txt,storedEmail,cal)
+                    recordViewModel.successfulSave.observe(viewLifecycleOwner){
+                        when(it){
+                            is Resource.Loading -> {
 
+                            }
+                            is Resource.Success ->{
+
+                                Toast.makeText(requireContext(),it.data,Toast.LENGTH_SHORT).show()
+                                handler.postDelayed({
+                                    stopwatchChronometer.visibility = View.GONE
+                                    singleLayout.visibility = View.VISIBLE
+                                    findNavController().navigate(R.id.action_mapFragment_to_historyFragment)
+
+                                },3000)
+                            }
+                            is Resource.Error ->{
+
+                                Toast.makeText(requireContext(),it.string,Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
                 // 위 두개의 코드를 어떻게 처리해야할 지 고민해봐야함
             }
 
@@ -295,6 +315,44 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
         return view
+    }
+
+    fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val R = 6371.0 // 지구 반경 (단위: km)
+
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+
+        val a = sin(dLat / 2) * sin(dLat / 2) +
+                cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
+                sin(dLon / 2) * sin(dLon / 2)
+
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        return R * c
+    }
+    fun formatDistance(distance: Double): String {
+        return if (distance >= 1000) {
+            "${"%.2f".format(distance / 1000)} km"
+        } else {
+            "${"%.2f".format(distance)} m"
+        }
+    }
+    fun calculateTotalDistance(coordinates: MutableList<LatLng>): String {
+        var totalDistance = 0.0
+
+        // 리스트의 첫 번째 좌표부터 마지막 좌표까지 반복
+        for (i in 0 until coordinates.size - 1) {
+            val current = coordinates[i]
+            val next = coordinates[i + 1]
+
+            // 두 지점 간의 거리를 계산하여 누적
+            val distance =
+                haversine(current.latitude, current.longitude, next.latitude, next.longitude)
+            totalDistance += distance
+
+        }
+        return formatDistance(totalDistance)
     }
     private fun calculateCalories(elapsedMillis : Double): Double {
         val cal1 = (memberWeight?.toDouble() ?: return 0.0 )*elapsedMillis*3.5
@@ -450,7 +508,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mNaverMap.locationSource = locationSource
         uiSettings = naverMap.uiSettings
         uiSettings.isLocationButtonEnabled = false
-        uiSettings.isCompassEnabled = false
+        uiSettings.isCompassEnabled = true
         // 내위치 찾는 버튼
         val locationButtonView: LocationButtonView = binding.mylocationView
         locationButtonView.map = mNaverMap
@@ -588,7 +646,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+        const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
     override fun onResume() {
         super.onResume()
