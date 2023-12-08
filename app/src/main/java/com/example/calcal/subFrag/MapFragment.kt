@@ -1,7 +1,11 @@
 package com.example.calcal.subFrag
 
+import android.content.Context
+import android.content.Context.LOCATION_SERVICE
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
@@ -12,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.UiThread
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -29,6 +34,8 @@ import com.example.calcal.repository.RecordRepository
 import com.example.calcal.repository.RecordRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
 import com.example.calcal.service.ChronometerService
+import com.example.calcal.signlogin.LoginActivity
+import com.example.calcal.signlogin.LoginActivity.Companion.PREF_NAME
 import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.CourseViewModel
 import com.example.calcal.viewModel.MemberViewModel
@@ -38,6 +45,8 @@ import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import com.example.calcal.viewModelFactory.RecordViewModelFactory
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
+import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -63,8 +72,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var binding : FragmentMapBinding
     private lateinit var locationSource: FusedLocationSource
     private lateinit var mNaverMap: NaverMap
+    private var locationManager: LocationManager? = null
     private lateinit var uiSettings: UiSettings
     private lateinit var btn_back:ImageView
+    private lateinit var lastLocation:LatLng
+    private var isCameraMoveExecuted = false
     private val handler = Handler()
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
@@ -76,7 +88,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var memberGender :String?= null
     private lateinit var courseRepository: CourseRepositoryImpl
     private lateinit var courseViewModelFactory: CourseViewModelFactory
-    private var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
+    private lateinit var sharedPreferences: SharedPreferences
 
     private val courseViewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
 
@@ -111,10 +123,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
         mapFragment.getMapAsync(this)
 
+
         locationSource =
             FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-        val myRoute: MutableList<LatLng> = mutableListOf()
 
+
+
+        val myRoute: MutableList<LatLng> = mutableListOf()
+        var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
         var recordTime = 0L
 
 
@@ -141,11 +157,24 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val onLocationChangeListener = object : NaverMap.OnLocationChangeListener {
                 override fun onLocationChange(location: Location) {
 
+
                     myRoute.add(LatLng(location.latitude, location.longitude))
                     val polyline = PolylineOverlay()
                     polyline.color = Color.BLUE
                     polyline.width = 10
                     if (myRoute.size >= 2) {
+                        if (!isCameraMoveExecuted) {
+                            lastLocation = LatLng(location.latitude, location.longitude)
+
+                            val locationUpdate = CameraUpdate.scrollTo(lastLocation)
+                                .animate(CameraAnimation.Easing, 700)
+                            mNaverMap.moveCamera(locationUpdate)
+
+                            val zoomUpdate = CameraUpdate.zoomTo(17.0).animate(CameraAnimation.Easing, 500)
+                            mNaverMap.moveCamera(zoomUpdate)
+                            mNaverMap.locationTrackingMode = LocationTrackingMode.Follow
+                            isCameraMoveExecuted = true
+                        }
                         polyline.coords = myRoute
                         polyline.map = mNaverMap
                     } else {
@@ -169,24 +198,41 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     binding.calorieTv.text = cal.toInt().toString()
                 }
             }
+
             btnStart.setOnClickListener {
                  //위치 추적 모드, 현위치 오버레이와 카메라 좌표가 사용자의 위치를 따라 움직입니다. API나 제스터를 사용시 위치추적모드 해제
                 mNaverMap.locationTrackingMode = LocationTrackingMode.Follow // <-- 에뮬에서는 안되는듯
 
 
-                // 위치추적모드가 활성화 될때 이벤트 처리
+                // 위치추적모드가 활성화에 의한 영향으로 위치가 변할때 이벤트 처리
                 mNaverMap.addOnLocationChangeListener(onLocationChangeListener)
 
 
+                mNaverMap.setOnMapClickListener { _, _ ->
+                    // 지도 터치시 현재 시간 업데이트
+                    lastTouchTime = currentTimeMillis()
+
+                    // 터치가 있으면 5초 뒤에 다시 확인하는 핸들러 콜백 제거
+                    handler.removeCallbacksAndMessages(null)
 
 
-                handler.postDelayed({
-                    if (currentTimeMillis() - lastTouchTime >= touchTimeout) {
-                        mNaverMap.locationTrackingMode = LocationTrackingMode.Follow
-                    }
-                }, touchTimeout) // -> 오류 확인 필요
+
+                    // 터치가 있으면 5초 뒤에 다시 확인하는 핸들러 콜백 추가
+                    handler.postDelayed({
+                        if (currentTimeMillis() - lastTouchTime >= touchTimeout) {
+
+                            // 5초 이상 터치가 없었을 때, LocationTrackingMode.Follow 다시 활성화
+                            mNaverMap.locationTrackingMode = LocationTrackingMode.Follow
+                            isCameraMoveExecuted = false
+                        }
+                    }, touchTimeout)
+                }
 
 
+
+
+
+                chronometer.base = SystemClock.elapsedRealtime()
                 chronometer.start()
 
 
@@ -217,20 +263,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             btnComplete.setOnClickListener {
                 Toast.makeText(requireContext(),"기록을 종료합니다",Toast.LENGTH_SHORT).show()
                 chronometer.stop()
-                chronometer.base = SystemClock.elapsedRealtime()
+
                 textViewMap.text = "MAP"
                 mNaverMap.removeOnLocationChangeListener(onLocationChangeListener)
 
                 Toast.makeText(requireContext(),"잠시후 내 기록실로 이동합니다.",Toast.LENGTH_SHORT).show()
 
+                val txt = binding.textCourse.text.toString()
+                Log.d("$$","rat = $routeAndTimeDTO , courseName = $txt")
 
-
-                recordViewModel.saveRecord(routeAndTimeDTO,binding.textCourse.text.toString())
+                sharedPreferences = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                val storedEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
+                if (storedEmail != null) {
+                    recordViewModel.saveRecord(routeAndTimeDTO,txt,storedEmail)
+                }
                 handler.postDelayed({
+                    stopwatchChronometer.visibility = View.GONE
+                    singleLayout.visibility = View.VISIBLE
                     findNavController().navigate(R.id.action_mapFragment_to_historyFragment)
-                }, 5000)
-                stopwatchChronometer.visibility = View.GONE
-                singleLayout.visibility = View.VISIBLE
+                }, 4000)
+
                 // 위 두개의 코드를 어떻게 처리해야할 지 고민해봐야함
             }
 
@@ -398,6 +450,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mNaverMap.locationSource = locationSource
         uiSettings = naverMap.uiSettings
         uiSettings.isLocationButtonEnabled = false
+        uiSettings.isCompassEnabled = false
         // 내위치 찾는 버튼
         val locationButtonView: LocationButtonView = binding.mylocationView
         locationButtonView.map = mNaverMap

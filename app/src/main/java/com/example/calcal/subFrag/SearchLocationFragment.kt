@@ -110,7 +110,6 @@ class SearchLocationFragment:Fragment() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
 
-        Log.d("$$", "viewmodel.getPlaceList : ${viewModel.getPlaceList}")
         // selectedPlaceOrNot 은 처음SearchLocationFragment에 왔을때 제외하고 mapFragment 갔다오면 선택했던 PlaceList들의 내용을 미리 표시
         if(selectedPlaceOrNot){
             viewModel.getPlaceList.observe(viewLifecycleOwner){
@@ -178,7 +177,7 @@ class SearchLocationFragment:Fragment() {
             viewModel.getCourse(course_no,userEmail)
         }
 
-        // 코스 목록 관찰
+        // 코스 목록 불러오기
         viewModel.getCourse.observe(viewLifecycleOwner) { result ->
             Log.d("SearchLocationFragment", "Course observe result: $result")
             when (result) {
@@ -319,7 +318,7 @@ class SearchLocationFragment:Fragment() {
 
             waypoints.forEachIndexed() {index, waypoint ->
                 waypoint.setOnClickListener{
-                    openSearchAddressDialog(waypoint,index)
+                    openSearchAddressDialog(waypoint,index) // 예) depature 를 선택하면 index는 0, waypoint5Text를 선택하면 index는 5
 
                 }
             }
@@ -424,8 +423,10 @@ class SearchLocationFragment:Fragment() {
             override fun onItemClicked(itemDTO: ItemDTO) {
                 Log.d("$$","onItemClicked 설정 textView = $textView , itemDTO = $itemDTO")
                 textView.text = itemDTO.title
+
                 val coords = CoordinateDTO(longitude = itemDTO.mapx.toDouble()/10000000, latidute = itemDTO.mapy.toDouble()/10000000, addressName = itemDTO.roadAddress)
                 coordinateData(index,coords)
+
                 courseConfirmBtnEnableCheck()
                 updatePlaceList()
                 Log.d("$$","33 departure = $location_departure // waypoint1 = $location_waypoint1 // waypoint2 = $location_waypoint2 // arrival = $location_arrival")
