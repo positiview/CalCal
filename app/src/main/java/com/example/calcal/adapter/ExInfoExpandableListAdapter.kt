@@ -11,11 +11,13 @@ import android.widget.TextView
 import androidx.navigation.NavController
 import com.example.calcal.R
 import com.example.calcal.modelDTO.ExerciseDTO
+import com.example.calcal.viewModel.ExerciseViewModel
 
 class ExInfoExpandableListAdapter(
     private val context: Context,
     private val list: List<ExerciseDTO>,
-    private val navController: NavController
+    private val navController: NavController,
+    private val viewModel: ExerciseViewModel
 ) : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int {
@@ -73,6 +75,7 @@ class ExInfoExpandableListAdapter(
             titleBack.visibility = View.VISIBLE
         }
 
+
         return view
     }
 
@@ -86,6 +89,9 @@ class ExInfoExpandableListAdapter(
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.list_item, parent, false)
         val exerciseDto = getChild(groupPosition, childPosition) as ExerciseDTO
+
+        val infoTitle = view.findViewById<TextView>(R.id.ex_info_title_text)
+        infoTitle.text = exerciseDto.exname
 
         val infoText = view.findViewById<TextView>(R.id.ex_info_info)
         infoText.text = exerciseDto.excontent
@@ -104,6 +110,7 @@ class ExInfoExpandableListAdapter(
         goToExerciseText.visibility = View.VISIBLE
         goToExerciseText.setOnClickListener {
             // 여기서 actionId는 네비게이션 그래프에서 해당 페이지로 이동하는 액션의 ID입니다.
+            viewModel.selectItem(exerciseDto.exname)
             navController.navigate(R.id.action_exerciseInfoFragment_to_exercisestartFragment)
         }
 

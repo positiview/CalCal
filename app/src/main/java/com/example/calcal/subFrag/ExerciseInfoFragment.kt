@@ -1,5 +1,7 @@
 package com.example.calcal.subFrag
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,7 +18,9 @@ import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
 import com.example.calcal.adapter.ExInfoExpandableListAdapter
 import com.example.calcal.databinding.FragmentExerciseInfoBinding
+import com.example.calcal.modelDTO.ExerciseDTO
 import com.example.calcal.repository.ExerciseRepositoryImpl
+import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.ExerciseViewModel
 import com.example.calcal.viewModelFactory.ExerciseViewModelFactory
@@ -26,6 +30,7 @@ class ExerciseInfoFragment : Fragment() {
     private lateinit var binding:FragmentExerciseInfoBinding
     private lateinit var btn_back : Button
     private lateinit var viewModel: ExerciseViewModel
+    private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val repository = ExerciseRepositoryImpl()
@@ -38,7 +43,8 @@ class ExerciseInfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentExerciseInfoBinding.inflate(inflater, container, false)
-
+        sharedPreferences = requireActivity().getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val userEmail =  sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
         btn_back = binding.btnBack
         btn_back.setOnClickListener {
             NavHostFragment.findNavController(this).navigateUp()
@@ -54,8 +60,8 @@ class ExerciseInfoFragment : Fragment() {
                 is Resource.Success -> {
                     val exercises = resource.data
                     // ExerciseDTO 객체의 리스트를 생성
-                    val exerciseDTOs = exercises
-                    val adapter = ExInfoExpandableListAdapter(requireContext(), exerciseDTOs, navController)
+                    val exerciseDTOs = exercises.filter { it.email == "admin" || it.email == userEmail }
+                    val adapter = ExInfoExpandableListAdapter(requireContext(), exerciseDTOs, navController,viewModel)
                     binding.exerciseInfoRecycler.setAdapter(adapter)
                 }
                 is Resource.Error -> {
@@ -89,6 +95,4 @@ class ExerciseInfoFragment : Fragment() {
     fun onItemClick(position: Int) {
 
     }
-
-
 }
