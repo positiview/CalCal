@@ -11,11 +11,12 @@ import com.example.calcal.util.Resource
 import kotlinx.coroutines.launch
 
 class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel() {
-    private val _exerciseList: MutableLiveData<Resource<ExerciseDTO>> = MutableLiveData()
-    val exerciseList: LiveData<Resource<ExerciseDTO>> get() = _exerciseList
+    private val _exerciseList: MutableLiveData<Resource<List<ExerciseDTO>>> = MutableLiveData()
+    val exerciseList: LiveData<Resource<List<ExerciseDTO>>> get() = _exerciseList
 
     private val _saveSuccess: MutableLiveData<Resource<Boolean>> = MutableLiveData()
     val saveSuccess: LiveData<Resource<Boolean>> get() = _saveSuccess
+
 
 
 //    init {
@@ -34,10 +35,39 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
             }
         }
 
+    }
+    fun getExerciseInfo(exercise: String){
+        _exerciseList.value = Resource.Loading
+        viewModelScope.launch {
+            try{
+                repository.getExercise(exercise){ exercises ->
+                    _exerciseList.value = Resource.Success(exercises)
+                }
+            }catch (e:Exception){
+                _exerciseList.value = Resource.Error(e.message.toString())
+            }
+        }
+    }
+    fun getAllExercises() {
+        _exerciseList.value = Resource.Loading
 
-//        fun setExerciseList(exercises: Resource<ExerciseDTO>) {
-//            _exerciseList.value = exercises
-//        }
-
+        viewModelScope.launch {
+            try {
+                _exerciseList.value = repository.getAllExercises()
+            } catch (e: Exception) {
+                _exerciseList.value = Resource.Error("Error occurred while getting all exercises")
+            }
+        }
+    }
+    fun updateExerciseInfo(exerciseDTO: ExerciseDTO) {
+        _exerciseList.value = Resource.Loading
+        viewModelScope.launch {
+            try {
+                val updatedMember = repository.updateExercise(exerciseDTO)
+                _exerciseList.value = Resource.Success(listOf(updatedMember))
+            } catch (e: Exception) {
+                _exerciseList.value = Resource.Error(e.message.toString())
+            }
+        }
     }
 }

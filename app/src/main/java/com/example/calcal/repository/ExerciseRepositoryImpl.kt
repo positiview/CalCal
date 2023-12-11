@@ -41,25 +41,29 @@ class ExerciseRepositoryImpl : ExerciseRepository {
         })
     }
 
-    override suspend fun getExercise(email: String, result: (Resource<ExerciseDTO>) -> Unit) {
-        val call: Call<ExerciseDTO> = apiService.getExerciseData(email)
+    override suspend fun getExercise(exname: String, result: (List<ExerciseDTO>) -> Unit) {
+        val call: Call<ExerciseDTO> = apiService.getExerciseData(exname)
 
         call.enqueue(object : Callback<ExerciseDTO> {
             override fun onResponse(call: Call<ExerciseDTO>, response: Response<ExerciseDTO>) {
                 if (response.isSuccessful) {
                     val responseBody: ExerciseDTO? = response.body()
                     if (responseBody != null) {
-                        result(Resource.Success(responseBody))
+                        Log.d("getExercise", "Response received: $responseBody")
+                        result(listOf(responseBody))
                     } else {
-                        result(Resource.Error("No user data"))
+                        Log.d("getExercise", "Response body is null")
+                        result(listOf())
                     }
                 } else {
-                    result(Resource.Error("Failed to get user data"))
+                    Log.d("getExercise", "Response is not successful. Code: ${response.code()}, Message: ${response.message()}")
+                    result(listOf())
                 }
             }
 
             override fun onFailure(call: Call<ExerciseDTO>, t: Throwable) {
-                result(Resource.Error("Failed to get user data: ${t.message}"))
+                Log.d("getExercise", "API call failed", t)
+                result(listOf())
             }
         })
     }
@@ -95,6 +99,15 @@ class ExerciseRepositoryImpl : ExerciseRepository {
             }
         } catch (e: Exception) {
             result(Resource.Error(e.message ?: "오류가 발생하였습니다."))
+        }
+    }
+
+    override suspend fun getAllExercises(): Resource<List<ExerciseDTO>> {
+        return try {
+            val response = apiService.getAllExercises()
+            Resource.Success(response)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "An error occurred")
         }
     }
 }
