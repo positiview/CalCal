@@ -7,7 +7,7 @@ import com.example.calcal.util.Resource
 interface RecordRepository {
 
     suspend fun saveRecord(myRouteRecords: List<RouteAndTimeDTO>, courseName : String,
-                           email: String, calorie:Double, result: (Resource<String>) -> Unit)
+                           email: String, calorie:Double, distance:String, result: (Resource<String>) -> Unit)
 
     suspend fun getRecord(email: String, result: (Resource<List<RouteRecordDTO>?>) -> Unit)
 }

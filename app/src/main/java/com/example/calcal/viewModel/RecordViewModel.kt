@@ -17,24 +17,24 @@ class RecordViewModel(private val repository: RecordRepository):ViewModel() {
 
     val getRecord : LiveData<Resource<List<RouteRecordDTO>?>> get() = _getRecord
 
-    private val _getRecentRecord : MutableLiveData<List<RouteAndTimeDTO>> = MutableLiveData()
+    private val _getSelectedRecord : MutableLiveData<List<RouteAndTimeDTO>> = MutableLiveData()
 
-    val getRecentRecord : LiveData<List<RouteAndTimeDTO>> get() = _getRecentRecord
+    val getSelectedRecord : LiveData<List<RouteAndTimeDTO>> get() = _getSelectedRecord
 
     private val _successfulSave: MutableLiveData<Resource<String>> = MutableLiveData()
 
     val successfulSave :LiveData<Resource<String>> get() = _successfulSave
 
-    fun saveRecord(listRecord : List<RouteAndTimeDTO>, courseName: String, email: String, calorie:Double){
+    fun saveRecord(listRecord : List<RouteAndTimeDTO>, courseName: String, email: String, calorie:Double, distance:String){
 
         viewModelScope.launch {
             Log.d("$$","saveRecord ViewModel")
-            _getRecentRecord.value = listRecord
+            _getSelectedRecord.value = listRecord
 
             _successfulSave.value = Resource.Loading
             try{
 
-                repository.saveRecord(listRecord,courseName, email, calorie){
+                repository.saveRecord(listRecord,courseName, email, calorie, distance){
                     _successfulSave.value = it
                 }
             }catch (e:Exception){
@@ -56,6 +56,10 @@ class RecordViewModel(private val repository: RecordRepository):ViewModel() {
                 _getRecord.value = Resource.Error(e.message.toString())
             }
         }
+    }
+
+    fun getSelectedRecord(ratList : List<RouteAndTimeDTO>){
+        _getSelectedRecord.value = ratList
     }
 
 

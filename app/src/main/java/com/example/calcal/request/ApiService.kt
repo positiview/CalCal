@@ -128,7 +128,8 @@ interface ApiService {
         @Body routeRecord: List<RouteAndTimeDTO>,
         @Query("userEmail") userEmail: String,
         @Query("courseName") courseName: String,
-        @Query("calorie") calorie:Double
+        @Query("calorie") calorie:Double,
+        @Query("distance") distance:String
     ): Call<String>
 
     @GET("record/history")
