@@ -10,10 +10,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.navigation.NavController
 import com.example.calcal.R
+import com.example.calcal.modelDTO.ExerciseDTO
 
 class ExInfoExpandableListAdapter(
     private val context: Context,
-    private val list: List<String>,
+    private val list: List<ExerciseDTO>,
     private val navController: NavController
 ) : BaseExpandableListAdapter() {
 
@@ -26,13 +27,13 @@ class ExInfoExpandableListAdapter(
         return 1 // 일단 각 그룹에 대해 하나의 자식 아이템이 있다고 가정했습니다.
     }
 
-    override fun getGroup(groupPosition: Int): Any {
+    override fun getGroup(groupPosition: Int): ExerciseDTO { // 반환 타입을 ExerciseDTO로 변경
         return list[groupPosition]
     }
 
-    override fun getChild(groupPosition: Int, childPosition: Int): Any {
+    override fun getChild(groupPosition: Int, childPosition: Int): ExerciseDTO {
         // 각 자식 항목을 반환하는 코드를 추가해야 합니다.
-        return Any() // 일단 비어있는 객체를 반환하도록 설정했습니다.
+        return list[groupPosition]
     }
 
     override fun getGroupId(groupPosition: Int): Long {
@@ -55,11 +56,14 @@ class ExInfoExpandableListAdapter(
     ): View {
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.list_group, parent, false) // 여기서 your_group_layout은 그룹 뷰에 해당하는 레이아웃 파일 이름입니다.
-
+        val exerciseDto = getGroup(groupPosition) as ExerciseDTO
         val titleText = view.findViewById<TextView>(R.id.ex_info_title_text)
         val titleBack = view.findViewById<LinearLayout>(R.id.ex_info_title)
 
-        titleText.text = getGroup(groupPosition) as String
+
+
+        titleText.text = exerciseDto.exname
+
 
         if (isExpanded) {
             titleText.visibility = View.GONE
@@ -80,19 +84,20 @@ class ExInfoExpandableListAdapter(
         parent: ViewGroup?
     ): View {
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.list_item, parent, false) // 여기서 your_child_layout은 자식 뷰에 해당하는 레이아웃 파일 이름입니다.
+        val view = inflater.inflate(R.layout.list_item, parent, false)
+        val exerciseDto = getChild(groupPosition, childPosition) as ExerciseDTO
 
         val infoText = view.findViewById<TextView>(R.id.ex_info_info)
-        // infoText.text에 각 자식의 정보를 설정해야 합니다.
+        infoText.text = exerciseDto.excontent
 
         val calText = view.findViewById<TextView>(R.id.ex_info_cal)
-        // calText.text에 각 자식의 칼로리 정보를 설정해야 합니다.
+        calText.text = exerciseDto.excal.toString()
 
         val timeText = view.findViewById<TextView>(R.id.ex_info_time)
-        // timeText.text에 각 자식의 권장 시간을 설정해야 합니다.
+        timeText.text = exerciseDto.extime.toString()
 
         val imageView = view.findViewById<ImageView>(R.id.ex_info_img)
-        // imageView에 각 자식의 이미지를 설정해야 합니다.
+
 
         // '운동하러가기' 텍스트뷰의 가시성 설정
         val goToExerciseText = view.findViewById<TextView>(R.id.ex_info_go)

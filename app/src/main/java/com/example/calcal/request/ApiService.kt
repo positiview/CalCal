@@ -151,6 +151,9 @@ interface ApiService {
     @GET("api/getExerciseData")
     fun getExerciseData(@Query("exname") exname: String): Call<ExerciseDTO>
 
+    @GET("api/getAllExercises")
+    suspend fun getAllExercises(): List<ExerciseDTO>
+
     @DELETE("api/deleteExercise/{exname}")
     suspend fun deleteExerciseData(@Path("exname") exname: String): Response<Unit>
 
