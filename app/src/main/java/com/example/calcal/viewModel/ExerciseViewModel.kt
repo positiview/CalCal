@@ -16,7 +16,19 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
 
     private val _saveSuccess: MutableLiveData<Resource<Boolean>> = MutableLiveData()
     val saveSuccess: LiveData<Resource<Boolean>> get() = _saveSuccess
+    private val _selectedItem = MutableLiveData<String?>()
+    val selectedItem: LiveData<String?> get() = _selectedItem
+    val userInput = MutableLiveData<Double>()
+    val calculatedValue = MutableLiveData<String>()
 
+    fun calculate(userInput: Double, excalValue: Int) {
+        val result = userInput / excalValue
+        calculatedValue.value = "$result"
+    }
+
+    fun selectItem(item: String) {
+        _selectedItem.value = item
+    }
 
 
 //    init {

@@ -29,7 +29,7 @@
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:text="TextView"
+            android:text="000"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"/>
         <Button
