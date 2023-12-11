@@ -67,6 +67,7 @@ import java.lang.Integer.min
 import java.lang.System.currentTimeMillis
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -84,6 +85,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
     private var cal :Double = 0.0
+    private var distance = ""
     private var chronometerService: ChronometerService? = null
     //임시몸무게
     private var memberWeight : Int? = 70
@@ -135,7 +137,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         val myRoute: MutableList<LatLng> = mutableListOf()
         var routeAndTimeDTO: MutableList<RouteAndTimeDTO> = mutableListOf()
-        var recordTime = 0L
+
 
 
 
@@ -153,23 +155,44 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
 
             selectCourse.setOnClickListener{
-                findNavController().navigateUp()
+                findNavController().navigate(R.id.action_mapFragment_to_searchLocationFragment)
             }
 
 
 
             val onLocationChangeListener = object : NaverMap.OnLocationChangeListener {
                 override fun onLocationChange(location: Location) {
-
-
-                    myRoute.add(LatLng(location.latitude, location.longitude))
+                    val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
+                    Log.d("$$","ChronometerTime : $elapsedMillis")
+                    var speed = 0.0
                     val polyline = PolylineOverlay()
                     polyline.color = Color.BLUE
                     polyline.width = 10
-                    if (myRoute.size >= 2) {
+                    // 2개의 루트 이상일때 오차 생략하기 계산
+                    if(myRoute.size >= 3){
+                        // GPS 오차 생략하기
+                        val routeSize = myRoute.size
+                        val avgLatLng = calculateAverageLatLng(myRoute.last().latitude,myRoute.last().longitude,myRoute[routeSize-2].latitude,myRoute[routeSize-2].longitude)
+                        val diff = haversine(avgLatLng.latitude, avgLatLng.longitude, location.latitude, location.longitude)
+                        Log.d("$$","diff 값 : $diff")
+
+                        val range = haversine(location.latitude,location.longitude,myRoute.last().latitude,myRoute.last().longitude)
+
+                        // 오차 15m 이내로 제한
+                        if ((diff/1000) <=20.0) {
+                            myRoute.add(LatLng(location.latitude, location.longitude))
+                            speed = range /(elapsedMillis.toDouble() - routeAndTimeDTO.last().recordTime)*3.6 //거리/시간
+                            binding.showSpeed.text = speed.toInt().toString()
+                            polyline.coords = myRoute
+                            polyline.map = mNaverMap
+                        }  else{
+                            // 15m 이상이면 데이터를 저장하지 않는다.
+                        }
+                    }else if(myRoute.size == 2){
+                        // 줌은 한번만 활성화 된다.
                         if (!isCameraMoveExecuted) {
-                            Log.d("$$","zoom활성화?")
-                            val zoomUpdate = CameraUpdate.zoomTo(17.0).animate(CameraAnimation.Easing, 500)
+                            Log.d("$$","zoom활성화!!!!")
+                            val zoomUpdate = CameraUpdate.zoomTo(17.0).animate(CameraAnimation.Easing, 1000)
                             mNaverMap.moveCamera(zoomUpdate)
 
                             mNaverMap.addOnCameraIdleListener {
@@ -177,28 +200,35 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             }
                             isCameraMoveExecuted = true
                         }
+                        myRoute.add(LatLng(location.latitude, location.longitude))
                         polyline.coords = myRoute
                         polyline.map = mNaverMap
-                    } else {
-                        // 적어도 2개 이상의 좌표가 필요합니다. 예외 처리 또는 다른 로직을 추가하세요.
-                        // 예: Toast.makeText(requireContext(), "적어도 2개 이상의 좌표가 필요합니다.", Toast.LENGTH_SHORT).show()
+                    }else{
+                        Marker().apply {
+                            position = LatLng(location.latitude, location.longitude)
+                            map = mNaverMap
+                            icon = MarkerIcons.LIGHTBLUE
+                            captionText = "출발"
+                            captionHaloColor = Color.rgb(200,255,200)
+                            captionMinZoom = 12.0
+                        }
+
+                        myRoute.add(LatLng(location.latitude, location.longitude))
                     }
-
-
+                    // 지도맵에 이동한 루트를 그려준다.
 
 
 //                    // 기록 저장
-                    val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
-                    Log.d("$$","ChronometerTime : $elapsedMillis")
+
                     routeAndTimeDTO.add(RouteAndTimeDTO(
                         longitude = location.longitude,
                         latitude = location.latitude ,
                         recordTime = elapsedMillis.toDouble()
                     ))
 
-                    cal = calculateCalories(elapsedMillis.toDouble())
+                    cal = calculateCalories(elapsedMillis.toDouble(),speed)
 
-                    val distance = calculateTotalDistance(myRoute)
+                    distance = calculateTotalDistance(myRoute) // 전체 거리
 
                     binding.calorieTv.text = cal.toInt().toString()
                     binding.distanceTv.text = distance
@@ -214,6 +244,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 mNaverMap.addOnLocationChangeListener(onLocationChangeListener)
 
 
+                // 수정 필요
                 mNaverMap.setOnMapClickListener { _, _ ->
                     // 지도 터치시 현재 시간 업데이트
                     lastTouchTime = currentTimeMillis()
@@ -235,12 +266,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
 
 
-
-
-
                 chronometer.base = SystemClock.elapsedRealtime()
                 chronometer.start()
-
 
                 textViewMap.text = textCourse.text
                 stopwatchChronometer.visibility = View.VISIBLE
@@ -280,7 +307,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 sharedPreferences = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 val storedEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
                 if (storedEmail != null) {
-                    recordViewModel.saveRecord(routeAndTimeDTO,txt,storedEmail,cal)
+                    recordViewModel.saveRecord(routeAndTimeDTO,txt,storedEmail,cal,distance)
                     recordViewModel.successfulSave.observe(viewLifecycleOwner){
                         when(it){
                             is Resource.Loading -> {
@@ -317,6 +344,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         return view
     }
 
+    private fun calculateAverageLatLng(latitude: Double, longitude: Double, latitude1: Double, longitude1: Double): LatLng {
+        val avgLat = (latitude + longitude) / 2
+        val avgLon = (latitude1 + longitude1) / 2
+        return LatLng(avgLat, avgLon)
+    }
+
     fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val R = 6371.0 // 지구 반경 (단위: km)
 
@@ -331,7 +364,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         return R * c
     }
-    fun formatDistance(distance: Double): String {
+    private fun formatDistance(distance: Double): String {
         return if (distance >= 1000) {
             "${"%.2f".format(distance / 1000)} km"
         } else {
@@ -354,12 +387,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
         return formatDistance(totalDistance)
     }
-    private fun calculateCalories(elapsedMillis : Double): Double {
+    private fun calculateCalories(elapsedMillis : Double, speed: Double): Double {
         val cal1 = (memberWeight?.toDouble() ?: return 0.0 )*elapsedMillis*3.5
 
+        val met = 0.09* speed.pow(2.0) - 0.27*speed + 2.03
         val minute = elapsedMillis/60000
         //ex)(강도*3.5*0.001*체중)*5*운동시간(min)
-        val cal = (3*3.5*0.001* memberWeight!!)*5*minute
+        val cal = (met*3.5*0.001* memberWeight!!)*5*minute
         Log.d("$$","elapsedMilliselapsedMillis : ${minute}")
         // BMR 계산법 일일 기초대사량
        /* var bmr : Double
@@ -508,13 +542,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mNaverMap.locationSource = locationSource
         uiSettings = naverMap.uiSettings
         uiSettings.isLocationButtonEnabled = false
-        uiSettings.isCompassEnabled = true
+        uiSettings.isRotateGesturesEnabled = false
+        uiSettings.isTiltGesturesEnabled = false
         // 내위치 찾는 버튼
         val locationButtonView: LocationButtonView = binding.mylocationView
         locationButtonView.map = mNaverMap
-        // 나침반
-        val compassView: CompassView = binding.compass
-        compassView.map = mNaverMap
+
+
 
         mNaverMap.maxZoom = 18.0
         mNaverMap.minZoom = 5.0
@@ -596,7 +630,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     memberWeight = it.data.weight
                 }
             }
-            val cal = memberWeight?.let { calculateCalories(it.toDouble()) }
+            val cal = memberWeight?.let { calculateCalories(it.toDouble(), 4.0) }
             if (cal != null) {
                 binding.calorieView.text = cal.toInt().toString()
             }

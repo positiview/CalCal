@@ -4,32 +4,51 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMainBinding
+import com.example.calcal.modelDTO.RouteAndTimeDTO
+import com.example.calcal.modelDTO.RouteRecordDTO
 import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.repository.MemberRepositoryImpl
+import com.example.calcal.repository.RecordRepository
+import com.example.calcal.repository.RecordRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory
 import com.example.calcal.signlogin.GenderActivity
 import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.signlogin.LoginActivity.Companion.PREF_NAME
+import com.example.calcal.util.LatLngBoundsCalculator.Companion.calculateBounds
 import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.MemberViewModel
+import com.example.calcal.viewModel.RecordViewModel
 import com.example.calcal.viewModelFactory.MemberViewModelFactory
+import com.example.calcal.viewModelFactory.RecordViewModelFactory
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraUpdate
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.NaverMapOptions
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.PathOverlay
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class MainFragment : Fragment() {
-
+class MainFragment : Fragment(), OnMapReadyCallback {
+    private lateinit var mNaverMap: NaverMap
+    private val recordRepository: RecordRepository = RecordRepositoryImpl()
+    private val recordViewModelFactory = RecordViewModelFactory(recordRepository)
+    private val recordViewModel: RecordViewModel by viewModels() { recordViewModelFactory }
     private lateinit var binding: FragmentMainBinding
     private val apiService = RequestFactory.create()
     private lateinit var memberViewModel: MemberViewModel
@@ -40,9 +59,12 @@ class MainFragment : Fragment() {
         val repository = MemberRepositoryImpl()
         memberViewModel = ViewModelProvider(this, MemberViewModelFactory(repository))[MemberViewModel::class.java]
         sharedPreferences = requireActivity().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+
         val userEmail =  sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
         if (userEmail != null) {
             memberViewModel.getMemberInfo(userEmail)
+            recordViewModel.getRecord(userEmail)
         }
 
     }
@@ -52,8 +74,20 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainBinding.inflate(inflater, container, false) // 뷰 바인딩 초기화
-        val sharedPreferences = requireActivity().getSharedPreferences("login_pref", Context.MODE_PRIVATE)
 
+        val options = NaverMapOptions()
+            .mapType(NaverMap.MapType.Terrain)
+        val fm = childFragmentManager
+        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
+            ?: MapFragment.newInstance(options).also {
+                fm.beginTransaction().add(R.id.map, it).commit()
+            }
+        mapFragment.getMapAsync(this)
+
+        val overlay = binding.overlay
+        overlay.setOnClickListener {
+            findNavController().navigate(R.id.action_mainFragment_to_historyFragment)
+             }
 
         binding.btnWalking.setOnClickListener{
             findNavController().navigate(R.id.action_mainFragment_to_searchLocationFragment)
@@ -79,6 +113,28 @@ class MainFragment : Fragment() {
 
 
         return binding.root
+    }
+
+    override fun onMapReady(p0: NaverMap) {
+        mNaverMap = p0
+        val uiSettings = mNaverMap.uiSettings
+        uiSettings.isZoomControlEnabled = false
+        uiSettings.isScaleBarEnabled = false
+        recordViewModel.getRecord.observe(viewLifecycleOwner){
+
+            if(it is Resource.Success){
+
+                val ratList: List<RouteAndTimeDTO> = it.data?.last()!!.ratList
+                val coords: List<LatLng> = ratList.map{rat -> LatLng(rat.latitude,rat.longitude)}
+                val cameraUpdate = CameraUpdate.fitBounds(calculateBounds(coords), 20)
+                val path = PathOverlay()
+                path.coords = coords
+                path.color = Color.MAGENTA
+                path.map = mNaverMap
+                mNaverMap.moveCamera(cameraUpdate)
+            }
+
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -108,6 +164,8 @@ class MainFragment : Fragment() {
             }
 
         }
+
+
 
         binding.btnGraph.setOnClickListener{
             findNavController().navigate(R.id.navi_graph)

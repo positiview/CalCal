@@ -1,5 +1,6 @@
 package com.example.calcal.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.calcal.R
 import com.example.calcal.modelDTO.RouteRecordDTO
 import com.example.calcal.subFrag.HistoryFragment
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class RecordListAdapter(private val recordList: List<RouteRecordDTO>, private val listener: HistoryFragment) : RecyclerView.Adapter<RecordListAdapter.ViewHolder>(){
 
@@ -24,13 +27,20 @@ class RecordListAdapter(private val recordList: List<RouteRecordDTO>, private va
             val position = adapterPosition
             if(position != RecyclerView.NO_POSITION){
                 listener.onItemClick(recordList[position])
+
             }
         }
 
         fun bind(rList: RouteRecordDTO) {
             recordName.text = rList.courseName
+            Log.d("$$","rlist courseName : ${rList.courseName}")
             calorieRecord.text = rList.calorie.toInt().toString()
-            dateRecord.text = rList.regDate.toString()
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.KOREA)
+            val outputFormat = SimpleDateFormat("yy-MM-dd HH:mm", Locale.KOREA)
+
+            val date = inputFormat.parse(rList.regDate)
+            val formattedDate = outputFormat.format(date)
+            dateRecord.text = formattedDate
         }
     }
 
@@ -45,11 +55,13 @@ class RecordListAdapter(private val recordList: List<RouteRecordDTO>, private va
     override fun onBindViewHolder(holder: RecordListAdapter.ViewHolder, position: Int) {
         val rList = recordList[position]
         holder.bind(rList)
+        // 첫 번째 항목을 자동으로 클릭
+        if (position == 0) {
+            holder.itemView.performClick()
+        }
     }
 
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getItemCount(): Int = recordList.size
 
 
 }

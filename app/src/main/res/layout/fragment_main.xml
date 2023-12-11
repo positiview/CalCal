@@ -220,21 +220,39 @@
                     android:textSize="16sp"
                     android:text="하루 걸음 수"
                     android:textColor="@color/white" />
-                <LinearLayout
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="145dp"
                     android:layout_marginTop="12dp"
                     android:id="@+id/map_main"
-                    android:background="@drawable/blackgradient"
-                    android:orientation="horizontal"
-                    android:paddingTop="12dp">
+                    app:cardBackgroundColor="@color/backgroundblack"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_gravity="center_horizontal"
-                        android:gravity="bottom"
                         android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1">
+                            <androidx.fragment.app.FragmentContainerView
+                                android:id="@+id/map"
+                                android:name="com.naver.maps.map.MapFragment"
+                                android:layout_weight="1"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+
+                            <View
+                                android:id="@+id/overlay"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:background="@android:color/transparent" />
+                        </RelativeLayout>
+
 
                         <TextView
                             android:layout_width="match_parent"
@@ -249,8 +267,9 @@
                             android:textColor="@color/white"
                             android:textSize="12sp" />
 
+
                     </LinearLayout>
-                </LinearLayout>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout

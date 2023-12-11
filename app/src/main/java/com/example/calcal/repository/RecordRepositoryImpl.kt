@@ -21,11 +21,12 @@ class RecordRepositoryImpl:RecordRepository {
         courseName:String,
         email:String,
         calorie:Double,
+        distance:String,
         result: (Resource<String>) -> Unit
     ) {
 
         Log.d("$$","saveRecord 저장 : myRouteRecords = $myRouteRecords // courseName = $courseName // storedEmail = $email")
-        val call : Call<String> = apiService.saveRouteRecord(myRouteRecords,email,courseName,calorie)
+        val call : Call<String> = apiService.saveRouteRecord(myRouteRecords,email,courseName,calorie, distance)
 
         call.enqueue(object : Callback<String>{
             override fun onResponse(call: Call<String>, response: Response<String>) {
@@ -55,26 +56,32 @@ class RecordRepositoryImpl:RecordRepository {
         email: String,
         result: (Resource<List<RouteRecordDTO>?>) -> Unit
     ) {
-        val getCall:Call<List<RouteRecordDTO>> = apiService.getRouteRecord(email)
+        val getCall: Call<List<RouteRecordDTO>> = apiService.getRouteRecord(email)
 
-        getCall.enqueue(object :Callback<List<RouteRecordDTO>>{
+        Log.d("$$", "getRecord: Making network request...")
+
+        getCall.enqueue(object : Callback<List<RouteRecordDTO>> {
             override fun onResponse(
                 call: Call<List<RouteRecordDTO>>,
                 response: Response<List<RouteRecordDTO>>
             ) {
-                if(response.isSuccessful){
+                Log.d("$$", "getRecord: onResponse called")
+
+                if (response.isSuccessful) {
+                    Log.d("$$", "getRecord: Successful response received")
                     result.invoke(Resource.Success(response.body()))
-                    Log.d("$$","내 기록 저장 성공")
-                }else{
+                    Log.d("$$", "내 기록 불러오기 성공")
+                } else {
                     val errorBody = response.errorBody()?.string()
-                    val errorMessage = "내 기록 불러오기 실패!! 응답코드: ${response.code()}, 오류 내용: $errorBody"
+                    val errorMessage =
+                        "내 기록 불러오기 실패!! 응답코드: ${response.code()}, 오류 내용: $errorBody"
                     Log.d("$$", errorMessage)
                     result.invoke(Resource.Error("기록 불러오기 관련 응답 실패"))
                 }
-
             }
 
             override fun onFailure(call: Call<List<RouteRecordDTO>>, t: Throwable) {
+                Log.e("$$", "getRecord: Network request failed", t)
                 result.invoke(Resource.Error("기록 불러오기 관련 요청 실패"))
             }
 
