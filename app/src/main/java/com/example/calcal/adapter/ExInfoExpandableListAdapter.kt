@@ -1,6 +1,7 @@
 package com.example.calcal.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,6 +71,8 @@ class ExInfoExpandableListAdapter(
         if (isExpanded) {
             titleText.visibility = View.GONE
             titleBack.visibility = View.GONE
+            viewModel.selectItem(exerciseDto.exname)
+            Log.d("GroupView", "Selected item: ${viewModel.selectedItem.value}")
         } else {
             titleText.visibility = View.VISIBLE
             titleBack.visibility = View.VISIBLE
@@ -110,7 +113,6 @@ class ExInfoExpandableListAdapter(
         goToExerciseText.visibility = View.VISIBLE
         goToExerciseText.setOnClickListener {
             // 여기서 actionId는 네비게이션 그래프에서 해당 페이지로 이동하는 액션의 ID입니다.
-            viewModel.selectItem(exerciseDto.exname)
             navController.navigate(R.id.action_exerciseInfoFragment_to_exercisestartFragment)
         }
 

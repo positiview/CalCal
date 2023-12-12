@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +39,7 @@ class ExercisestartFragment : Fragment() {
     private lateinit var viewModel: ExerciseViewModel
     private lateinit var sharedPreferences: SharedPreferences
     private val list = arrayListOf<String>()
+    private  var position: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val repository = ExerciseRepositoryImpl()
@@ -53,12 +55,13 @@ class ExercisestartFragment : Fragment() {
         binding = FragmentExercisestartBinding.inflate(inflater, container, false)
         sharedPreferences = requireActivity().getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
         val userEmail =  sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
-        val selectedItem = viewModel.selectedItem
+        val selectedItem = viewModel.selectedItem.value
 
         btn_back = binding.btnBack
         btn_back.setOnClickListener {
             NavHostFragment.findNavController(this).navigateUp()
         }
+
 
         viewModel.exerciseList.observe(viewLifecycleOwner, Observer { resource ->
             when(resource) {
@@ -93,30 +96,31 @@ class ExercisestartFragment : Fragment() {
                         val etcGo = view.findViewById<TextView>(R.id.ex_etc_go)
 
                         okButton.setOnClickListener {
-                            val position = spinner.selectedItemPosition
+                            position = spinner.selectedItemPosition
                             binding.btnExTitle.text = items[position]
 
                             list.clear()
                             list.addAll(when (position) {
-                                0, 1 -> listOf("시간당 예상 소모 칼로리", "목표 소모 칼로리 ","남은 전체 목표 칼로리","예상 소요 시간","예상 소요 거리")
-                                else -> listOf("시간당 예상 소모 칼로리", "목표 소모 칼로리 ","남은 전체 목표 칼로리","예상 소요 시간")
+                                0, 1 -> listOf("시간당 예상 소모 칼로리", "목표 소모 칼로리 ","전체 목표 칼로리","예상 소요 시간","예상 소요 거리")
+                                else -> listOf("시간당 예상 소모 칼로리", "목표 소모 칼로리 ","전체 목표 칼로리","예상 소요 시간")
                             })
                             val recyclerView = binding.exStartRecycler
                             recyclerView.layoutManager = LinearLayoutManager(requireContext())
                             val navController = NavHostFragment.findNavController(this@ExercisestartFragment)
                             val selectedExercise = exercises.find { it.exname == items[position] }
                             val excalValue = selectedExercise?.excal ?: 0
-                            val navAdapter = ExStartAdapter(list, excalValue, this@ExercisestartFragment, navController,viewModel) { userInput ->
+                            val contentList = MutableList(list.size) { 0.0 }
+                            var navAdapter: ExStartAdapter? = null
+                            navAdapter = ExStartAdapter(list, contentList, excalValue, this@ExercisestartFragment, navController, viewModel) { userInput ->
                                 // userInput은 사용자가 입력한 값입니다.
                                 // 여기에서 필요한 계산을 수행합니다.
-                               // val calculatedValue = userInput / excalValue
-//                                if (list.size > 3) {
-//                                    list[3] = "$calculatedValue"
-//                                }
+                                val calculatedValue = userInput / excalValue
+                                if (list.size > 3) {
+                                    contentList[3] = calculatedValue
+                                    navAdapter?.notifyItemChanged(3)
+                                }
                             }
-
                             recyclerView.adapter = navAdapter
-                            navAdapter.notifyDataSetChanged()
                             recyclerView.visibility = View.VISIBLE
                             dialog.dismiss()
                         }
@@ -146,15 +150,19 @@ class ExercisestartFragment : Fragment() {
             }
         })
 
-
         binding.exInfoGo.setOnClickListener{
             NavHostFragment.findNavController(this)
                 .navigate(R.id.action_exercisestartFragment_to_exerciseInfoFragment)
         }
-        binding.btnStartBotton.setOnClickListener{
-            //if문으로 다른 프래그먼트로 보내야함
-            NavHostFragment.findNavController(this)
-            .navigate(R.id.action_exercisestartFragment_to_fragment_search_location)
+        binding.btnStartBotton.setOnClickListener {
+            if (position == 0 || position == 1) {
+                // position이 0이나 1일 때의 동작
+                NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_exercisestartFragment_to_fragment_search_location)
+            } else {
+                NavHostFragment.findNavController(this)
+                    .navigate(R.id.action_exercisestartFragment_to_calcheckFragment)
+            }
         }
 
 
