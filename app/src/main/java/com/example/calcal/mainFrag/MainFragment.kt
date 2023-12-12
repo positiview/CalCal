@@ -120,20 +120,34 @@ class MainFragment : Fragment(), OnMapReadyCallback {
         val uiSettings = mNaverMap.uiSettings
         uiSettings.isZoomControlEnabled = false
         uiSettings.isScaleBarEnabled = false
-        recordViewModel.getRecord.observe(viewLifecycleOwner){
+        recordViewModel.getRecord.observe(viewLifecycleOwner) { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    val lastRecord = resource.data?.last()
+                    if (lastRecord != null) {
+                        binding.messageHidden.visibility = View.GONE
+                        val ratList: List<RouteAndTimeDTO> = lastRecord.ratList
+                        val coords: List<LatLng> = ratList.map { rat -> LatLng(rat.latitude, rat.longitude) }
+                        val cameraUpdate = CameraUpdate.fitBounds(calculateBounds(coords), 20)
+                        val path = PathOverlay()
+                        path.coords = coords
+                        path.color = Color.MAGENTA
+                        path.map = mNaverMap
+                        mNaverMap.moveCamera(cameraUpdate)
+                    } else {
+                        binding.messageHidden.text = " 운동을 시작해봐요!! "
+                        binding.messageHidden.visibility = View.VISIBLE
 
-            if(it is Resource.Success){
+                    }
+                }
+                is Resource.Error -> {
+                    binding.messageHidden.text = " 최근 기록 데이터 가져오는데 실패 "
+                    binding.messageHidden.visibility = View.VISIBLE
+                }
+                else ->{
 
-                val ratList: List<RouteAndTimeDTO> = it.data?.last()!!.ratList
-                val coords: List<LatLng> = ratList.map{rat -> LatLng(rat.latitude,rat.longitude)}
-                val cameraUpdate = CameraUpdate.fitBounds(calculateBounds(coords), 20)
-                val path = PathOverlay()
-                path.coords = coords
-                path.color = Color.MAGENTA
-                path.map = mNaverMap
-                mNaverMap.moveCamera(cameraUpdate)
+                }
             }
-
         }
     }
 

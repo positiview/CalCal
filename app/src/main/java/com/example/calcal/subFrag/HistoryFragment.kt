@@ -199,7 +199,7 @@ class HistoryFragment :Fragment(), OnMapReadyCallback {
             val animatedValue = animator.animatedValue as Int
             binding.calorieResult.text = animatedValue.toString()
         }
-        calorieAnimator.duration = 6000 // 9초 동안 애니메이션 진행
+        calorieAnimator.duration = 6000 // 6초 동안 애니메이션 진행
         calorieAnimator.start()
         val distanceString = rrDTO.distance.replace("m", "")
 
@@ -209,7 +209,7 @@ class HistoryFragment :Fragment(), OnMapReadyCallback {
             val formattedValue = String.format("%.2f", animatedValue) // 소수점 두 자리까지 포맷팅
             binding.distanceResult.text = "$formattedValue km"
         }
-        distanceAnimator.duration = 6000 // 9초 동안 애니메이션 진행
+        distanceAnimator.duration = 6000 // 6초 동안 애니메이션 진행
         distanceAnimator.start()
 
 
