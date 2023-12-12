@@ -89,7 +89,7 @@ class ExStartAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val viewHolder = holder as ViewHolder
         val currentItem = mData[position]
-        viewHolder.exStartTitle.text = mData[position]
+        viewHolder.exStartContent.text = mData[position]
 
         if (position == 0) {
             viewHolder.exStartContent.text = excal?.toString() ?: "Default Text"
