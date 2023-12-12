@@ -123,7 +123,7 @@ class MainFragment : Fragment(), OnMapReadyCallback {
         recordViewModel.getRecord.observe(viewLifecycleOwner) { resource ->
             when (resource) {
                 is Resource.Success -> {
-                    val lastRecord = resource.data?.last()
+                    val lastRecord = resource.data?.lastOrNull()
                     if (lastRecord != null) {
                         binding.messageHidden.visibility = View.GONE
                         val ratList: List<RouteAndTimeDTO> = lastRecord.ratList

@@ -238,6 +238,9 @@
         <action
             android:id="@+id/action_exercisestartFragment_to_etcExerciseFragment"
             app:destination="@id/etcExerciseFragment" />
+        <action
+            android:id="@+id/action_exercisestartFragment_to_calcheckFragment"
+            app:destination="@id/calcheckFragment" />
 
     </fragment>
     <fragment

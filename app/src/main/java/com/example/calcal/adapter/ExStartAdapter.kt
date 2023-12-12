@@ -18,6 +18,7 @@ import com.example.calcal.viewModel.ExerciseViewModel
 
 class ExStartAdapter(
     private val mData: MutableList<String>,
+    private val contentList: MutableList<Double>,
     private val excal: Int,
     private val listener: ExercisestartFragment,
     private val navController: NavController,
@@ -47,21 +48,23 @@ class ExStartAdapter(
 
 
                 val dialog = builder.create()
-                val dialogBack = inflater.inflate(R.layout.ex_info_dialog, null, false)
+                val dialogBack = inflater.inflate(R.layout.ex_custom_dialog, null, false)
                 dialogBack.background = ColorDrawable(Color.TRANSPARENT)
                 dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
                 okButton.setOnClickListener {
                     val userInputValue = input.text.toString().toDoubleOrNull() ?: 0.0
                     btnExStartCal.text = "$userInputValue kcal"
+                    onUserInput(userInputValue)
                     dialog.dismiss()
-                    onUserInput(userInputValue) // 사용자 입력을 콜백 함수를 통해 전달
+                    // 사용자 입력을 콜백 함수를 통해 전달
                 }
                 cancelButton.setOnClickListener {
                     dialog.dismiss()
                 }
 
                 dialog.show()
+
             }
         }
 
@@ -89,23 +92,19 @@ class ExStartAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val viewHolder = holder as ViewHolder
         val currentItem = mData[position]
-        viewHolder.exStartContent.text = mData[position]
+        viewHolder.exStartTitle.text = currentItem
 
         if (position == 0) {
             viewHolder.exStartContent.text = excal?.toString() ?: "Default Text"
-        }
-
-        viewHolder.exStartTitle.text = currentItem
-
-        if (position == 1) {
+        } else if (position == 1) {
             viewHolder.exStartTitle.text = currentItem
-
-            // 위치가 1인 경우에만 exStartContent를 숨기고 btnExStartCal를 보이게 합니다.
             viewHolder.exStartContent.visibility = View.GONE
             viewHolder.btnExStartCal.visibility = View.VISIBLE
         } else {
             // 그 외의 경우에는 exStartContent를 보이게 합니다.
             viewHolder.exStartContent.visibility = View.VISIBLE
+            viewHolder.btnExStartCal.visibility = View.GONE
+            viewHolder.exStartContent.text = contentList[position].toString() // contentList의 값을 사용
         }
     }
 }
