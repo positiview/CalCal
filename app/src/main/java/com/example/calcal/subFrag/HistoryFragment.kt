@@ -193,28 +193,50 @@ class HistoryFragment :Fragment(), OnMapReadyCallback {
         })
     }
     fun onItemClick(rrDTO: RouteRecordDTO) {
-        binding.calorieResult.text = rrDTO.calorie.toInt().toString()
-        binding.distanceResult.text = rrDTO.distance
+        // 칼로리 애니메이션
+        val calorieAnimator = ValueAnimator.ofInt(0, rrDTO.calorie.toInt())
+        calorieAnimator.addUpdateListener { animator ->
+            val animatedValue = animator.animatedValue as Int
+            binding.calorieResult.text = animatedValue.toString()
+        }
+        calorieAnimator.duration = 6000 // 9초 동안 애니메이션 진행
+        calorieAnimator.start()
+        val distanceString = rrDTO.distance.replace("m", "")
+
+        val distanceAnimator = ValueAnimator.ofFloat(0f, distanceString.toFloat())
+        distanceAnimator.addUpdateListener { animator ->
+            val animatedValue = animator.animatedValue as Float
+            val formattedValue = String.format("%.2f", animatedValue) // 소수점 두 자리까지 포맷팅
+            binding.distanceResult.text = "$formattedValue km"
+        }
+        distanceAnimator.duration = 6000 // 9초 동안 애니메이션 진행
+        distanceAnimator.start()
+
 
         val elapsedTimeInSeconds = ((rrDTO.ratList.last().recordTime - rrDTO.ratList.first().recordTime) / 1000).toInt()
+        val chronometerAnimator = ValueAnimator.ofInt(0,elapsedTimeInSeconds)
+        Log.d("$$","elapsedTimeInSeconds = $elapsedTimeInSeconds")
 
-        val hours = elapsedTimeInSeconds / 3600
-        val minutes = (elapsedTimeInSeconds % 3600) / 60
-        val seconds = elapsedTimeInSeconds % 60
-        var formattedTime = ""
+        chronometerAnimator.addUpdateListener {
+            val animatedValue = it.animatedValue as Int
+            val hours = animatedValue / 3600
+            val minutes = (animatedValue % 3600) / 60
+            val seconds = animatedValue % 60
+            var formattedTime = ""
 
-        if(elapsedTimeInSeconds>=0){
-            formattedTime = String.format("%02d",seconds)
-        }else if(elapsedTimeInSeconds>=60){
-            formattedTime = String.format("%02d:%02d",minutes,seconds)
-        }else if(elapsedTimeInSeconds>=3600){
-            formattedTime = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+            if(elapsedTimeInSeconds>=3600){
+                formattedTime = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+            }else if(elapsedTimeInSeconds>=60){
+                formattedTime = String.format("%02d:%02d",minutes,seconds)
+            }else if(elapsedTimeInSeconds>=0){
+                formattedTime = String.format("%02d",seconds)
+            }
+            binding.chronometerResult.text = formattedTime
         }
+        chronometerAnimator.duration = 6000 // 9초 동안 애니메이션 진행
+        chronometerAnimator.start()
 
-        binding.chronometerResult.text = formattedTime
 
-
-        binding.chronometerResult.text = ((rrDTO.ratList.last().recordTime - rrDTO.ratList.first().recordTime)/1000).toInt().toString()
         behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         recordViewModel.getSelectedRecord(rrDTO.ratList)
         recordViewModel.getSelectedRecord.observe(viewLifecycleOwner){

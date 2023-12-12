@@ -55,8 +55,8 @@ class RecordListAdapter(private val recordList: List<RouteRecordDTO>, private va
     override fun onBindViewHolder(holder: RecordListAdapter.ViewHolder, position: Int) {
         val rList = recordList[position]
         holder.bind(rList)
-        // 첫 번째 항목을 자동으로 클릭
-        if (position == 0) {
+        // 가장 최근 항목을 자동으로 클릭
+        if (position == itemCount - 1) {
             holder.itemView.performClick()
         }
     }
