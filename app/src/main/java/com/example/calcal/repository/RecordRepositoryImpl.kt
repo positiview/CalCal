@@ -1,13 +1,10 @@
 package com.example.calcal.repository
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
+import com.example.calcal.modelDTO.CalDTO
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.modelDTO.RouteRecordDTO
 import com.example.calcal.retrofit.RequestFactory
-import com.example.calcal.signlogin.LoginActivity.Companion.KEY_EMAIL
-import com.example.calcal.signlogin.LoginActivity.Companion.PREF_NAME
 import com.example.calcal.util.Resource
 import retrofit2.Call
 import retrofit2.Callback
@@ -20,13 +17,14 @@ class RecordRepositoryImpl:RecordRepository {
         myRouteRecords: List<RouteAndTimeDTO>,
         courseName:String,
         email:String,
+        goalCalorie:Double,
         calorie:Double,
         distance:String,
         result: (Resource<String>) -> Unit
     ) {
 
         Log.d("$$","saveRecord 저장 : myRouteRecords = $myRouteRecords // courseName = $courseName // storedEmail = $email")
-        val call : Call<String> = apiService.saveRouteRecord(myRouteRecords,email,courseName,calorie, distance)
+        val call : Call<String> = apiService.saveRouteRecord(myRouteRecords,email,courseName,goalCalorie, calorie, distance)
 
         call.enqueue(object : Callback<String>{
             override fun onResponse(call: Call<String>, response: Response<String>) {
@@ -86,5 +84,31 @@ class RecordRepositoryImpl:RecordRepository {
             }
 
         })
+    }
+
+    override suspend fun getTodayRecord(email: String, result: (Resource<List<CalDTO>?>) -> Unit) {
+
+        val getTodayCall: Call<List<CalDTO>> = apiService.getTodayRecord(email)
+
+        getTodayCall.enqueue(object : Callback<List<CalDTO>>{
+            override fun onResponse(call: Call<List<CalDTO>>, response: Response<List<CalDTO>>) {
+                if(response.isSuccessful){
+                    Log.d("$$", "오늘의 기록 불러오기 성공")
+                    Log.d("$$","${response.body()}")
+                    result.invoke(Resource.Success(response.body()))
+                }else{
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage =
+                        "오늘의 기록 불러오기 실패!! 응답코드: ${response.code()}, 오류 내용: $errorBody"
+                    Log.d("$$", errorMessage)
+                    result.invoke(Resource.Error("오늘의 기록 불러오기 관련 응답 실패"))
+                }
+            }
+
+            override fun onFailure(call: Call<List<CalDTO>>, t: Throwable) {
+                result.invoke(Resource.Error("오늘의 기록 불러오기 관련 요청 실패"))
+            }
+        })
+
     }
 }

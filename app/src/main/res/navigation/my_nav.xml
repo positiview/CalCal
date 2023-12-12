@@ -101,8 +101,8 @@
             android:id="@+id/action_graphFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
         <action
-            android:id="@+id/action_graphFragment_to_mapFragment2"
-            app:destination="@id/mapFragment" />
+            android:id="@+id/action_graphFragment_to_historyFragment"
+            app:destination="@id/historyFragment" />
     </fragment>
     <fragment
         android:id="@+id/mypageFragment"

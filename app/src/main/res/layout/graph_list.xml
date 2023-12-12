@@ -118,12 +118,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"
-                android:text="걸음수"
+                android:text="위치"
                 android:textColor="@color/gray"
                 android:textSize="12sp" />
 
             <TextView
-                android:id="@+id/walk_count"
+                android:id="@+id/exer_place"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/poppins_bold"

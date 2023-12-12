@@ -11,6 +11,8 @@
         android:id="@+id/ring_graph"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:focusable="false"
+        android:clickable="false"
         CircleProgressView:cpv_autoTextSize="true"
 
         CircleProgressView:cpv_barColor="#F1AAB2"
@@ -32,6 +34,7 @@
         CircleProgressView:cpv_unitColor="#FF2000"
         CircleProgressView:cpv_unitScale="0.5"
         CircleProgressView:cpv_value="38"
+
         tools:ignore="MissingConstraints" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -39,7 +42,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/ring_graph_curcal"
+            android:id="@+id/ring_graph_cal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="136dp"
@@ -79,13 +82,16 @@
             CircleProgressView:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/ring_graph_allcal2"
+            android:id="@+id/modify_calorie_goal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="256dp"
             android:text="목표 수정하기"
             android:textColor="@color/lightred"
             android:textSize="12sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:elevation="1dp"
             CircleProgressView:layout_constraintEnd_toEndOf="parent"
             CircleProgressView:layout_constraintHorizontal_bias="0.498"
             CircleProgressView:layout_constraintStart_toStartOf="parent"
