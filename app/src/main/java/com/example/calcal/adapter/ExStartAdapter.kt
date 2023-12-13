@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.calcal.R
 import com.example.calcal.subFrag.ExercisestartFragment
 import com.example.calcal.viewModel.ExerciseViewModel
+import com.example.calcal.viewModel.ExnameViewModel
+import com.example.calcal.viewModel.TargetCalViewModel
 
 class ExStartAdapter(
     private val mData: MutableList<String>,
@@ -22,7 +25,9 @@ class ExStartAdapter(
     private val excal: Int,
     private val listener: ExercisestartFragment,
     private val navController: NavController,
-    private val viewModel: ExerciseViewModel,
+    private val exerciseViewModel: ExerciseViewModel,
+    private val exnameViewModel: ExnameViewModel,
+    private val targetCalViewModel: TargetCalViewModel,
     private val onUserInput: (Double) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     @SuppressLint("SetTextI18n")
@@ -56,6 +61,9 @@ class ExStartAdapter(
                     val userInputValue = input.text.toString().toDoubleOrNull() ?: 0.0
                     btnExStartCal.text = "$userInputValue kcal"
                     onUserInput(userInputValue)
+                    targetCalViewModel.getTargetCalorie(userInputValue)
+
+                    Log.d("ExerciseViewModel", "getTargetCalorie called with value: $userInputValue")
                     dialog.dismiss()
                     // 사용자 입력을 콜백 함수를 통해 전달
                 }

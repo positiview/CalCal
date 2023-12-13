@@ -13,12 +13,14 @@ import androidx.navigation.NavController
 import com.example.calcal.R
 import com.example.calcal.modelDTO.ExerciseDTO
 import com.example.calcal.viewModel.ExerciseViewModel
+import com.example.calcal.viewModel.ExnameViewModel
 
 class ExInfoExpandableListAdapter(
     private val context: Context,
     private val list: List<ExerciseDTO>,
     private val navController: NavController,
-    private val viewModel: ExerciseViewModel
+    private val exerciseViewModel: ExerciseViewModel,
+    private val exnameViewModel: ExnameViewModel
 ) : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int {
@@ -71,8 +73,8 @@ class ExInfoExpandableListAdapter(
         if (isExpanded) {
             titleText.visibility = View.GONE
             titleBack.visibility = View.GONE
-            viewModel.selectItem(exerciseDto.exname)
-            Log.d("GroupView", "Selected item: ${viewModel.selectedItem.value}")
+            exnameViewModel.setSelectedItem(exerciseDto.exname)
+            Log.d("GroupView", "Selected item: ${exnameViewModel.selectedItem.value}")
         } else {
             titleText.visibility = View.VISIBLE
             titleBack.visibility = View.VISIBLE

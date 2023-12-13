@@ -30,21 +30,28 @@ import com.example.calcal.repository.ExerciseRepositoryImpl
 import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.ExerciseViewModel
+import com.example.calcal.viewModel.ExnameViewModel
+import com.example.calcal.viewModel.TargetCalViewModel
 import com.example.calcal.viewModelFactory.ExerciseViewModelFactory
 
 
 class ExercisestartFragment : Fragment() {
     private lateinit var binding: FragmentExercisestartBinding
     private lateinit var btn_back: Button
-    private lateinit var viewModel: ExerciseViewModel
+    private lateinit var exerciseViewModel: ExerciseViewModel
+    private lateinit var exnameViewModel: ExnameViewModel
+    private lateinit var targetCalViewModel: TargetCalViewModel
     private lateinit var sharedPreferences: SharedPreferences
     private val list = arrayListOf<String>()
-    private  var position: Int = -1
+    private var position: Int = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val repository = ExerciseRepositoryImpl()
-        viewModel = ViewModelProvider(this, ExerciseViewModelFactory(repository))[ExerciseViewModel::class.java]
-        viewModel.getAllExercises()
+        exerciseViewModel = ViewModelProvider(
+            this,
+            ExerciseViewModelFactory(repository)
+        )[ExerciseViewModel::class.java]
+        exerciseViewModel.getAllExercises()
     }
 
     @SuppressLint("ResourceType", "NotifyDataSetChanged")
@@ -53,25 +60,28 @@ class ExercisestartFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentExercisestartBinding.inflate(inflater, container, false)
-        sharedPreferences = requireActivity().getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
-        val userEmail =  sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
-        val selectedItem = viewModel.selectedItem.value
+        sharedPreferences =
+            requireActivity().getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
+        val userEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
 
         btn_back = binding.btnBack
         btn_back.setOnClickListener {
             NavHostFragment.findNavController(this).navigateUp()
         }
 
-
-        viewModel.exerciseList.observe(viewLifecycleOwner, Observer { resource ->
-            when(resource) {
+        exnameViewModel = ViewModelProvider(this).get(ExnameViewModel::class.java)
+        targetCalViewModel = ViewModelProvider(this).get(TargetCalViewModel::class.java)
+        exerciseViewModel.exerciseList.observe(viewLifecycleOwner, Observer { resource ->
+            when (resource) {
                 is Resource.Success -> {
                     val exercises = resource.data
                     // ExerciseDTO 객체의 리스트를 필터링하고, 해당 객체들의 이름을 가져옵니다.
-                    val exerciseNames = exercises.filter { it.email == "admin" || it.email == userEmail }.map { it.exname }
+                    val exerciseNames =
+                        exercises.filter { it.email == "admin" || it.email == userEmail }
+                            .map { it.exname }
 
                     binding.btnExTitle.setOnClickListener {
-                        val items =  exerciseNames.toTypedArray()
+                        val items = exerciseNames.toTypedArray()
 
 
                         val builder = AlertDialog.Builder(requireContext(), R.style.DialogTheme)
@@ -79,11 +89,16 @@ class ExercisestartFragment : Fragment() {
                         val view = inflater.inflate(R.layout.ex_info_dialog, null, false)
 
                         val spinner = view.findViewById<Spinner>(R.id.dialog_input)
-                        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, items)
+                        val adapter = ArrayAdapter(
+                            requireContext(),
+                            android.R.layout.simple_spinner_item,
+                            items
+                        )
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         spinner.adapter = adapter
 
-                        val selectedItemPosition = exerciseNames.indexOf(viewModel.selectedItem.value)
+                        val selectedItemPosition =
+                            exerciseNames.indexOf(exnameViewModel.selectedItem.value)
                         if (selectedItemPosition != -1) {
                             spinner.setSelection(selectedItemPosition)
                         }
@@ -99,20 +114,45 @@ class ExercisestartFragment : Fragment() {
                         okButton.setOnClickListener {
                             position = spinner.selectedItemPosition
                             binding.btnExTitle.text = items[position]
-
+                            exnameViewModel.setSelectedItem(items[position])
+                            val selectedExercise = exercises.find { it.exname == items[position] }
                             list.clear()
-                            list.addAll(when (position) {
-                                0, 1 -> listOf("시간당 예상 소모 칼로리", "목표 소모 칼로리 ","전체 목표 칼로리","예상 소요 시간","예상 소요 거리")
-                                else -> listOf("시간당 예상 소모 칼로리", "목표 소모 칼로리 ","전체 목표 칼로리","예상 소요 시간")
-                            })
+                            list.addAll(
+                                if (selectedExercise?.exmove == true) {
+                                    listOf(
+                                        "시간당 예상 소모 칼로리",
+                                        "목표 소모 칼로리",
+                                        "전체 목표 칼로리",
+                                        "예상 소요 시간",
+                                        "예상 소요 거리"
+                                    )
+                                } else {
+                                    listOf(
+                                        "시간당 예상 소모 칼로리",
+                                        "목표 소모 칼로리",
+                                        "전체 목표 칼로리",
+                                        "예상 소요 시간"
+                                    )
+                                }
+                            )
                             val recyclerView = binding.exStartRecycler
                             recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                            val navController = NavHostFragment.findNavController(this@ExercisestartFragment)
-                            val selectedExercise = exercises.find { it.exname == items[position] }
+                            val navController =
+                                NavHostFragment.findNavController(this@ExercisestartFragment)
+
                             val excalValue = selectedExercise?.excal ?: 0
                             val contentList = MutableList(list.size) { 0.0 }
                             var navAdapter: ExStartAdapter? = null
-                            navAdapter = ExStartAdapter(list, contentList, excalValue, this@ExercisestartFragment, navController, viewModel) { userInput ->
+                            navAdapter = ExStartAdapter(
+                                list,
+                                contentList,
+                                excalValue,
+                                this@ExercisestartFragment,
+                                navController,
+                                exerciseViewModel,
+                                exnameViewModel,
+                                targetCalViewModel
+                            ) { userInput ->
                                 // userInput은 사용자가 입력한 값입니다.
                                 // 여기에서 필요한 계산을 수행합니다.
                                 val calculatedValue = userInput / excalValue
@@ -144,17 +184,21 @@ class ExercisestartFragment : Fragment() {
                     }
 
                 }
+
                 is Resource.Error -> {
                     // 오류 메시지를 표시하는 코드를 추가합니다.
                     Toast.makeText(context, "resource.message", Toast.LENGTH_SHORT).show()
                 }
+
                 is Resource.Loading -> {
                     // 로딩 중임을 표시하는 코드를 추가합니다.
                 }
+
+                else -> {}
             }
         })
 
-        binding.exInfoGo.setOnClickListener{
+        binding.exInfoGo.setOnClickListener {
             NavHostFragment.findNavController(this)
                 .navigate(R.id.action_exercisestartFragment_to_exerciseInfoFragment)
         }

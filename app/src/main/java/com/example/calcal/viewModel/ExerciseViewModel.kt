@@ -6,9 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.calcal.modelDTO.ExerciseDTO
-import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.repository.ExerciseRepository
-import com.example.calcal.signlogin.MemberDTO
 import com.example.calcal.util.Resource
 import kotlinx.coroutines.launch
 
@@ -19,31 +17,10 @@ class ExerciseViewModel(private val repository: ExerciseRepository) : ViewModel(
     private val _saveSuccess: MutableLiveData<Resource<Boolean>> = MutableLiveData()
     val saveSuccess: LiveData<Resource<Boolean>> get() = _saveSuccess
 
-    private val _selectedItem = MutableLiveData<String?>()
-
-    val selectedItem: LiveData<String?> = _selectedItem
-
-    fun selectItem(item: String) {
-        Log.d("ExerciseViewModel", "selectItem called with value: $item")
-        _selectedItem.value = item
-        _selectedItem.postValue(item) // postValue 사용
-    }
-
-    private val _getTargetCalorie = MutableLiveData<Int?>()
-    val getTargetCalorie: LiveData<Int?> get() = _getTargetCalorie
-    val userInput = MutableLiveData<Double>()
-
-    val calculatedValue = MutableLiveData<String>()
-
-    fun calculate(userInput: Double, excalValue: Int) {
-        val result = userInput / excalValue
-        calculatedValue.value = "$result"
-    }
 
 
-    fun getTargetCalorie(item: Int){
-        _getTargetCalorie.value = item
-    }
+
+
 
 //    init {
 //        _exerciseList.value = repository.getExercise()

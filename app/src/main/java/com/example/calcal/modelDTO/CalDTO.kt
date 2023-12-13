@@ -3,6 +3,7 @@ package com.example.calcal.modelDTO
 data class CalDTO (
     val recordId:Int,
     val courseName : String,
+    val exname: String,
     val goalCalorie : Double,
     val calorie : Double,
     val distance: String,
