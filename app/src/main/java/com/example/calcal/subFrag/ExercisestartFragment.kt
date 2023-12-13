@@ -39,7 +39,7 @@ class ExercisestartFragment : Fragment() {
     private lateinit var viewModel: ExerciseViewModel
     private lateinit var sharedPreferences: SharedPreferences
     private val list = arrayListOf<String>()
-    private  var position: Int = 0
+    private  var position: Int = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val repository = ExerciseRepositoryImpl()
@@ -94,7 +94,8 @@ class ExercisestartFragment : Fragment() {
                         val okButton = view.findViewById<Button>(R.id.dialog_ok)
                         val cancelButton = view.findViewById<Button>(R.id.dialog_cancel)
                         val etcGo = view.findViewById<TextView>(R.id.ex_etc_go)
-
+                        binding.btnStartBotton.isEnabled = false
+                        binding.btnStartBotton.setBackgroundColor(Color.GRAY)
                         okButton.setOnClickListener {
                             position = spinner.selectedItemPosition
                             binding.btnExTitle.text = items[position]
@@ -119,6 +120,9 @@ class ExercisestartFragment : Fragment() {
                                     contentList[3] = calculatedValue
                                     navAdapter?.notifyItemChanged(3)
                                 }
+                                binding.btnStartBotton.isEnabled = true
+                                binding.btnStartBotton.setBackgroundColor(Color.RED)
+                                binding.btnStartBotton.setTextColor(Color.WHITE)
                             }
                             recyclerView.adapter = navAdapter
                             recyclerView.visibility = View.VISIBLE
@@ -154,6 +158,7 @@ class ExercisestartFragment : Fragment() {
             NavHostFragment.findNavController(this)
                 .navigate(R.id.action_exercisestartFragment_to_exerciseInfoFragment)
         }
+
         binding.btnStartBotton.setOnClickListener {
             if (position == 0 || position == 1) {
                 // position이 0이나 1일 때의 동작

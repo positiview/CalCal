@@ -56,7 +56,10 @@ class EtcAdapter(
     }
 
     override fun getItemCount(): Int = mData.size
-
+    private fun checkAllFilled(): Boolean {
+        val exercise = exercises[0]  // exercises 리스트의 첫 번째 객체
+        return exercise.exname.isNotEmpty() && exercise.excontent.isNotEmpty() && exercise.excal != 0 && exercise.extime != 0
+    }
     interface OnDataChangedListener {
         fun onDataChanged(isAllFilled: Boolean)
         abstract fun onItemClick(position: Int)
@@ -81,6 +84,8 @@ class EtcAdapter(
                         3 -> exercise.extime = s?.toString()?.toIntOrNull() ?: 0
 
                     }
+                    val isAllFilled = checkAllFilled()
+                    listener.onDataChanged(isAllFilled)
                 }
 
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
