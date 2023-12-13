@@ -93,9 +93,9 @@ class MainFragment : Fragment(), OnMapReadyCallback {
             findNavController().navigate(R.id.action_mainFragment_to_searchLocationFragment)
         }
 
-        binding.mapMain.setOnClickListener {
+        /*binding.mapMain.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_historyFragment)
-        }
+        }*/
         binding.btnDaycount.setOnClickListener{
             findNavController().navigate(R.id.navi_calendar)
         }
@@ -117,6 +117,7 @@ class MainFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(p0: NaverMap) {
         mNaverMap = p0
+        mNaverMap.maxZoom = 19.0
         val uiSettings = mNaverMap.uiSettings
         uiSettings.isZoomControlEnabled = false
         uiSettings.isScaleBarEnabled = false
@@ -126,23 +127,29 @@ class MainFragment : Fragment(), OnMapReadyCallback {
                     val lastRecord = resource.data?.lastOrNull()
                     if (lastRecord != null) {
                         binding.messageHidden.visibility = View.GONE
+                        binding.map.visibility = View.VISIBLE
+                        binding.overlay.visibility =View.VISIBLE
                         val ratList: List<RouteAndTimeDTO> = lastRecord.ratList
                         val coords: List<LatLng> = ratList.map { rat -> LatLng(rat.latitude, rat.longitude) }
                         val cameraUpdate = CameraUpdate.fitBounds(calculateBounds(coords), 20)
                         val path = PathOverlay()
                         path.coords = coords
-                        path.color = Color.MAGENTA
+                        path.color = Color.GREEN
                         path.map = mNaverMap
                         mNaverMap.moveCamera(cameraUpdate)
                     } else {
-                        binding.messageHidden.text = " 운동을 시작해봐요!! "
+                        binding.messageHidden.text = "운동한 기록이 없어요"
                         binding.messageHidden.visibility = View.VISIBLE
+                        binding.map.visibility =View.GONE
+                        binding.overlay.visibility =View.GONE
 
                     }
                 }
                 is Resource.Error -> {
-                    binding.messageHidden.text = " 최근 기록 데이터 가져오는데 실패 "
+                    binding.messageHidden.text = "데이터 로딩 실패"
                     binding.messageHidden.visibility = View.VISIBLE
+                    binding.map.visibility =View.GONE
+                    binding.overlay.visibility =View.GONE
                 }
                 else ->{
 

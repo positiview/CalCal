@@ -81,6 +81,6 @@ dependencies {
 
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
 
-    implementation ("com.google.android.material:material:1.5.0")
 
+    implementation("com.google.android.material:material:1.6.1")
 }

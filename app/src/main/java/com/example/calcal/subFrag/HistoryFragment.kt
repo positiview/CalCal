@@ -63,6 +63,7 @@ class HistoryFragment :Fragment(), OnMapReadyCallback {
 
     lateinit var behavior: BottomSheetBehavior<LinearLayout>
     var initialMapHeight = 0
+    private var recordId = 0
 
     private lateinit var binding : FragmentHistoryBinding
             override fun onCreateView(
@@ -192,6 +193,8 @@ class HistoryFragment :Fragment(), OnMapReadyCallback {
 
         })
     }
+
+    // recyclerView 아이템 클릭시...
     fun onItemClick(rrDTO: RouteRecordDTO) {
         // 칼로리 애니메이션
         val calorieAnimator = ValueAnimator.ofInt(0, rrDTO.calorie.toInt())
@@ -287,18 +290,7 @@ class HistoryFragment :Fragment(), OnMapReadyCallback {
                 }
             }
             animator.start()
-            /*animator.addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationStart(animation: Animator, isReverse: Boolean) {
-                    super.onAnimationStart(animation, isReverse)
-                    behavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                }
 
-                override fun onAnimationEnd(animation: Animator) {
-                    super.onAnimationEnd(animation)
-                    // 애니메이션이 종료되면 BottomSheet를 반 펼쳐진 상태로 변경
-                    behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
-                }
-            })*/
         }
     }
 
@@ -345,7 +337,8 @@ class HistoryFragment :Fragment(), OnMapReadyCallback {
                         binding.txtEmpty.visibility = View.VISIBLE
                     }else{
                         Log.d("$$","getRecord 성공성공!! ${it.data}")
-                        recordListAdapter = RecordListAdapter(it.data,this)
+                        val selectedRecordId:Int = arguments?.getInt("selectedRecordId", -1) ?: recordId
+                        recordListAdapter = RecordListAdapter(selectedRecordId,it.data,this)
                         recyclerView.adapter = recordListAdapter
                         recyclerView.scrollToPosition(recordListAdapter.itemCount - 1)
                     }

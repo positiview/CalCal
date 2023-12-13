@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.calcal.modelDTO.CalDTO
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.modelDTO.RouteRecordDTO
 import com.example.calcal.repository.RecordRepository
@@ -25,7 +26,11 @@ class RecordViewModel(private val repository: RecordRepository):ViewModel() {
 
     val successfulSave :LiveData<Resource<String>> get() = _successfulSave
 
-    fun saveRecord(listRecord : List<RouteAndTimeDTO>, courseName: String, email: String, calorie:Double, distance:String){
+    private val _getTodayRecord: MutableLiveData<Resource<List<CalDTO>?>> = MutableLiveData()
+
+    val getTodayRecord: LiveData<Resource<List<CalDTO>?>> get() = _getTodayRecord
+
+    fun saveRecord(listRecord : List<RouteAndTimeDTO>, courseName: String, email: String, goalCalorie:Double, calorie:Double, distance:String){
 
         viewModelScope.launch {
             Log.d("$$","saveRecord ViewModel")
@@ -34,7 +39,7 @@ class RecordViewModel(private val repository: RecordRepository):ViewModel() {
             _successfulSave.value = Resource.Loading
             try{
 
-                repository.saveRecord(listRecord,courseName, email, calorie, distance){
+                repository.saveRecord(listRecord,courseName, email, goalCalorie,calorie, distance){
                     _successfulSave.value = it
                 }
             }catch (e:Exception){
@@ -62,6 +67,19 @@ class RecordViewModel(private val repository: RecordRepository):ViewModel() {
         _getSelectedRecord.value = ratList
     }
 
+
+    fun getTodayRecord(email:String){
+        viewModelScope.launch {
+            _getTodayRecord.value = Resource.Loading
+            try{
+                repository.getTodayRecord(email){
+                    _getTodayRecord.value = it
+                }
+            }catch (e:Exception){
+                _getRecord.value = Resource.Error(e.message.toString())
+            }
+        }
+    }
 
 
 }

@@ -25,6 +25,7 @@ import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.adapter.CourseListAdapter
 import com.example.calcal.databinding.FragmentSearchLocationBinding
+import com.example.calcal.helper.AddressHelper
 import com.example.calcal.modelDTO.Result
 import com.example.calcal.modelDTO.ReverseGeocodingResponseDTO
 import com.example.calcal.modelDTO.CoordinateDTO
@@ -591,7 +592,8 @@ class SearchLocationFragment:Fragment() {
         fusedLocationProviderClient.lastLocation
             .addOnSuccessListener { location: Location? ->
                 location?.let {
-                    getAddressName(it) { address ->
+                    val coords = location?.longitude.toString()+","+location?.latitude.toString()
+                    AddressHelper.getAddressName(coords) { address ->
                         val ad = address.firstOrNull()
                         if(ad !=null){
                             val actualAddress = "${ad.region.area1.name} ${ad.region.area2.name} ${ad.region.area3.name} ${ad.region.area4.name}".trim()
@@ -613,7 +615,7 @@ class SearchLocationFragment:Fragment() {
     }
 
     // 지역검색 API
-    private fun getAddressName(location: Location?, callback: (List<Result>) -> Unit ) {
+    /*private fun getAddressName(location: Location?, callback: (List<Result>) -> Unit ) {
         Log.d("$$","getAddressName 주소 정보 요청 location : $location")
         val apiKeyId = "clurvbfncz"
         val apiKey = "WuVnFkJnFdIt7L03dhCZw7iCyNCeLGtNh3UsrhrI"
@@ -654,7 +656,7 @@ class SearchLocationFragment:Fragment() {
 
             }
         })
-    }
+    }*/
     override fun onResume() {
         super.onResume()
         (activity as? MainActivity)?.hideBottomNavigation()

@@ -1,5 +1,6 @@
 package com.example.calcal.request
 
+import com.example.calcal.modelDTO.CalDTO
 import com.example.calcal.modelDTO.ChannelDTO
 import com.example.calcal.modelDTO.CoordinateDTO
 import com.example.calcal.modelDTO.CourseListDTO
@@ -128,6 +129,7 @@ interface ApiService {
         @Body routeRecord: List<RouteAndTimeDTO>,
         @Query("userEmail") userEmail: String,
         @Query("courseName") courseName: String,
+        @Query("goalCalorie") goalCalorie: Double,
         @Query("calorie") calorie:Double,
         @Query("distance") distance:String
     ): Call<String>
@@ -136,6 +138,12 @@ interface ApiService {
     fun getRouteRecord(
         @Query("userEmail") userEmail: String
     ): Call<List<RouteRecordDTO>>
+
+
+    @GET("record/today")
+    fun getTodayRecord(
+        @Query("userEmail") userEmail: String
+    ): Call<List<CalDTO>>
 
     @PUT("api/updateMemberData")
     fun updateMemberData(@Body memberDTO: MemberDTO): Call<String>

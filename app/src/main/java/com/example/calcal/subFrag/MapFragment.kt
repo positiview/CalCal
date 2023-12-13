@@ -85,6 +85,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val touchTimeout = 5000L // 5초
     private var lastTouchTime = 0L
     private var cal :Double = 0.0
+    private var goalCal : Double = 0.0
     private var distance = ""
     private var chronometerService: ChronometerService? = null
     //임시몸무게
@@ -307,7 +308,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 sharedPreferences = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 val storedEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
                 if (storedEmail != null) {
-                    recordViewModel.saveRecord(routeAndTimeDTO,txt,storedEmail,cal,distance)
+                    recordViewModel.saveRecord(routeAndTimeDTO,txt,storedEmail,goalCal,cal,distance)
                     recordViewModel.successfulSave.observe(viewLifecycleOwner){
                         when(it){
                             is Resource.Loading -> {

@@ -12,7 +12,7 @@ import com.example.calcal.subFrag.HistoryFragment
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class RecordListAdapter(private val recordList: List<RouteRecordDTO>, private val listener: HistoryFragment) : RecyclerView.Adapter<RecordListAdapter.ViewHolder>(){
+class RecordListAdapter(private val recordId:Int,private val recordList: List<RouteRecordDTO>, private val listener: HistoryFragment) : RecyclerView.Adapter<RecordListAdapter.ViewHolder>(){
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener{
 
@@ -55,8 +55,10 @@ class RecordListAdapter(private val recordList: List<RouteRecordDTO>, private va
     override fun onBindViewHolder(holder: RecordListAdapter.ViewHolder, position: Int) {
         val rList = recordList[position]
         holder.bind(rList)
-        // 가장 최근 항목을 자동으로 클릭
-        if (position == itemCount - 1) {
+        // 가장 최근 항목을 자동으로 클릭 or recordId가 일치하면 클릭
+        if (rList.recordId == recordId) {
+            holder.itemView.performClick()
+        } else if (position == itemCount - 1 && recordList.none { it.recordId == recordId }) {
             holder.itemView.performClick()
         }
     }
