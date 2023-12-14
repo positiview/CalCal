@@ -151,6 +151,10 @@ interface ApiService {
     @GET("api/getMemberData")
     fun getMemberData(@Query("email") email: String): Call<MemberDTO>
 
+    @GET("api/updateGoalCal")
+    fun updateGoalCal(@Query("email") email: String,
+                      @Query("goalcal") goalcal: Int): Call<String>
+
     @DELETE("api/deleteMember/{email}")
     suspend fun deleteMemberData(@Path("email") email: String): Response<Unit>
 

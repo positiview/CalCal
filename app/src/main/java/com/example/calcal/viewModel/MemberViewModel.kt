@@ -1,5 +1,6 @@
 package com.example.calcal.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,6 +32,10 @@ class MemberViewModel(private val repository: MemberRepository) : ViewModel() {
 
     val saveSuccess : LiveData<Resource<Boolean>> get() = _saveSuccess
 
+    private val _updateGoalCal : MutableLiveData<Resource<String>> = MutableLiveData()
+
+    val updateGoalCal : LiveData<Resource<String>> get() = _updateGoalCal
+
 
     fun saveMemberInfo(memberDTO: MemberDTO){
         // 회원가입은 viewModel 필요 없음. 직접 repository에서 사용가능.. 하지만 사용함 ㅋ
@@ -52,7 +57,8 @@ class MemberViewModel(private val repository: MemberRepository) : ViewModel() {
         viewModelScope.launch {
             try{
                 repository.getMember(email){
-                    _getMemberInfo.value = it
+                    _getMemberInfo.value = Resource.Success(it)
+
                 }
             }catch (e:Exception){
                 _getMemberInfo.value = Resource.Error(e.message.toString())
@@ -72,8 +78,16 @@ class MemberViewModel(private val repository: MemberRepository) : ViewModel() {
         }
     }
 
+    fun updateMemberGoalcal(email: String, goalcal: Int){
 
+        viewModelScope.launch {
 
+                repository.updateGoalCal(email,goalcal) {
+                    _updateGoalCal.value = Resource.Success(it)
+                }
+
+        }
+    }
 
 
 

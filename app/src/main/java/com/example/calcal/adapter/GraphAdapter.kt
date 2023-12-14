@@ -7,8 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import at.grabner.circleprogress.CircleProgressView
@@ -16,9 +14,9 @@ import com.example.calcal.R
 import com.example.calcal.helper.AddressHelper
 import com.example.calcal.mainFrag.GraphFragment
 import com.example.calcal.modelDTO.CalDTO
-import com.google.android.material.button.MaterialButton
+import com.example.calcal.viewModel.MemberViewModel
 
-class GraphAdapter(private val calListRecord : List<CalDTO>, private val listener: GraphFragment, private val navController: NavController): RecyclerView.Adapter<RecyclerView.ViewHolder,>()   {
+class GraphAdapter(private val calListRecord : List<CalDTO>, private val goalcal:Int, private val listener: GraphFragment, private val navController: NavController): RecyclerView.Adapter<RecyclerView.ViewHolder,>()   {
     companion object {
         private const val ring_graph = 0 // 링그래프
         private const val graph_list = 1 // 오늘 운동한 기록 카드
@@ -37,6 +35,7 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val listene
         val continuity:TextView = itemView.findViewById(R.id.continuity)
 
         init {
+
             itemView.setOnClickListener(this)
             btnExermap.setOnClickListener(this)
         }
@@ -58,6 +57,7 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val listene
         }
 
         fun bind(calRecord: CalDTO) {
+
             exerTitle.text = calRecord.courseName
             exerCalChild.text = calRecord.calorie.toInt().toString()
             val elapsedTimeInSeconds = (calRecord.time/1000).toInt()
@@ -98,6 +98,7 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val listene
         val ringGraph: CircleProgressView = itemView.findViewById(R.id.ring_graph)
         val ringGraphCurcal: TextView = itemView.findViewById(R.id.ring_graph_cal)
         val modifyCalorieGoal: TextView = itemView.findViewById(R.id.modify_calorie_goal)
+        val calorieGoal: TextView = itemView.findViewById(R.id.ring_graph_allcal)
 
         init {
             modifyCalorieGoal.setOnClickListener(this)
@@ -106,7 +107,7 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val listene
             Log.d("GraphAdapter", "onClick executed")
             if(v == modifyCalorieGoal ){
 
-                listener.onModifyCalorieGoal()
+                listener.onModifyCalorieGoal(calorieGoal)
             }
 
         }
@@ -159,7 +160,8 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val listene
             is FirstViewHolder -> {
                 val calorieCombined = calListRecord.sumOf { it.calorie }
 
-                holder.ringGraph.setValueAnimated(0f, (calorieCombined/1000).toFloat(), 1000) // 1초 동안 0에서 100까지 애니메이션합니다.
+                holder.calorieGoal.text = goalcal.toString()
+                holder.ringGraph.setValueAnimated(0f, (calorieCombined/goalcal).toFloat(), 1000) // 1초 동안 0에서 100까지 애니메이션합니다.
 
                 val animator = ValueAnimator.ofInt(0, calorieCombined.toInt())
                 animator.addUpdateListener { animation ->

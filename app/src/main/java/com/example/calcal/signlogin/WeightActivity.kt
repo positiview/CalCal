@@ -8,11 +8,8 @@ import android.widget.ImageView
 import android.widget.NumberPicker
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.calcal.MainActivity
 import com.example.calcal.R
-import com.example.calcal.databinding.ActivityAgeBinding
 import com.example.calcal.databinding.ActivityWeightBinding
-import com.example.calcal.repository.ExerciseRepository
 import com.example.calcal.repository.MemberRepository
 import com.example.calcal.repository.MemberRepositoryImpl
 import com.example.calcal.retrofit.RequestFactory

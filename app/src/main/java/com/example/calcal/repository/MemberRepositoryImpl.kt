@@ -42,7 +42,7 @@ class MemberRepositoryImpl: MemberRepository {
     }
 
 
-    override suspend fun getMember(email: String, result: (Resource<MemberDTO>) -> Unit) {
+    override suspend fun getMember(email: String, result: (MemberDTO) -> Unit) {
         val call: Call<MemberDTO> = apiService.getMemberData(email) // 사용자 정보를 가져오는 API 호출
 
         call.enqueue(object : Callback<MemberDTO> {
@@ -50,17 +50,17 @@ class MemberRepositoryImpl: MemberRepository {
                 if (response.isSuccessful) {
                     val responseBody: MemberDTO? = response.body()
                     if (responseBody != null) {
-                        result(Resource.Success(responseBody))
+                        result(responseBody)
                     } else {
-                        result(Resource.Error("No user data"))
+                        Log.d("$$","No user data")
                     }
                 } else {
-                    result(Resource.Error("Failed to get user data"))
+                    Log.d("$$","Failed to get user data")
                 }
             }
 
             override fun onFailure(call: Call<MemberDTO>, t: Throwable) {
-                result(Resource.Error("Failed to get user data: ${t.message}"))
+                Log.d("$$","Failed to get user data: ${t.message}")
             }
         })
     }
@@ -97,6 +97,32 @@ class MemberRepositoryImpl: MemberRepository {
         } catch (e: Exception) {
             result(Resource.Error(e.message ?: "오류가 발생하였습니다."))
         }
+    }
+
+    override suspend fun updateGoalCal(email:String, goalcal: Int, result: (String) -> Unit) {
+
+        val goalcalCall = apiService.updateGoalCal(email,goalcal)
+
+        goalcalCall.enqueue(object: Callback<String>{
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.isSuccessful) {
+                    val txt = response.body()
+                    Log.d("$$", "목표 칼로리 업데이트 $txt")
+                    if (txt != null) {
+                        result.invoke(txt)
+                    }
+                } else {
+                    Log.d("$$", "목표 칼로리 업데이트 서버에서 failure")
+                }
+
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d("$$", "목표 칼로리 업데이트 전송 오류 발생")
+            }
+        })
+
+
     }
 
 }

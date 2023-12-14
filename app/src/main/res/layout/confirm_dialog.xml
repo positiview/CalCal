@@ -15,7 +15,7 @@
         android:text="목표 칼로리를 입력하세요" />
 
     <EditText
-        android:id="@+id/confirm"
+        android:id="@+id/goalcal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/aim"
@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/confirm"
+        android:layout_below="@id/goalcal"
         android:layout_alignParentEnd="true"
         >
 
