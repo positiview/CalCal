@@ -17,5 +17,7 @@ data class MemberDTO(
 
     var age: Int?,
 
-    var gender: String
+    var gender: String,
+
+    var goalcal: Int?
 ): Serializable

@@ -127,7 +127,7 @@ class SignActivity : AppCompatActivity() {
             val hashedPassword2 = hashPassword(password2)
 
             //값 반영
-            val memberDTO = MemberDTO(email,phone,hashedPassword,hashedPassword2, weight = null, length = null,age = null, gender = "" )
+            val memberDTO = MemberDTO(email,phone,hashedPassword,hashedPassword2, weight = null, length = null,age = null, gender = "" ,goalcal = null)
 
 
             viewModel.saveMemberInfo(memberDTO)
@@ -214,7 +214,7 @@ class SignActivity : AppCompatActivity() {
             // 추가로 필요한 사용자 정보도 가져올 수 있습니다.
 
             // 회원 정보를 데이터베이스에 저장하기 위한 API 요청
-            val memberDTO = MemberDTO(email, "", "", "",null,null,null,"") // memberDTO에 필요한 정보 추가
+            val memberDTO = MemberDTO(email, "", "", "",null,null,null,"", null) // memberDTO에 필요한 정보 추가
             val call: Call<String> = apiService.memberData(memberDTO)
 
             call.enqueue(object : Callback<String> {
