@@ -6,7 +6,7 @@ data class ExerciseDTO(
     var email: String = "",
     var excal: Int? = null,
     var excontent: String = "",
-    val exicon: String = "",
+    var exicon: String = "",
     var exmove: Boolean = false,
     var exname: String = "",
     var extime: Int? = null
