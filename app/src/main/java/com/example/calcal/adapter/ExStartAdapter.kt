@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.calcal.R
 import com.example.calcal.subFrag.ExercisestartFragment
 import com.example.calcal.viewModel.ExerciseViewModel
-import com.example.calcal.viewModel.ExnameViewModel
-import com.example.calcal.viewModel.TargetCalViewModel
 
 class ExStartAdapter(
     private val mData: MutableList<String>,
@@ -26,8 +24,6 @@ class ExStartAdapter(
     private val listener: ExercisestartFragment,
     private val navController: NavController,
     private val exerciseViewModel: ExerciseViewModel,
-    private val exnameViewModel: ExnameViewModel,
-    private val targetCalViewModel: TargetCalViewModel,
     private val onUserInput: (Double) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     @SuppressLint("SetTextI18n")
@@ -61,7 +57,7 @@ class ExStartAdapter(
                     val userInputValue = input.text.toString().toDoubleOrNull() ?: 0.0
                     btnExStartCal.text = "$userInputValue kcal"
                     onUserInput(userInputValue)
-                    targetCalViewModel.getTargetCalorie(userInputValue)
+
 
                     Log.d("ExerciseViewModel", "getTargetCalorie called with value: $userInputValue")
                     dialog.dismiss()
