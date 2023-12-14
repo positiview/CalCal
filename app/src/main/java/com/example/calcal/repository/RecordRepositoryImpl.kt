@@ -2,6 +2,7 @@ package com.example.calcal.repository
 
 import android.util.Log
 import com.example.calcal.modelDTO.CalDTO
+import com.example.calcal.modelDTO.ExRecordDTO
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.modelDTO.RouteRecordDTO
 import com.example.calcal.retrofit.RequestFactory
@@ -85,6 +86,75 @@ class RecordRepositoryImpl:RecordRepository {
 
         })
     }
+
+    override suspend fun saveExRecord(
+        exRecords: List<ExRecordDTO>,
+        email: String,
+        exname: String,
+        goalCalorie: Double,
+        calorie: Double,
+        result: (Resource<String>) -> Unit
+    ) {
+        Log.d("$$","saveExRecord 함수가 호출되었습니다.")
+        val call : Call<String> = apiService.saveExRecord(exRecords,email,exname,goalCalorie, calorie)
+
+        call.enqueue(object : Callback<String>{
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if(response.isSuccessful){
+                    result.invoke(Resource.Success("성공적으로 기록을 저장했습니다."))
+                    Log.d("$$","내 기록 저장 성공")
+                }else{
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = "내 기록 저장 실패!! 응답코드: ${response.code()}, 오류 내용: $errorBody"
+                    Log.d("$$", errorMessage)
+                    result.invoke(Resource.Error("기록 저장 관련 응답 실패"))
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d("$$","내 기록 응답 실패~~~~")
+                result.invoke(Resource.Error("기록 저장 실패!!"))
+            }
+        })
+    }
+
+    override suspend fun getExRecord(
+        email: String,
+        result: (Resource<List<ExRecordDTO>?>) -> Unit
+    ) {
+        val getCall: Call<List<ExRecordDTO>> = apiService.getExRecord(email)
+
+        Log.d("$$", "getRecord: Making network request...")
+
+        getCall.enqueue(object : Callback<List<ExRecordDTO>> {
+            override fun onResponse(
+                call: Call<List<ExRecordDTO>>,
+                response: Response<List<ExRecordDTO>>
+            ) {
+                Log.d("$$", "getRecord: onResponse called")
+
+                if (response.isSuccessful) {
+                    Log.d("$$", "getRecord: Successful response received")
+                    result.invoke(Resource.Success(response.body()))
+                    Log.d("$$", "내 기록 불러오기 성공")
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage =
+                        "내 기록 불러오기 실패!! 응답코드: ${response.code()}, 오류 내용: $errorBody"
+                    Log.d("$$", errorMessage)
+                    result.invoke(Resource.Error("기록 불러오기 관련 응답 실패"))
+                }
+            }
+
+
+            override fun onFailure(call: Call<List<ExRecordDTO>>, t: Throwable) {
+                Log.e("$$", "getRecord: Network request failed", t)
+                result.invoke(Resource.Error("기록 불러오기 관련 요청 실패"))
+            }
+
+        })
+    }
+
 
     override suspend fun getTodayRecord(email: String, result: (Resource<List<CalDTO>?>) -> Unit) {
 

@@ -11,19 +11,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentCalcheckBinding
+import com.example.calcal.modelDTO.ExerciseDTO
+import com.example.calcal.repository.ExerciseRepository
 import com.example.calcal.repository.ExerciseRepositoryImpl
 import com.example.calcal.repository.MemberRepositoryImpl
+import com.example.calcal.repository.RecordRepository
+import com.example.calcal.repository.RecordRepositoryImpl
 import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.ExerciseViewModel
 import com.example.calcal.viewModel.MemberViewModel
+import com.example.calcal.viewModel.RecordViewModel
 import com.example.calcal.viewModelFactory.ExerciseViewModelFactory
 import com.example.calcal.viewModelFactory.MemberViewModelFactory
+import com.example.calcal.viewModelFactory.RecordViewModelFactory
 import kotlin.math.pow
 
 
@@ -32,21 +39,28 @@ class CalcheckFragment : Fragment() {
     private lateinit var btn_back : Button
     private lateinit var memberViewModel:MemberViewModel
     private lateinit var exerciseViewModel: ExerciseViewModel
+
     private lateinit var sharedPreferences: SharedPreferences
-    var selectedItem = arguments?.getString("selectedItem")
-    var userInputValue = arguments?.getDouble("userInputValue")
-    var excal = arguments?.getInt("excal")
+    private val recordRepository: RecordRepository = RecordRepositoryImpl()
+    private val recordViewModelFactory = RecordViewModelFactory(recordRepository)
+    private val recordViewModel: RecordViewModel by viewModels() { recordViewModelFactory }
+    private var selectedItem = arguments?.getString("selectedItem")
+    private var userInputValue = arguments?.getDouble("userInputValue")
+    private var excal = arguments?.getInt("excal")
     private var pauseOffset: Long = 0
     private var isRunning = false
     private var memberWeight : Int? = 70
-
+    private var calories : Double? = 0.0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val exerciserepository = ExerciseRepositoryImpl()
         exerciseViewModel = ViewModelProvider(this, ExerciseViewModelFactory(exerciserepository))[ExerciseViewModel::class.java]
+
         val memberRepository = MemberRepositoryImpl()
         memberViewModel = ViewModelProvider(this, MemberViewModelFactory(memberRepository))[MemberViewModel::class.java]
 
+        val recordRepository = RecordRepositoryImpl()
+//        recordViewModel = ViewModelProvider(this, RecordViewModelFactory(recordRepository))[RecordViewModel::class.java]
 
 
     }
@@ -85,10 +99,10 @@ class CalcheckFragment : Fragment() {
         }
         binding.chronometer.setOnChronometerTickListener { chronometer ->
             val elapsedMillis = SystemClock.elapsedRealtime() - chronometer.base
-            val calories = excal?.let { calculateCalories(elapsedMillis.toDouble(), it) }
+            calories = excal?.let { calculateCalories(elapsedMillis.toDouble(), it) }
             binding.calorieTv.text = calories?.let { String.format("%.2f", it) } ?: "0.00"
 
-            if (userInputValue != null && calories != null && calories >= userInputValue!!) {
+            if (userInputValue != null && calories != null && calories!! >= userInputValue!!) {
                 stopChronometer()
                 toggleChronometer()
             }
@@ -102,9 +116,26 @@ class CalcheckFragment : Fragment() {
             builder.setMessage("정말 완료하시겠습니까?")
 
             builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+                val resource = recordViewModel.getExRecord.value
+                if (resource is Resource.Success) {
+                    val exRecord = resource.data ?: listOf()
+                    userInputValue?.let { it1 ->
+                        calories?.let { it2 ->
+                            if (userEmail != null) {
+                                selectedItem?.let { it3 ->
+                                    recordViewModel.saveExRecord(exRecord,userEmail, it3,
+                                        it1, it2
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Resource의 상태가 Success가 아닌 경우에 대한 처리
+                }
                 stopChronometer()
-                findNavController().navigate(R.id.action_calcheckFragment_to_graphFragment)
                 dialog.dismiss()
+                findNavController().navigate(R.id.action_calcheckFragment_to_graphFragment)
             }
 
             builder.setNegativeButton(android.R.string.no) { dialog, which ->
@@ -135,12 +166,16 @@ class CalcheckFragment : Fragment() {
     }
 
     private fun toggleChronometer() {
+        val currentCalories = calories
+        val targetCalories = userInputValue
         if (isRunning) {
             stopChronometer()
             binding.btnPause.isChecked = true
         } else {
-            startChronometer()
-            binding.btnPause.isChecked = false
+            if (currentCalories != null && targetCalories != null && currentCalories < targetCalories) {
+                startChronometer()
+                binding.btnPause.isChecked = false
+            }
         }
     }
 

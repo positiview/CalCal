@@ -7,6 +7,7 @@ import com.example.calcal.modelDTO.CourseListDTO
 import com.example.calcal.modelDTO.DataDTO
 import com.example.calcal.modelDTO.DirectionResponseDTO
 import com.example.calcal.modelDTO.ExerciseDTO
+import com.example.calcal.modelDTO.ExRecordDTO
 import com.example.calcal.modelDTO.FeatureCollection
 import com.example.calcal.modelDTO.RouteAndTimeDTO
 import com.example.calcal.modelDTO.NaverGeocodingResponseDTO
@@ -162,10 +163,20 @@ interface ApiService {
 
     @GET("api/getAllExercises")
     suspend fun getAllExercises(): List<ExerciseDTO>
+    @POST("exrecord/exSave")
+    fun saveExRecord(
+        @Body exRecord: List<ExRecordDTO>,
+        @Query("userEmail") userEmail: String,
+        @Query("exName") exName: String,
+        @Query("goalCalorie") goalCalorie: Double,
+        @Query("calorie") calorie: Double
+    ): Call<String>
 
     @DELETE("api/deleteExercise/{exname}")
     suspend fun deleteExerciseData(@Path("exname") exname: String): Response<Unit>
 
+    @GET("exrecord/get")
+    fun getExRecord(email: String): Call<List<ExRecordDTO>>
 
 
 }
