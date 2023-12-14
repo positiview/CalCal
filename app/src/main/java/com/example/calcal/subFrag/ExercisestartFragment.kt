@@ -7,7 +7,6 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,12 +25,11 @@ import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.adapter.ExStartAdapter
 import com.example.calcal.databinding.FragmentExercisestartBinding
+import com.example.calcal.modelDTO.ExerciseDTO
 import com.example.calcal.repository.ExerciseRepositoryImpl
 import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.util.Resource
 import com.example.calcal.viewModel.ExerciseViewModel
-import com.example.calcal.viewModel.ExnameViewModel
-import com.example.calcal.viewModel.TargetCalViewModel
 import com.example.calcal.viewModelFactory.ExerciseViewModelFactory
 
 
@@ -39,11 +37,13 @@ class ExercisestartFragment : Fragment() {
     private lateinit var binding: FragmentExercisestartBinding
     private lateinit var btn_back: Button
     private lateinit var exerciseViewModel: ExerciseViewModel
-    private lateinit var exnameViewModel: ExnameViewModel
-    private lateinit var targetCalViewModel: TargetCalViewModel
     private lateinit var sharedPreferences: SharedPreferences
     private val list = arrayListOf<String>()
     private var position: Int = -1
+    private lateinit var selectedExercise: ExerciseDTO
+    private lateinit var exercises: List<ExerciseDTO>
+    private lateinit var items: Array<String>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val repository = ExerciseRepositoryImpl()
@@ -63,25 +63,24 @@ class ExercisestartFragment : Fragment() {
         sharedPreferences =
             requireActivity().getSharedPreferences(LoginActivity.PREF_NAME, Context.MODE_PRIVATE)
         val userEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
-
+        var userInputValue = 0.0
         btn_back = binding.btnBack
         btn_back.setOnClickListener {
             NavHostFragment.findNavController(this).navigateUp()
         }
 
-        exnameViewModel = ViewModelProvider(this).get(ExnameViewModel::class.java)
-        targetCalViewModel = ViewModelProvider(this).get(TargetCalViewModel::class.java)
+
         exerciseViewModel.exerciseList.observe(viewLifecycleOwner, Observer { resource ->
             when (resource) {
                 is Resource.Success -> {
-                    val exercises = resource.data
+                    exercises = resource.data
                     // ExerciseDTO 객체의 리스트를 필터링하고, 해당 객체들의 이름을 가져옵니다.
                     val exerciseNames =
                         exercises.filter { it.email == "admin" || it.email == userEmail }
                             .map { it.exname }
 
                     binding.btnExTitle.setOnClickListener {
-                        val items = exerciseNames.toTypedArray()
+                        items = exerciseNames.toTypedArray()
 
 
                         val builder = AlertDialog.Builder(requireContext(), R.style.DialogTheme)
@@ -97,11 +96,7 @@ class ExercisestartFragment : Fragment() {
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                         spinner.adapter = adapter
 
-                        val selectedItemPosition =
-                            exerciseNames.indexOf(exnameViewModel.selectedItem.value)
-                        if (selectedItemPosition != -1) {
-                            spinner.setSelection(selectedItemPosition)
-                        }
+
 
                         builder.setView(view)
                         val dialog = builder.create()
@@ -114,8 +109,7 @@ class ExercisestartFragment : Fragment() {
                         okButton.setOnClickListener {
                             position = spinner.selectedItemPosition
                             binding.btnExTitle.text = items[position]
-                            exnameViewModel.setSelectedItem(items[position])
-                            val selectedExercise = exercises.find { it.exname == items[position] }
+                            selectedExercise = exercises.find { it.exname == items[position] }!!
                             list.clear()
                             list.addAll(
                                 if (selectedExercise?.exmove == true) {
@@ -149,9 +143,8 @@ class ExercisestartFragment : Fragment() {
                                 excalValue,
                                 this@ExercisestartFragment,
                                 navController,
-                                exerciseViewModel,
-                                exnameViewModel,
-                                targetCalViewModel
+                                exerciseViewModel
+
                             ) { userInput ->
                                 // userInput은 사용자가 입력한 값입니다.
                                 // 여기에서 필요한 계산을 수행합니다.
@@ -163,6 +156,7 @@ class ExercisestartFragment : Fragment() {
                                 binding.btnStartBotton.isEnabled = true
                                 binding.btnStartBotton.setBackgroundColor(Color.RED)
                                 binding.btnStartBotton.setTextColor(Color.WHITE)
+                                userInputValue = userInput
                             }
                             recyclerView.adapter = navAdapter
                             recyclerView.visibility = View.VISIBLE
@@ -204,13 +198,25 @@ class ExercisestartFragment : Fragment() {
         }
 
         binding.btnStartBotton.setOnClickListener {
-            if (position == 0 || position == 1) {
+            val exerciseNames =
+                exercises.filter { it.email == "admin" || it.email == userEmail }
+                    .map { it.exname }
+            items = exerciseNames.toTypedArray()
+            selectedExercise = exercises.find { it.exname == items[position] }!!
+
+            val bundle = Bundle().apply {
+                putString("selectedItem", items[position])
+                putDouble("userInputValue", userInputValue)
+                selectedExercise?.excal?.let { it1 -> putInt("excal", it1) }
+            }
+
+            if (selectedExercise?.exmove == true) {
                 // position이 0이나 1일 때의 동작
                 NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_exercisestartFragment_to_fragment_search_location)
+                    .navigate(R.id.action_exercisestartFragment_to_fragment_search_location, bundle)
             } else {
                 NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_exercisestartFragment_to_calcheckFragment)
+                    .navigate(R.id.action_exercisestartFragment_to_calcheckFragment, bundle)
             }
         }
 

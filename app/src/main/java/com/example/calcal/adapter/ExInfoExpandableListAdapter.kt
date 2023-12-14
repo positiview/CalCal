@@ -10,17 +10,16 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.navigation.NavController
+import com.bumptech.glide.Glide
 import com.example.calcal.R
 import com.example.calcal.modelDTO.ExerciseDTO
 import com.example.calcal.viewModel.ExerciseViewModel
-import com.example.calcal.viewModel.ExnameViewModel
 
 class ExInfoExpandableListAdapter(
     private val context: Context,
     private val list: List<ExerciseDTO>,
     private val navController: NavController,
-    private val exerciseViewModel: ExerciseViewModel,
-    private val exnameViewModel: ExnameViewModel
+    private val exerciseViewModel: ExerciseViewModel
 ) : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int {
@@ -73,8 +72,7 @@ class ExInfoExpandableListAdapter(
         if (isExpanded) {
             titleText.visibility = View.GONE
             titleBack.visibility = View.GONE
-            exnameViewModel.setSelectedItem(exerciseDto.exname)
-            Log.d("GroupView", "Selected item: ${exnameViewModel.selectedItem.value}")
+
         } else {
             titleText.visibility = View.VISIBLE
             titleBack.visibility = View.VISIBLE
@@ -94,6 +92,7 @@ class ExInfoExpandableListAdapter(
         val inflater = LayoutInflater.from(context)
         val view = inflater.inflate(R.layout.list_item, parent, false)
         val exerciseDto = getChild(groupPosition, childPosition) as ExerciseDTO
+        Log.d("$$","exerciseDto : $exerciseDto")
 
         val infoTitle = view.findViewById<TextView>(R.id.ex_info_title_text)
         infoTitle.text = exerciseDto.exname
@@ -108,7 +107,13 @@ class ExInfoExpandableListAdapter(
         timeText.text = exerciseDto.extime.toString()
 
         val imageView = view.findViewById<ImageView>(R.id.ex_info_img)
+        val exicon = exerciseDto.exicon.replace("\\", "/")  // 백슬래시를 슬래시로 변경
+        val url = "http://10.100.203.52:8080/$exicon"
 
+        Glide.with(view.context)
+            .load(url)
+            .into(imageView)
+        Log.d("$$","url : $url")
 
         // '운동하러가기' 텍스트뷰의 가시성 설정
         val goToExerciseText = view.findViewById<TextView>(R.id.ex_info_go)

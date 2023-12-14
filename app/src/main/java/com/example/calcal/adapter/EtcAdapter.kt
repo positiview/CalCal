@@ -58,7 +58,7 @@ class EtcAdapter(
     override fun getItemCount(): Int = mData.size
     private fun checkAllFilled(): Boolean {
         val exercise = exercises[0]  // exercises 리스트의 첫 번째 객체
-        return exercise.exname.isNotEmpty() && exercise.excontent.isNotEmpty() && exercise.excal != 0 && exercise.extime != 0
+        return exercise.exname.isNotEmpty() && exercise.excontent.isNotEmpty() && exercise.exicon.isNotEmpty()&& exercise.excal != 0 && exercise.extime != 0
     }
     interface OnDataChangedListener {
         fun onDataChanged(isAllFilled: Boolean)
@@ -82,14 +82,21 @@ class EtcAdapter(
                         1 -> exercise.excontent = s.toString()
                         2 -> exercise.excal = s?.toString()?.toIntOrNull() ?: 0
                         3 -> exercise.extime = s?.toString()?.toIntOrNull() ?: 0
-
+                        3 -> exercise.exicon = s.toString()
                     }
                     val isAllFilled = checkAllFilled()
                     listener.onDataChanged(isAllFilled)
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { }
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             }.also { holder.exEtcInput.addTextChangedListener(it) }
 
             when (position) {
@@ -98,30 +105,47 @@ class EtcAdapter(
                     holder.exEtcSwitch.visibility = View.GONE
                     holder.exEtcInput.setText(exercise.exname)
                 }
+
                 1 -> {
                     holder.exEtcInput.visibility = View.VISIBLE
                     holder.exEtcSwitch.visibility = View.GONE
                     holder.exEtcInput.setText(exercise.excontent)
                 }
+
                 2 -> {
                     holder.exEtcInput.visibility = View.VISIBLE
                     holder.exEtcSwitch.visibility = View.GONE
                     holder.exEtcInput.inputType = InputType.TYPE_CLASS_NUMBER
-                    exercise.excal.toString().toIntOrNull()?.let { holder.exEtcInput.setText(it.toString()) }
+                    exercise.excal.toString().toIntOrNull()
+                        ?.let { holder.exEtcInput.setText(it.toString()) }
                 }
+
                 3 -> {
                     holder.exEtcInput.visibility = View.VISIBLE
                     holder.exEtcSwitch.visibility = View.GONE
                     holder.exEtcInput.inputType = InputType.TYPE_CLASS_NUMBER
-                    exercise.extime.toString().toIntOrNull()?.let { holder.exEtcInput.setText(it.toString()) }
+                    exercise.extime.toString().toIntOrNull()
+                        ?.let { holder.exEtcInput.setText(it.toString()) }
 
                 }
+
                 4 -> {
                     holder.exEtcInput.visibility = View.GONE
                     holder.exEtcSwitch.visibility = View.VISIBLE
                     holder.exEtcSwitch.isChecked = exercise.exmove
                     holder.exEtcSwitch.setOnCheckedChangeListener { _, isChecked ->
                         exercise.exmove = isChecked
+                    }
+
+                }
+
+                5 -> {
+                    holder.exEtcInput.visibility = View.GONE
+                    holder.exEtcSwitch.visibility = View.VISIBLE
+                    holder.exEtcSwitch.isChecked = exercise.exmove
+                    holder.exEtcSwitch.setOnCheckedChangeListener { _, isChecked ->
+                        exercise.exicon.toIntOrNull()
+                            ?.let { holder.exEtcInput.setText(it.toString()) }
                     }
                 }
             }
