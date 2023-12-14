@@ -80,7 +80,7 @@ class RecordRepositoryImpl:RecordRepository {
             }
 
             override fun onFailure(call: Call<List<RouteRecordDTO>>, t: Throwable) {
-                Log.e("$$", "getRecord: Network request failed", t)
+                Log.e("$$", "getRouteRecord: Network request failed", t)
                 result.invoke(Resource.Error("기록 불러오기 관련 요청 실패"))
             }
 
@@ -148,7 +148,7 @@ class RecordRepositoryImpl:RecordRepository {
 
 
             override fun onFailure(call: Call<List<ExRecordDTO>>, t: Throwable) {
-                Log.e("$$", "getRecord: Network request failed", t)
+                Log.e("$$", "getExRecord: Network request failed", t)
                 result.invoke(Resource.Error("기록 불러오기 관련 요청 실패"))
             }
 
