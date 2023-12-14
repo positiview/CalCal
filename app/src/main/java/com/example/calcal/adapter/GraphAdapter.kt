@@ -99,10 +99,14 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val listene
         val ringGraphCurcal: TextView = itemView.findViewById(R.id.ring_graph_cal)
         val modifyCalorieGoal: TextView = itemView.findViewById(R.id.modify_calorie_goal)
 
+        init {
+            modifyCalorieGoal.setOnClickListener(this)
+        }
         override fun onClick(v: View?) {
             Log.d("GraphAdapter", "onClick executed")
-            when (v) {
-                modifyCalorieGoal -> listener.onModifyCalorieGoal()
+            if(v == modifyCalorieGoal ){
+
+                listener.onModifyCalorieGoal()
             }
 
         }
@@ -149,10 +153,7 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val listene
                     val calRecord = calListRecord[position-1]
                     holder.bind(calRecord)
                 }
-                /*if (position < mData.size) {
-                    val text = mData[position]
-                    holder.exerTitle.text = text
-                }*/
+
 
             }
             is FirstViewHolder -> {

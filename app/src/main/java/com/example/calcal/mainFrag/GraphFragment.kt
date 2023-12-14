@@ -105,8 +105,8 @@ class GraphFragment : Fragment() {
         Log.d("$$","showDialog 실행")
         val builder = AlertDialog.Builder(requireContext()).create()
         val dialogView = layoutInflater.inflate(R.layout.confirm_dialog,null)
-        val confirmBtn = dialogView.findViewById<MaterialButton>(R.id.dialogConfirm)
-        val cancelBtn = dialogView.findViewById<MaterialButton>(R.id.dialogCancel)
+        val confirmBtn = dialogView.findViewById<Button>(R.id.dialogConfirm)
+        val cancelBtn = dialogView.findViewById<Button>(R.id.dialogCancel)
 
         confirmBtn.setOnClickListener{
            /* userCancelled = false
