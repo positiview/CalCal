@@ -277,7 +277,11 @@
         android:id="@+id/calcheckFragment"
         android:name="com.example.calcal.subFrag.CalcheckFragment"
         android:label="fragment_calcheck"
-        tools:layout="@layout/fragment_calcheck" />
+        tools:layout="@layout/fragment_calcheck" >
+        <action
+            android:id="@+id/action_calcheckFragment_to_graphFragment"
+            app:destination="@id/graphFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/centerFragment"

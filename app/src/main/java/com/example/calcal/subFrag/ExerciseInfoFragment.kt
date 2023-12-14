@@ -18,7 +18,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
 import com.example.calcal.adapter.ExInfoExpandableListAdapter
 import com.example.calcal.databinding.FragmentExerciseInfoBinding
-import com.example.calcal.modelDTO.ExerciseDTO
 import com.example.calcal.repository.ExerciseRepositoryImpl
 import com.example.calcal.signlogin.LoginActivity
 import com.example.calcal.util.Resource
@@ -29,13 +28,13 @@ import com.example.calcal.viewModelFactory.ExerciseViewModelFactory
 class ExerciseInfoFragment : Fragment() {
     private lateinit var binding:FragmentExerciseInfoBinding
     private lateinit var btn_back : Button
-    private lateinit var viewModel: ExerciseViewModel
+    private lateinit var exerciseViewModel: ExerciseViewModel
     private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val repository = ExerciseRepositoryImpl()
-        viewModel = ViewModelProvider(this, ExerciseViewModelFactory(repository))[ExerciseViewModel::class.java]
-        viewModel.getAllExercises()
+        exerciseViewModel = ViewModelProvider(this, ExerciseViewModelFactory(repository))[ExerciseViewModel::class.java]
+        exerciseViewModel.getAllExercises()
     }
 
     override fun onCreateView(
@@ -53,15 +52,14 @@ class ExerciseInfoFragment : Fragment() {
 
 
         val navController = findNavController()
-
-        viewModel.exerciseList.observe(viewLifecycleOwner, Observer { resource ->
+        exerciseViewModel.exerciseList.observe(viewLifecycleOwner, Observer { resource ->
             Log.d("ExerciseInfoFragment", "exerciseList resource: $resource")
             when(resource) {
                 is Resource.Success -> {
                     val exercises = resource.data
                     // ExerciseDTO 객체의 리스트를 생성
                     val exerciseDTOs = exercises.filter { it.email == "admin" || it.email == userEmail }
-                    val adapter = ExInfoExpandableListAdapter(requireContext(), exerciseDTOs, navController,viewModel)
+                    val adapter = ExInfoExpandableListAdapter(requireContext(), exerciseDTOs, navController,exerciseViewModel)
                     binding.exerciseInfoRecycler.setAdapter(adapter)
                 }
                 is Resource.Error -> {

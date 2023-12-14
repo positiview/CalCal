@@ -19,7 +19,7 @@ class ExInfoExpandableListAdapter(
     private val context: Context,
     private val list: List<ExerciseDTO>,
     private val navController: NavController,
-    private val viewModel: ExerciseViewModel
+    private val exerciseViewModel: ExerciseViewModel
 ) : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int {
@@ -72,8 +72,7 @@ class ExInfoExpandableListAdapter(
         if (isExpanded) {
             titleText.visibility = View.GONE
             titleBack.visibility = View.GONE
-            viewModel.selectItem(exerciseDto.exname)
-            Log.d("GroupView", "Selected item: ${viewModel.selectedItem.value}")
+
         } else {
             titleText.visibility = View.VISIBLE
             titleBack.visibility = View.VISIBLE

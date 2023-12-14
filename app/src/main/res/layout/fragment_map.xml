@@ -73,13 +73,7 @@
         app:layout_constraintBottom_toTopOf="@id/course_recode"
         app:layout_constraintStart_toStartOf="@id/map"
         />
-    <com.naver.maps.map.widget.CompassView
-        android:id="@+id/compass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:layout_constraintStart_toStartOf="@+id/map"
-        app:layout_constraintBottom_toTopOf="@+id/mylocation_view"/>
+
 
 
     <LinearLayout

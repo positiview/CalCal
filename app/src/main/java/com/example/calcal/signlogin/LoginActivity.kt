@@ -12,12 +12,9 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.example.calcal.MainActivity
 import com.example.calcal.R
 import com.example.calcal.databinding.ActivityLoginBinding
-import com.example.calcal.repository.MemberRepository
-import com.example.calcal.viewModelFactory.MemberViewModelFactory
 import com.example.calcal.retrofit.RequestFactory
 import com.example.calcal.viewModel.MemberViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -133,7 +130,10 @@ class LoginActivity : AppCompatActivity() {
             val hashedPassword = hashPassword(password)
 
             // Retrofit을 통한 로그인 요청
-            val call: Call<String> = apiService.login(MemberDTO(email = email, phone = "", password = hashedPassword, password2 = "", weight = null, length = null,age = null, gender = "" ))
+            val call: Call<String> = apiService.login(MemberDTO(
+                email = email, phone = "", password = hashedPassword, password2 = "", weight = null, length = null,
+                age = null, gender = "",
+                goalcal = null ))
             call.enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
                     if (response.isSuccessful) {
@@ -222,7 +222,7 @@ class LoginActivity : AppCompatActivity() {
             // 추가로 필요한 사용자 정보도 가져올 수 있습니다.
 
             // 회원 정보를 데이터베이스에 저장하기 위한 API 요청
-            val memberDTO = MemberDTO(email, "", "", "",null,null,null,"") // memberDTO에 필요한 정보 추가
+            val memberDTO = MemberDTO(email, "", "", "",null,null,null,"",null) // memberDTO에 필요한 정보 추가
             val call: Call<String> = apiService.memberData(memberDTO)
 
             call.enqueue(object : Callback<String> {
