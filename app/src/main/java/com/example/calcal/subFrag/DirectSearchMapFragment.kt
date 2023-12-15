@@ -25,11 +25,12 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import java.util.Locale
-interface OnMapConfirmListener {
-    fun onConfirmButtonClicked(locations: LatLng) // 원하는 데이터 형식으로 수정 가능
-}
+
 class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
-    private lateinit var itemDTO: ItemDTO // 전달받은 itemDTO 값
+    interface OnLocationSelectedListener {
+        fun onLocationSelected(coordinateDTO: CoordinateDTO)
+    }
+
     private lateinit var binding: FragmentDirectSearchMapBinding
     private lateinit var mapFragment: MapFragment
     private lateinit var naverMap: NaverMap
@@ -39,28 +40,16 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
     private var selectedAddress: String? = null
     private var selectedLocation: LatLng? = null
 
-    private var confirmListener: OnMapConfirmListener? = null
+    private var listener: OnLocationSelectedListener? = null
 
-    fun setOnMapConfirmListener(listener: OnMapConfirmListener) {
-        confirmListener = listener
+    fun setOnLocationSelectedListener(listener: OnLocationSelectedListener) {
+        this.listener = listener
     }
-
-    fun setItemDTO(item: ItemDTO) {
-        this.itemDTO = item
-        Log.d("$$","wetfwsfewsfffffffffffffffffO = $item")
-    }
-
-   /* fun setSelectedAddress(address: String) {
-        selectedAddress = address
-
-        Log.d("$$","qqqqqqqqqqqqqqqqqqq = $address") //장소명
-    }*/
-
-
     fun setCurrentLocation(location: LatLng) {
-        currentLocation = LatLng(location.longitude, location.latitude)
-        Log.d("$$","aaaaaaaaaaaaaaaaaaa = $location") // 내위치
+        currentLocation = LatLng(location.latitude, location.longitude)
+        Log.d("$$", "aaaaaaaaaaaaaaaaaaa = $location") // 내위치
     }
+
 
     private var waypointTextView: TextView? = null
 
@@ -177,8 +166,7 @@ class DirectSearchMapFragment : DialogFragment(), OnMapReadyCallback {
                     longitude = marker.position.longitude
                 )
 
-                // setLocationAndAddress 메서드를 호출하여 값을 업데이트
-                setLocationAndAddress(coordinateDTO)
+                listener?.onLocationSelected(coordinateDTO)
 
                 dismiss()
             }

@@ -72,7 +72,7 @@ class SearchLocationFragment:Fragment() {
     private lateinit var courseViewModelFactory: CourseViewModelFactory
 
 
-//    private val viewModel: CourseViewModel by lazy {
+    //    private val viewModel: CourseViewModel by lazy {
 //        ViewModelProvider(this, courseViewModelFactory)[CourseViewModel::class.java]
 //    }
     private val viewModel: CourseViewModel by activityViewModels() { courseViewModelFactory }
@@ -164,8 +164,8 @@ class SearchLocationFragment:Fragment() {
         }
         courseConfirmBtnEnableCheck()
 
-       /* val layoutManager = GridLayoutManager(requireContext(), 1)
-        binding.selectedLocation.layoutManager = layoutManager*/
+        /* val layoutManager = GridLayoutManager(requireContext(), 1)
+         binding.selectedLocation.layoutManager = layoutManager*/
         val recyclerView = binding.courseList
         recyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -458,6 +458,21 @@ class SearchLocationFragment:Fragment() {
 
                 // 현재 위치 정보를 전달
                 fragment.setCurrentLocation(locations)
+
+                // 위치 선택 리스너 설정
+                fragment.setOnLocationSelectedListener(object : DirectSearchMapFragment.OnLocationSelectedListener {
+                    override fun onLocationSelected(selectedCoordinateDTO: CoordinateDTO) {
+                        // 선택된 위치 정보를 받아 처리하는 코드
+                        // 예: 선택된 위치를 SearchLocationFragment의 변수에 저장하거나 UI를 업데이트하는 등
+                        coordinateData(index, selectedCoordinateDTO)
+                        Log.d("$$","주소 검색 결과 읍답 : $selectedCoordinateDTO")
+
+                        // 선택된 주소 정보를 텍스트뷰에 설정
+                        textView.text = selectedCoordinateDTO.addressName
+
+                    }
+                })
+
                 courseConfirmBtnEnableCheck()
                 updatePlaceList()
 
@@ -525,40 +540,40 @@ class SearchLocationFragment:Fragment() {
     private fun checkGrantAndGetMyLocation() {
 
         val locationPermissionRequest =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                // 권한이 허용되면 위치 정보 가져오기
-                getMyLocation(){
-                    if(it != null){
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+                if (isGranted) {
+                    // 권한이 허용되면 위치 정보 가져오기
+                    getMyLocation(){
+                        if(it != null){
 
-                        myArea = it.region.area2.name // 내 지역 데이터 저장
+                            myArea = it.region.area2.name // 내 지역 데이터 저장
 
-                        val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
+                            val actualAddress = "${it.region.area1.name} ${it.region.area2.name} ${it.region.area3.name} ${it.region.area4.name}".trim()
 
-                        binding.departure.text = "[내 위치] $actualAddress"
+                            binding.departure.text = "[내 위치] $actualAddress"
+                            Log.d("$$", "cameraPositioncameraPosition = $actualAddress")
+                        }else{
+                            Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
+                        }
 
-                    }else{
-                        Toast.makeText(requireContext(),"내 위치를 찾을 수 없습니다.",Toast.LENGTH_SHORT).show()
+
+
                     }
 
 
+                } else {
+                    // 권한이 거부된 경우 적절히 처리
+                    Log.d("$$", "위치 권한이 거부되었습니다.")
 
+
+                    // 사용자에게 위치 권한이 필요한 이유를 설명해야함
                 }
-
-
-            } else {
-                // 권한이 거부된 경우 적절히 처리
-                Log.d("$$", "위치 권한이 거부되었습니다.")
-
-
-                // 사용자에게 위치 권한이 필요한 이유를 설명해야함
             }
-        }
 
         Log.d("$$","setLocationList 에서 내 위치 가져오기")
 
 
-            // 위치 권한이 허용되어 있는 경우
+        // 위치 권한이 허용되어 있는 경우
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
