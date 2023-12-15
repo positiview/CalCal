@@ -156,12 +156,12 @@ class RecordRepositoryImpl:RecordRepository {
     }
 
 
-    override suspend fun getTodayRecord(email: String, result: (Resource<List<CalDTO>?>) -> Unit) {
+    override suspend fun getTodayRecord(email: String, result: (Resource<Map<String, List<CalDTO>>?>) -> Unit) {
 
-        val getTodayCall: Call<List<CalDTO>> = apiService.getTodayRecord(email)
+        val getTodayCall: Call<Map<String, List<CalDTO>>> = apiService.getTodayRecord(email)
 
-        getTodayCall.enqueue(object : Callback<List<CalDTO>>{
-            override fun onResponse(call: Call<List<CalDTO>>, response: Response<List<CalDTO>>) {
+        getTodayCall.enqueue(object : Callback<Map<String, List<CalDTO>>>{
+            override fun onResponse(call: Call<Map<String, List<CalDTO>>>, response: Response<Map<String, List<CalDTO>>>) {
                 if(response.isSuccessful){
                     Log.d("$$", "오늘의 기록 불러오기 성공")
                     Log.d("$$","${response.body()}")
@@ -175,7 +175,7 @@ class RecordRepositoryImpl:RecordRepository {
                 }
             }
 
-            override fun onFailure(call: Call<List<CalDTO>>, t: Throwable) {
+            override fun onFailure(call: Call<Map<String, List<CalDTO>>>, t: Throwable) {
                 result.invoke(Resource.Error("오늘의 기록 불러오기 관련 요청 실패"))
             }
         })

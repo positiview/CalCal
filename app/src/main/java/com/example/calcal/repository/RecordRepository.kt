@@ -16,7 +16,7 @@ interface RecordRepository {
     suspend fun saveExRecord(exRecords: List<ExRecordDTO>,
                              email: String, exname: String, goalCalorie:Double, calorie:Double, result: (Resource<String>) -> Unit)
     suspend fun getExRecord(email: String, result: (Resource<List<ExRecordDTO>?>) -> Unit)
-    suspend fun getTodayRecord(email: String, result: (Resource<List<CalDTO>?>) -> Unit)
+    suspend fun getTodayRecord(email: String, result: (Resource<Map<String, List<CalDTO>>?>) -> Unit)
 
 
 

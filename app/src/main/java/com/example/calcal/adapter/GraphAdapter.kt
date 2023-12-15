@@ -16,7 +16,7 @@ import com.example.calcal.mainFrag.GraphFragment
 import com.example.calcal.modelDTO.CalDTO
 import com.example.calcal.viewModel.MemberViewModel
 
-class GraphAdapter(private val calListRecord : List<CalDTO>, private val goalcal:Int, private val listener: GraphFragment, private val navController: NavController): RecyclerView.Adapter<RecyclerView.ViewHolder,>()   {
+class GraphAdapter(private val calListRecord : Map<String, List<CalDTO>>, private val goalcal:Int, private val listener: GraphFragment, private val navController: NavController): RecyclerView.Adapter<RecyclerView.ViewHolder,>()   {
     companion object {
         private const val ring_graph = 0 // 링그래프
         private const val graph_list = 1 // 오늘 운동한 기록 카드
@@ -42,23 +42,36 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val goalcal
 
         override fun onClick(v: View?) {
             val position = adapterPosition
-            if (position != RecyclerView.NO_POSITION) {
-                if (v == btnExermap) {
-                    val selectedRecordId = calListRecord[position - 1].recordId
-                    val bundle = Bundle().apply {
-                        putInt("selectedRecordId",selectedRecordId)
-                    }
-                    navController.navigate(R.id.action_graphFragment_to_historyFragment,bundle)
-                } else {
+            val joggingList = calListRecord.getOrDefault("jogging", emptyList())
+            val etcList = calListRecord.getOrDefault("etc", emptyList())
+            var selectedRecordId: Int? = null
 
-                    listener.onItemClick(position)
+            if (position != RecyclerView.NO_POSITION) {
+                if (joggingList.isNotEmpty() && position - 1 < joggingList.size) {
+                    selectedRecordId = joggingList[position - 1].recordId
+                    val bundle = Bundle().apply {
+                        putInt("selectedRecordId", selectedRecordId!!)
+                    }
+                    navController.navigate(R.id.action_graphFragment_to_historyFragment, bundle)
+                } else if (etcList.isNotEmpty() && position - 1 < etcList.size) {
+                    selectedRecordId = etcList[position - 1].recordId
+                    val bundle = Bundle().apply {
+                        putInt("selectedRecordId", selectedRecordId)
+                    }
+                    navController.navigate(R.id.action_graphFragment_to_calcheckFragment, bundle)
+                } else {
+                    // 두 리스트 모두 비어있거나 모든 요소가 조회되었을 때의 처리
+                    return
                 }
             }
         }
 
-        fun bind(calRecord: CalDTO) {
-
-            exerTitle.text = calRecord.courseName
+        fun bind(calRecord: CalDTO,isJoggingList: Boolean) {
+            exerTitle.text = if (isJoggingList) {
+                calRecord.courseName
+            } else {
+                calRecord.exname
+            }
             exerCalChild.text = calRecord.calorie.toInt().toString()
             val elapsedTimeInSeconds = (calRecord.time/1000).toInt()
             val hours = elapsedTimeInSeconds / 3600
@@ -108,6 +121,9 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val goalcal
             if(v == modifyCalorieGoal ){
 
                 listener.onModifyCalorieGoal(calorieGoal)
+
+
+
             }
 
         }
@@ -148,27 +164,31 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val goalcal
 
     // 카드 꾸미기
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val joggingList = calListRecord.getOrDefault("jogging", emptyList())
+        val etcList = calListRecord.getOrDefault("etc", emptyList())
         when (holder) {
             is ViewHolder -> {
-                if (position <= calListRecord.size) {
-                    val calRecord = calListRecord[position-1]
-                    holder.bind(calRecord)
+                if (position <= joggingList.size) {
+                    val calRecord = joggingList[position-1]
+                    holder.bind(calRecord, true)
+                } else if (position - 1 - joggingList.size < etcList.size) {
+                    val calRecord = etcList[position - 1 - joggingList.size]
+                    holder.bind(calRecord, false)
                 }
-
-
             }
             is FirstViewHolder -> {
-                val calorieCombined = calListRecord.sumOf { it.calorie }
-
+                val calorieCombined = (joggingList + etcList).sumOf { it.calorie }
+                // 여기에서 holder.calorieGoal이 0이 아닐 때만 계산을 수행하도록 수정하였습니다.
                 holder.calorieGoal.text = goalcal.toString()
-                holder.ringGraph.setValueAnimated(0f, (calorieCombined/goalcal).toFloat(), 1000) // 1초 동안 0에서 100까지 애니메이션합니다.
+
+                holder.ringGraph.setValueAnimated(0f, (calorieCombined/goalcal).toFloat(), 1000)
 
                 val animator = ValueAnimator.ofInt(0, calorieCombined.toInt())
                 animator.addUpdateListener { animation ->
                     val value = animation.animatedValue as Int
                     holder.ringGraphCurcal.text = value.toString()
                 }
-                animator.duration = 1000 // 1초 동안 0에서 25까지 애니메이션합니다.
+                animator.duration = 1000
                 animator.start()
             }
             is LastViewHolder -> {
@@ -177,7 +197,13 @@ class GraphAdapter(private val calListRecord : List<CalDTO>, private val goalcal
         }
     }
 
-    override fun getItemCount(): Int = calListRecord.size+2
+    override fun getItemCount(): Int {
+        var total = 2
+        for (list in calListRecord.values) {
+            total += list.size
+        }
+        return total
+    }
 
     override fun getItemViewType(position: Int): Int {
         return when {

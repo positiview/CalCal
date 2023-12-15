@@ -45,6 +45,7 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/mainFragment"
             app:popUpToInclusive="false"/>
+
         <action
             android:id="@+id/action_mainFragment_to_calcheckFragment"
             app:destination="@id/calcheckFragment"
@@ -76,6 +77,7 @@
         android:name="com.example.calcal.mainFrag.GraphFragment"
         android:label="fragment_graph"
         tools:layout="@layout/fragment_graph" >
+
         <action
             android:id="@+id/navi_calendar"
             app:destination="@id/calendarFragment"
@@ -103,6 +105,9 @@
         <action
             android:id="@+id/action_graphFragment_to_historyFragment"
             app:destination="@id/historyFragment" />
+        <action
+            android:id="@+id/action_graphFragment_to_calcheckFragment"
+            app:destination="@id/calcheckFragment" />
     </fragment>
     <fragment
         android:id="@+id/mypageFragment"

@@ -144,7 +144,7 @@ interface ApiService {
     @GET("record/today")
     fun getTodayRecord(
         @Query("userEmail") userEmail: String
-    ): Call<List<CalDTO>>
+    ): Call<Map<String, List<CalDTO>>>
 
     @PUT("api/updateMemberData")
     fun updateMemberData(@Body memberDTO: MemberDTO): Call<String>

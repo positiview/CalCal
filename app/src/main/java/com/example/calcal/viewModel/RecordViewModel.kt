@@ -37,9 +37,9 @@ class RecordViewModel(private val repository: RecordRepository):ViewModel() {
 
     val successfulSave :LiveData<Resource<String>> get() = _successfulSave
 
-    private val _getTodayRecord: MutableLiveData<Resource<List<CalDTO>?>> = MutableLiveData()
+    private val _getTodayRecord: MutableLiveData<Resource<Map<String, List<CalDTO>>?>> = MutableLiveData()
 
-    val getTodayRecord: LiveData<Resource<List<CalDTO>?>> get() = _getTodayRecord
+    val getTodayRecord: LiveData<Resource<Map<String, List<CalDTO>>?>> get() = _getTodayRecord
 
     fun saveRecord(listRecord : List<RouteAndTimeDTO>, courseName: String, email: String, goalCalorie:Double, calorie:Double, distance:String){
 
