@@ -80,43 +80,43 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
     }
 
 
-   /* interface OnMyLocationClickListener{
-        fun onMyLocationClicked(myLocation: CoordinateDTO)
-    }
+    /* interface OnMyLocationClickListener{
+         fun onMyLocationClicked(myLocation: CoordinateDTO)
+     }
 
-    private var myLocationClickListener: OnMyLocationClickListener? = null
+     private var myLocationClickListener: OnMyLocationClickListener? = null
 
-    fun setOnMyLocationClickListener(listener: OnMyLocationClickListener){
-        myLocationClickListener = listener
-    }*/
+     fun setOnMyLocationClickListener(listener: OnMyLocationClickListener){
+         myLocationClickListener = listener
+     }*/
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-       dialog?.window?.let { window ->
-           val params = window.attributes
-           params.width = WindowManager.LayoutParams.MATCH_PARENT // 다이얼로그의 가로 길이를 맞춰줍니다.
-           // 다이얼로그를 화면의 상단에 위치하도록 설정
-           params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-           // 화면의 상단부터 일정 거리를 띄우고 싶다면 아래와 같이 설정할 수 있습니다.
-           params.y = (resources.displayMetrics.heightPixels * .18).toInt() // 상단으로부터 20% 지점에 위치
-           window.attributes = params
-       }
+        dialog?.window?.let { window ->
+            val params = window.attributes
+            params.width = WindowManager.LayoutParams.MATCH_PARENT // 다이얼로그의 가로 길이를 맞춰줍니다.
+            // 다이얼로그를 화면의 상단에 위치하도록 설정
+            params.gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+            // 화면의 상단부터 일정 거리를 띄우고 싶다면 아래와 같이 설정할 수 있습니다.
+            params.y = (resources.displayMetrics.heightPixels * .18).toInt() // 상단으로부터 20% 지점에 위치
+            window.attributes = params
+        }
         binding = DialongFragmentSearchAddressBinding.inflate(inflater,container,false)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
-       if (dialog?.window == null) {
-           // 다이얼로그 창이 null인 경우 처리
-           Log.e("SearchAddressDialog", "Dialog window is null.")
-           dismiss()  // 다이얼로그를 종료하거나 적절한 대응을 수행하세요.
-           return null  // onCreateView에서 null을 반환하면 오류가 발생하지 않습니다.
-       }
-       dialog?.window?.setDimAmount(0.8f)
+        if (dialog?.window == null) {
+            // 다이얼로그 창이 null인 경우 처리
+            Log.e("SearchAddressDialog", "Dialog window is null.")
+            dismiss()  // 다이얼로그를 종료하거나 적절한 대응을 수행하세요.
+            return null  // onCreateView에서 null을 반환하면 오류가 발생하지 않습니다.
+        }
+        dialog?.window?.setDimAmount(0.8f)
 
-       // 터치 이벤트를 밖으로 전파하지 않도록 설정하여 주변을 터치하면 다이얼로그가 종료되도록 합니다.
-       dialog?.setCanceledOnTouchOutside(true)
+        // 터치 이벤트를 밖으로 전파하지 않도록 설정하여 주변을 터치하면 다이얼로그가 종료되도록 합니다.
+        dialog?.setCanceledOnTouchOutside(true)
 
         val recyclerView = binding.addressList
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -195,10 +195,10 @@ class SearchAddressDialog(private val myArea: String) :DialogFragment() {
             }
         }
 
-       val waypointText: String? = clickedTextView?.text.toString()
-       if (!waypointText.isNullOrEmpty()) {
-           binding.searchQuery.setText(waypointText)
-       }
+        val waypointText: String? = clickedTextView?.text.toString()
+        if (!waypointText.isNullOrEmpty()) {
+            binding.searchQuery.setText(waypointText)
+        }
 
         return binding.root
     }
