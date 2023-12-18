@@ -327,6 +327,9 @@ class SearchLocationFragment:Fragment() {
             // 코스 확인 및 저장 버튼 !!
             courseConfirm.setOnClickListener {
                 updatePlaceList()
+                val receivedBundle = arguments
+
+
 
                 fun getCurrentDateTimeAsString(): String {
                     val dateFormat = SimpleDateFormat("MM-dd HH:mm", Locale.getDefault())
@@ -344,7 +347,7 @@ class SearchLocationFragment:Fragment() {
                 if (email != null) {
                     viewModel.saveCourse(course_no,email,courseName,placeList)
                 }
-                findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment)
+                findNavController().navigate(R.id.action_searchlocationFragment_to_mapFragment, receivedBundle)
             }
         }
         return view

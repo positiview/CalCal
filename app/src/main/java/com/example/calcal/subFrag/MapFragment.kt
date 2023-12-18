@@ -304,6 +304,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                 val txt = binding.textCourse.text.toString()
                 Log.d("$$","rat = $routeAndTimeDTO , courseName = $txt")
+                val receivedBundle = arguments
+
+                if (receivedBundle != null) {
+                    goalCal = receivedBundle.getDouble("userInputValue")
+
+                    // 번들에서 추출한 값들을 사용
+                    // ...
+                }
+
 
                 sharedPreferences = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 val storedEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
