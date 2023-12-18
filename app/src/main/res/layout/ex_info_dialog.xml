@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:background="@drawable/graph_back"
+    android:orientation="vertical"
+    >
+
+    <Spinner
+        android:id="@+id/dialog_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints"
+        android:padding="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/input_selecter"
+        android:inputType="number"/>
+<TextView
+    android:id="@+id/ex_etc_go"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="원하시는 운동이 없나요?"
+    android:textColor="@color/red"
+    android:layout_gravity="end"
+    android:layout_marginEnd="20dp"
+    android:layout_marginBottom="8dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        >
+        <Button
+            android:id="@+id/dialog_ok"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="운동 정하기"
+            android:background="@drawable/btn_cal_start"
+            android:textColor="@color/white"
+            />
+        <Button
+            android:id="@+id/dialog_cancel"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="취소"
+            android:background="@drawable/btn_cal_cancel"/>
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">calcal</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="location_permission_description">위치 접근 권한 설정</string>
+    <string name="course">산책코스</string>
+    <string name="google_login_client_id">648879563018-amfif4hftuklbvdis8eanfvomii5g1d9.apps.googleusercontent.com</string>
+    <string name="naver_client_id">xEVB1F1BbNmh7DRPIvCJ</string>
+    <string name="naver_client_secret">QMlVGalSUn</string>
+    <string name="naver_client_name">Cal Cal</string>
+    <string-array name="custom_weekdays">
+        <item>월</item>
+        <item>화</item>
+        <item>수</item>
+        <item>목</item>
+        <item>금</item>
+        <item>토</item>
+        <item>일</item>
+    </string-array>
+    <string-array name="custom_month">
+        <item>1월</item>
+        <item>2월</item>
+        <item>3월</item>
+        <item>4월</item>
+        <item>5월</item>
+        <item>6월</item>
+        <item>7월</item>
+        <item>8월</item>
+        <item>9월</item>
+        <item>10월</item>
+        <item>11월</item>
+        <item>12월</item>
+    </string-array>
+</resources>

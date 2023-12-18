@@ -1,0 +1,24 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Calcal" parent='Theme.AppCompat.Light'>
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+    <style name="Theme.CalCalApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <!-- Primary brand color. -->
+     <!--   <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+&lt;!&ndash;        <item name="colorPrimary">@color/red</item>&ndash;&gt;
+        <item name="colorPrimaryVariant">@color/red</item>
+        <item name="colorOnPrimary">@color/white</item>
+        &lt;!&ndash; Secondary brand color. &ndash;&gt;
+        <item name="colorSecondary">@color/backgroundblack</item>
+        <item name="colorSecondaryVariant">@color/backgroundblack</item>
+        <item name="colorOnSecondary">@color/white</item>
+        &lt;!&ndash; Status bar color. &ndash;&gt;
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>-->
+        <!-- Customize your theme here. -->
+    </style>
+    <style name="Theme.Calcal" parent="Base.Theme.Calcal" />
+</resources>

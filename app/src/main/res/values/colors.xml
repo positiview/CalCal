@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="theme">#E91E1E</color>
+    <color name="red">#DF1930</color>
+    <color name="lightred">#F47483</color>
+    <color name="darkred">#871422</color>
+    <color name="backgroundblack">#1C1B29</color>
+    <color name="gradationred">#123456</color>
+    <color name="gray">#9A9A9A</color>
+    <color name="semigray">#FFD6D6D6</color>
+    <color name="verygray">#323232</color>
+    <color name="button">#333147</color>
+    <color name="green">#8BC34A</color>
+    <color name="blue">#2196F3</color>
+</resources>
