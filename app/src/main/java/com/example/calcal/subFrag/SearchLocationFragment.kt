@@ -472,11 +472,11 @@ class SearchLocationFragment:Fragment() {
 
                         // 선택된 주소 정보를 텍스트뷰에 설정
                         textView.text = selectedCoordinateDTO.addressName
-
+                        courseConfirmBtnEnableCheck()
                     }
                 })
 
-                courseConfirmBtnEnableCheck()
+
                 updatePlaceList()
 
                 fragment.show(parentFragmentManager, "DirectSearchMapFragment")
