@@ -129,6 +129,7 @@ class GraphFragment : Fragment() {
 
         confirmBtn.setOnClickListener{
             val goalcal : Int = goalcalEditText.text.toString().toInt()
+            calorieGoal.text = goalcal.toString()
             memberViewModel.updateMemberGoalcal(email,goalcal)
             memberViewModel.updateGoalCal.observe(viewLifecycleOwner){
                 if(it is Resource.Success){

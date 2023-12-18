@@ -64,7 +64,7 @@ dependencies {
     // 레트로핏 서버 요청
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.google.code.gson:gson:2.10.1")
+    implementation ("com.google.code.gson:gson:2.8.8")
     implementation ("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
 
     // 네이버 지도

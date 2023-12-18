@@ -118,7 +118,7 @@ class MemberRepositoryImpl: MemberRepository {
             }
 
             override fun onFailure(call: Call<String>, t: Throwable) {
-                Log.d("$$", "목표 칼로리 업데이트 전송 오류 발생")
+                Log.d("$$", "목표 칼로리 업데이트 전송 오류 발생  :  $t")
             }
         })
 

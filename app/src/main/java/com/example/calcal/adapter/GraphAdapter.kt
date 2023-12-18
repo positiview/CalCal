@@ -125,10 +125,7 @@ class GraphAdapter(private val calListRecord : Map<String, List<CalDTO>>, privat
         override fun onClick(v: View?) {
             Log.d("GraphAdapter", "onClick executed")
             if(v == modifyCalorieGoal ){
-
                 listener.onModifyCalorieGoal(calorieGoal)
-
-
 
             }
 
