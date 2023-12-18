@@ -78,12 +78,18 @@ class GraphAdapter(private val calListRecord : Map<String, List<CalDTO>>, privat
             val minutes = (elapsedTimeInSeconds % 3600) / 60
             val seconds = elapsedTimeInSeconds % 60
             var formattedTime = ""
-            if(elapsedTimeInSeconds>=3600){
-                formattedTime = String.format("%02d시 %02d분 %02d초", hours, minutes, seconds)
-            }else if(elapsedTimeInSeconds>=60){
-                formattedTime = String.format("%02d분 %02d초",minutes,seconds)
-            }else if(elapsedTimeInSeconds>=0){
-                formattedTime = String.format("%02d초",seconds)
+            if (isJoggingList) {
+                // joggingList에 대한 처리
+                formattedTime = if (elapsedTimeInSeconds >= 3600) {
+                    String.format("%02d시 %02d분 %02d초", hours, minutes, seconds)
+                } else if (elapsedTimeInSeconds >= 60) {
+                    String.format("%02d분 %02d초", minutes, seconds)
+                } else {
+                    String.format("%02d초", seconds)
+                }
+            } else {
+                // etcList에 대한 처리
+                formattedTime = calRecord.exTime.toString()
             }
             val coords = "${calRecord.longitude},${calRecord.latitude}"
             AddressHelper.getAddressName(coords){
@@ -177,11 +183,15 @@ class GraphAdapter(private val calListRecord : Map<String, List<CalDTO>>, privat
                 }
             }
             is FirstViewHolder -> {
+                holder.ringGraph.maxValue = goalcal.toFloat()
+
                 val calorieCombined = (joggingList + etcList).sumOf { it.calorie }
+                Log.d("$$","calorieCombined = $calorieCombined // goalcal = $goalcal")
+
                 // 여기에서 holder.calorieGoal이 0이 아닐 때만 계산을 수행하도록 수정하였습니다.
                 holder.calorieGoal.text = goalcal.toString()
 
-                holder.ringGraph.setValueAnimated(0f, (calorieCombined/goalcal).toFloat(), 1000)
+                holder.ringGraph.setValueAnimated(0f, calorieCombined.toFloat(), 1000)
 
                 val animator = ValueAnimator.ofInt(0, calorieCombined.toInt())
                 animator.addUpdateListener { animation ->
