@@ -6,10 +6,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -17,7 +21,6 @@ import androidx.navigation.fragment.findNavController
 import com.example.calcal.R
 import com.example.calcal.databinding.FragmentMainBinding
 import com.example.calcal.modelDTO.RouteAndTimeDTO
-import com.example.calcal.modelDTO.RouteRecordDTO
 import com.example.calcal.modelDTO.TestDTO
 import com.example.calcal.repository.MemberRepositoryImpl
 import com.example.calcal.repository.RecordRepository
@@ -53,6 +56,7 @@ class MainFragment : Fragment(), OnMapReadyCallback {
     private val apiService = RequestFactory.create()
     private lateinit var memberViewModel: MemberViewModel
     private lateinit var sharedPreferences: SharedPreferences
+    private var doubleBackToExitPressedOnce = false
     //    private lateinit var btn_alarm : Button
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +70,7 @@ class MainFragment : Fragment(), OnMapReadyCallback {
             memberViewModel.getMemberInfo(userEmail)
             recordViewModel.getRecord(userEmail)
         }
+
 
     }
 
@@ -87,7 +92,7 @@ class MainFragment : Fragment(), OnMapReadyCallback {
         val overlay = binding.overlay
         overlay.setOnClickListener {
             findNavController().navigate(R.id.action_mainFragment_to_historyFragment)
-             }
+        }
 
         binding.btnWalking.setOnClickListener{
             findNavController().navigate(R.id.action_mainFragment_to_searchLocationFragment)
@@ -130,13 +135,18 @@ class MainFragment : Fragment(), OnMapReadyCallback {
                         binding.map.visibility = View.VISIBLE
                         binding.overlay.visibility =View.VISIBLE
                         val ratList: List<RouteAndTimeDTO> = lastRecord.ratList
-                        val coords: List<LatLng> = ratList.map { rat -> LatLng(rat.latitude, rat.longitude) }
-                        val cameraUpdate = CameraUpdate.fitBounds(calculateBounds(coords), 20)
-                        val path = PathOverlay()
-                        path.coords = coords
-                        path.color = Color.GREEN
-                        path.map = mNaverMap
-                        mNaverMap.moveCamera(cameraUpdate)
+                        if (ratList.size >= 2) {
+                            val coords: List<LatLng> = ratList.map { rat -> LatLng(rat.latitude, rat.longitude) }
+                            val cameraUpdate = CameraUpdate.fitBounds(calculateBounds(coords), 20)
+                            val path = PathOverlay()
+                            path.coords = coords
+                            path.color = Color.GREEN
+                            path.map = mNaverMap
+                            mNaverMap.moveCamera(cameraUpdate)
+                        } else {
+                            // ratList의 크기가 2 미만인 경우의 처리
+                            // 예: Toast.makeText(context, "경로를 그리기 위한 좌표가 충분하지 않습니다.", Toast.LENGTH_SHORT).show()
+                        }
                     } else {
                         binding.messageHidden.text = "운동한 기록이 없어요"
                         binding.messageHidden.visibility = View.VISIBLE
@@ -230,5 +240,29 @@ class MainFragment : Fragment(), OnMapReadyCallback {
             })
         }
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (doubleBackToExitPressedOnce) {
+                    requireActivity().onBackPressed() // 앱 종료
+                    return
+                }
+
+                doubleBackToExitPressedOnce = true
+                Toast.makeText(requireContext(), "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    doubleBackToExitPressedOnce = false
+                }, 2000) // 2초 이내에 다시 뒤로가기 버튼을 누르면 종료
+            }
+        })
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val userEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "")
+        if (userEmail != null) {
+            recordViewModel.getRecord(userEmail)
+        }
     }
 }

@@ -209,13 +209,14 @@ class GraphAdapter(private val calListRecord : Map<String, List<CalDTO>>, privat
         for (list in calListRecord.values) {
             total += list.size
         }
+        Log.d("RecyclerView", "item count: $total")
         return total
     }
-
     override fun getItemViewType(position: Int): Int {
+        val totalItemCount = getItemCount()
         return when {
             position == 0 -> ring_graph
-            position == calListRecord.size + 1 -> graph_list_plus
+            position == totalItemCount - 1 -> graph_list_plus
             else -> graph_list
         }
     }
